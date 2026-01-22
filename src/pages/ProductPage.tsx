@@ -1,0 +1,823 @@
+// src/pages/ProductPage.tsx
+// ✅ UPDATED (copy-paste ready)
+// Fixes & improvements:
+// - Safe image URL handling (no double apiUrl, handles http/absolute, missing images)
+// - Handles sizes/colors optionally (renders selectors only if exist)
+// - Prevents crash when sizes/colors/images are empty
+// - Uses accessToken (consistent with your other pages)
+// - Keeps instant-page restore state support (location.state.fromInstantPage)
+// - Better error messages + restricted states
+// - Adds basic price/offer badge safely
+
+import React, { useEffect, useMemo, useState } from 'react';
+import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
+import {
+  ArrowRight,
+  ShoppingCart,
+  Loader2,
+  AlertTriangle,
+  ChevronLeft,
+  ChevronRight,
+  Share2,
+  Check,
+  Sparkles,
+  ShoppingBag,
+  Heart,
+  Star,
+} from 'lucide-react';
+import { useApp } from '../contexts/AppContext';
+
+interface ProductImage {
+  imagePath: string;
+  id: string;
+  isMain: boolean;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  code: string;
+  description: string;
+  price: number;
+  originalPrice?: number;
+  createdAt: string;
+
+  // may differ across endpoints; keep optional to avoid runtime issues
+  category?: number | string;
+  season?: number | string;
+  type?: number | string;
+
+  isHidden: boolean;
+  isAvailable: boolean;
+
+  sizes: string[];
+  colors: string[];
+  images: ProductImage[];
+
+  rowVersion?: string;
+}
+
+type RestoreState = {
+  fromInstantPage?: { scrollY: number; pageNumber: number };
+  fromBreakfastPage?: { scrollY: number; pageNumber: number };
+  fromFeaturedPage?: { scrollY: number; pageNumber: number };
+};
+
+const apiUrl = import.meta.env.VITE_API_BASE_URL;
+
+const ProductPage: React.FC = () => {
+  const { dispatch } = useApp();
+  const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const restoreState = (location.state as RestoreState | undefined) || undefined;
+
+  const [copied, setCopied] = useState(false);
+
+  const [product, setProduct] = useState<Product | null>(
+    (location.state as any)?.product || null
+  );
+
+  const [loading, setLoading] = useState(!product);
+  const [error, setError] = useState<string | null>(null);
+
+  const [addingToCart, setAddingToCart] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
+
+  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedColor, setSelectedColor] = useState('');
+  const [quantity, setQuantity] = useState(1);
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchEndX, setTouchEndX] = useState<number | null>(null);
+
+  const [productRestricted, setProductRestricted] = useState<string | null>(null);
+
+  const productUrl = `${window.location.origin}/product/${id}`;
+
+  // ---------- helpers ----------
+  const getAuthToken = () =>
+    localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+
+  const resolveUrl = (path?: string) => {
+    if (!path) return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    if (path.startsWith('data:image')) return path;
+    if (path.startsWith('/')) return `${apiUrl}${path}`;
+    return `${apiUrl}/${path}`;
+  };
+
+  const safeImages = useMemo(() => {
+    const imgs = Array.isArray(product?.images) ? product!.images : [];
+    // normalize any missing paths
+    return imgs
+      .filter((img) => img && typeof img.imagePath === 'string' && img.imagePath.trim() !== '')
+      .map((img) => ({ ...img, imagePath: resolveUrl(img.imagePath) }));
+  }, [product]);
+
+  const mainImageIndex = useMemo(() => {
+    const idx = safeImages.findIndex((i) => i.isMain);
+    return idx >= 0 ? idx : 0;
+  }, [safeImages]);
+
+  const hasSizes = Array.isArray(product?.sizes) && (product?.sizes?.length || 0) > 0;
+  const hasColors = Array.isArray(product?.colors) && (product?.colors?.length || 0) > 0;
+
+  const isPurchaseDisabled =
+    addingToCart || !product || product.isHidden || !product.isAvailable || !!productRestricted;
+
+  const isOffer =
+    !!product?.originalPrice && product.originalPrice > product.price;
+
+  const discountPercent = useMemo(() => {
+    if (!product?.originalPrice || product.originalPrice <= product.price) return 0;
+    return Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+  }, [product]);
+
+  // ---------- effects ----------
+  useEffect(() => {
+    document.body.style.overflowX = 'hidden';
+    return () => {
+      document.body.style.overflowX = 'auto';
+    };
+  }, []);
+
+  useEffect(() => {
+    // always start top when entering product page
+    window.scrollTo(0, 0);
+  }, [id]);
+
+  useEffect(() => {
+    if (!product) return;
+
+    // set restriction message
+    if (product.isHidden) setProductRestricted('هذا المنتج غير متاح للعرض حالياً.');
+    else if (!product.isAvailable) setProductRestricted('المنتج غير متاح حالياً.');
+    else setProductRestricted(null);
+
+    // default selection
+    setSelectedSize((Array.isArray(product.sizes) && product.sizes[0]) || '');
+    setSelectedColor((Array.isArray(product.colors) && product.colors[0]) || '');
+
+    // default image
+    setCurrentImageIndex(mainImageIndex);
+  }, [product, mainImageIndex]);
+
+  useEffect(() => {
+    if (copied) {
+      const timer = setTimeout(() => setCopied(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [copied]);
+
+  useEffect(() => {
+    if (addedToCart) {
+      const timer = setTimeout(() => setAddedToCart(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [addedToCart]);
+
+  useEffect(() => {
+    if (product || !id) return;
+
+    const fetchProduct = async () => {
+      setLoading(true);
+      setError(null);
+      setProductRestricted(null);
+
+      try {
+        const token = getAuthToken();
+
+        const response = await fetch(`${apiUrl}/api/products/${id}`, {
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          const txt = await response.text().catch(() => '');
+          throw new Error(txt || 'لم يتم العثور على المنتج أو لا تملك صلاحية الوصول.');
+        }
+
+        const data: Product = await response.json();
+
+        // Normalize arrays to avoid runtime issues
+        const normalized: Product = {
+          ...data,
+          sizes: Array.isArray(data.sizes) ? data.sizes : [],
+          colors: Array.isArray(data.colors) ? data.colors : [],
+          images: Array.isArray(data.images) ? data.images : [],
+          isHidden: data.isHidden ?? false,
+          isAvailable: data.isAvailable ?? true,
+        };
+
+        setProduct(normalized);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'فشل في تحميل المنتج.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id, product]);
+
+  // ---------- share ----------
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(productUrl);
+      setCopied(true);
+    } catch {
+      const textArea = document.createElement('textarea');
+      textArea.value = productUrl;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+    }
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${product?.name || ''} - ${(product?.price ?? 0).toFixed(2)} جنيه`,
+          text: `👜 ${product?.name || ''}`,
+          url: productUrl,
+        });
+      } catch {
+        copyToClipboard();
+      }
+    } else {
+      copyToClipboard();
+    }
+  };
+
+  // ---------- touch for carousel ----------
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    setTouchStartX(e.touches[0].clientX);
+    setTouchEndX(null);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    setTouchEndX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX === null || touchEndX === null) return;
+    if (safeImages.length <= 1) return;
+
+    const diff = touchStartX - touchEndX;
+    const threshold = 35;
+
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0) {
+        setCurrentImageIndex((prev) => (prev < safeImages.length - 1 ? prev + 1 : 0));
+      } else {
+        setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : safeImages.length - 1));
+      }
+    }
+  };
+
+  // ---------- cart ----------
+  const handleAddToCart = async () => {
+    if (!product || addingToCart || isPurchaseDisabled) return;
+
+    setAddingToCart(true);
+    setError(null);
+
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        alert('يرجى تسجيل الدخول أولاً لإضافة المنتج للسلة');
+        navigate('/login');
+        return;
+      }
+
+      const payload = {
+        productId: product.id,
+        quantity,
+        size: hasSizes ? selectedSize : '',
+        color: hasColors ? selectedColor : '',
+      };
+
+      const response = await fetch(`${apiUrl}/api/cart/items`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const txt = await response.text().catch(() => '');
+        throw new Error(txt || 'فشل في إضافة المنتج إلى السلة');
+      }
+
+      dispatch({
+        type: 'ADD_TO_CART',
+        payload: {
+          product,
+          quantity,
+          selectedSize: hasSizes ? selectedSize : '',
+          selectedColor: hasColors ? selectedColor : '',
+        },
+      });
+
+      setAddedToCart(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'حدث خطأ أثناء إضافة المنتج إلى السلة');
+    } finally {
+      setAddingToCart(false);
+    }
+  };
+
+  // ---------- UI messages ----------
+  let statusMessage = productRestricted;
+  if (!statusMessage && product) {
+    statusMessage = 'متوفر وجاهز للطلب الآن! 👜';
+  }
+
+  // ---------- Loading ----------
+  if (loading) {
+    return (
+      <div
+        className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center px-4 pt-20"
+        dir="rtl"
+      >
+        <div className="text-center py-12">
+          <div className="relative inline-block mb-6">
+            <div className="absolute inset-0 bg-[#C4A57B] rounded-full blur-xl opacity-30 animate-pulse"></div>
+            <div className="relative bg-gradient-to-r from-[#8B7355] to-[#A67C52] rounded-full p-4">
+              <ShoppingBag className="h-12 w-12 text-white animate-bounce" />
+            </div>
+          </div>
+          <p className="text-[#8B7355] font-bold text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            جاري تحميل المنتج...
+          </p>
+          <p className="text-[#8B7355]/70 text-sm mt-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            انتظر لحظة 👜
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------- Error / Restricted / Not found ----------
+  if (error || !product || productRestricted) {
+    return (
+      <div
+        className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center px-4 py-8 pt-24"
+        dir="rtl"
+      >
+        <div className="bg-white/90 backdrop-blur-sm p-6 sm:p-8 rounded-2xl sm:rounded-3xl shadow-2xl text-center w-full max-w-md border-2 border-[#E5DCC5]">
+          <div className="mb-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full">
+              <AlertTriangle className="text-red-500" size={40} />
+            </div>
+          </div>
+          <h2
+            className="text-xl sm:text-2xl font-bold text-[#8B7355] mb-3"
+            style={{ fontFamily: 'Tajawal, sans-serif' }}
+          >
+            {error ? 'حدث خطأ' : 'عذراً!'}
+          </h2>
+          <p
+            className="text-[#8B7355]/70 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base"
+            style={{ fontFamily: 'Tajawal, sans-serif' }}
+          >
+            {error || productRestricted || 'المنتج غير موجود.'}
+          </p>
+
+          <div className="space-y-3">
+            <Link
+              to="/"
+              className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl hover:from-[#6B5644] hover:to-[#8B6644] font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all text-sm sm:text-base"
+              style={{ fontFamily: 'Tajawal, sans-serif' }}
+            >
+              <ShoppingBag size={20} />
+              <span>تصفح المنتجات</span>
+            </Link>
+
+            <button
+              onClick={() => {
+                // go back to where user came from; if none, go home
+                if (restoreState?.fromInstantPage || restoreState?.fromBreakfastPage || restoreState?.fromFeaturedPage) {
+                  navigate(-1);
+                } else {
+                  navigate('/');
+                }
+              }}
+              className="w-full bg-[#F5F5DC] text-[#8B7355] px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl hover:bg-[#E5DCC5] font-medium transition-all text-sm sm:text-base"
+              style={{ fontFamily: 'Tajawal, sans-serif' }}
+            >
+              العودة للخلف
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------- Main ----------
+  const currentImage = safeImages[currentImageIndex]?.imagePath || '';
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC]" dir="rtl">
+      <div className="pt-24 pb-12 px-3 sm:px-4 lg:px-8 max-w-7xl mx-auto">
+        {/* Back button + Share */}
+        <div className="mb-4 sm:mb-6 lg:mb-8 flex items-center justify-between">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center text-[#8B7355] hover:text-[#D4AF37] font-medium py-2 transition-colors text-sm sm:text-base"
+            style={{ fontFamily: 'Tajawal, sans-serif' }}
+          >
+            <ArrowRight size={18} className="sm:hidden ml-2" />
+            <ArrowRight size={20} className="hidden sm:block ml-2" />
+            <span>العودة</span>
+          </button>
+
+          <button
+            onClick={handleShare}
+            className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl transition-all font-medium shadow-md text-sm sm:text-base ${
+              copied
+                ? 'bg-green-500 text-white shadow-green-300'
+                : 'bg-white text-[#8B7355] border-2 border-[#E5DCC5] hover:border-[#D4AF37] hover:text-[#D4AF37] hover:shadow-lg'
+            }`}
+            style={{ fontFamily: 'Tajawal, sans-serif' }}
+          >
+            {copied ? (
+              <>
+                <Check size={16} className="sm:hidden" />
+                <Check size={18} className="hidden sm:block" />
+                <span>تم النسخ!</span>
+              </>
+            ) : (
+              <>
+                <Share2 size={16} className="sm:hidden" />
+                <Share2 size={18} className="hidden sm:block" />
+                <span className="hidden sm:inline">مشاركة</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Added to Cart Notification */}
+        {addedToCart && (
+          <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 animate-bounce">
+            <div
+              className="bg-green-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl shadow-2xl flex items-center gap-2 sm:gap-3 text-sm sm:text-base"
+              style={{ fontFamily: 'Tajawal, sans-serif' }}
+            >
+              <Check size={20} className="sm:hidden" />
+              <Check size={24} className="hidden sm:block" />
+              <span className="font-bold">تمت الإضافة للسلة بنجاح! 👜</span>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border-2 border-[#E5DCC5]">
+          <div className="lg:grid lg:grid-cols-2 lg:gap-0">
+            {/* Images */}
+            <div className="w-full lg:order-1">
+              <div
+                className="relative w-full overflow-hidden bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC] aspect-square"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                {currentImage ? (
+                  <img
+                    src={currentImage}
+                    alt={product.name}
+                    className="w-full h-full object-contain select-none"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="text-center">
+                      <ShoppingBag className="h-14 w-14 text-[#C4A57B] mx-auto mb-2" />
+                      <p className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        لا توجد صور لهذا المنتج
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Discount Badge */}
+                {isOffer && discountPercent > 0 && (
+                  <div
+                    className="absolute top-3 sm:top-4 right-3 sm:right-4 bg-red-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-lg"
+                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  >
+                    خصم {discountPercent}%
+                  </div>
+                )}
+
+                {/* Desktop arrows */}
+                {safeImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={() =>
+                        setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : safeImages.length - 1))
+                      }
+                      className="hidden lg:flex absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 text-[#8B7355] p-3 rounded-full hover:bg-white hover:shadow-xl transition-all shadow-lg"
+                    >
+                      <ChevronLeft size={24} />
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        setCurrentImageIndex((prev) => (prev < safeImages.length - 1 ? prev + 1 : 0))
+                      }
+                      className="hidden lg:flex absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 text-[#8B7355] p-3 rounded-full hover:bg-white hover:shadow-xl transition-all shadow-lg"
+                    >
+                      <ChevronRight size={24} />
+                    </button>
+                  </>
+                )}
+
+                {/* Dots */}
+                {safeImages.length > 1 && (
+                  <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 bg-white/80 backdrop-blur-sm rounded-full py-1.5 sm:py-2 px-3 sm:px-4 shadow-lg">
+                    {safeImages.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentImageIndex(i)}
+                        className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all ${
+                          currentImageIndex === i ? 'bg-[#8B7355] scale-125' : 'bg-gray-300 hover:bg-[#C4A57B]'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Thumbnails */}
+              {safeImages.length > 1 && (
+                <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 bg-[#FAF9F6]">
+                  <div className="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-1">
+                    {safeImages.map((image, i) => (
+                      <button
+                        key={image.id || i}
+                        onClick={() => setCurrentImageIndex(i)}
+                        className={`h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 flex-shrink-0 rounded-lg sm:rounded-xl overflow-hidden border-3 transition-all shadow-md hover:shadow-xl ${
+                          currentImageIndex === i
+                            ? 'border-[#D4AF37] shadow-[#D4AF37]/30 scale-105'
+                            : 'border-white hover:border-[#C4A57B]'
+                        }`}
+                      >
+                        <img src={image.imagePath} alt={`thumb-${i}`} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Details */}
+            <div className="p-4 sm:p-6 lg:p-8 xl:p-10 space-y-4 sm:space-y-5 lg:space-y-6 lg:order-2">
+              {/* Title */}
+              <div>
+                <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                  <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-[#D4AF37]" />
+                  <span className="text-[#D4AF37] font-medium text-xs sm:text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    من Turtle Art
+                  </span>
+                </div>
+
+                <h1
+                  className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-[#8B7355] leading-tight mb-3 sm:mb-4"
+                  style={{ fontFamily: 'Tajawal, sans-serif' }}
+                >
+                  {product.name}
+                </h1>
+
+                {product.description && (
+                  <p
+                    className="text-[#8B7355]/70 text-sm sm:text-base lg:text-lg leading-relaxed"
+                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  >
+                    {product.description}
+                  </p>
+                )}
+              </div>
+
+              {/* Code */}
+              <div className="flex flex-wrap gap-2 sm:gap-3">
+                <span
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#E5DCC5] text-[#8B7355] text-xs sm:text-sm rounded-full font-medium"
+                  style={{ fontFamily: 'Tajawal, sans-serif' }}
+                >
+                  كود: {product.code}
+                </span>
+              </div>
+
+              {/* Price */}
+              <div className="bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC] rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2 border-[#E5DCC5]">
+                <div className="flex items-baseline gap-2 sm:gap-3">
+                  <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#D4AF37]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    {Number(product.price || 0).toFixed(2)}
+                  </span>
+                  <span className="text-lg sm:text-xl text-[#8B7355] font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    جنيه
+                  </span>
+
+                  {isOffer && (
+                    <span className="text-base sm:text-lg lg:text-xl text-gray-400 line-through font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      {Number(product.originalPrice).toFixed(2)} جنيه
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Size selector */}
+              {hasSizes && (
+                <div className="bg-[#FAF9F6] rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2 border-[#E5DCC5]">
+                  <h3 className="font-bold text-[#8B7355] text-base sm:text-lg mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    المقاس
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {product.sizes.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setSelectedSize(s)}
+                        disabled={isPurchaseDisabled}
+                        className={`px-4 py-2 rounded-xl border-2 text-sm font-bold transition-all ${
+                          selectedSize === s
+                            ? 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white border-transparent shadow-md'
+                            : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:border-[#D4AF37]'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        style={{ fontFamily: 'Tajawal, sans-serif' }}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Color selector */}
+              {hasColors && (
+                <div className="bg-[#FAF9F6] rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2 border-[#E5DCC5]">
+                  <h3 className="font-bold text-[#8B7355] text-base sm:text-lg mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    اللون
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setSelectedColor(c)}
+                        disabled={isPurchaseDisabled}
+                        className={`px-4 py-2 rounded-xl border-2 text-sm font-bold transition-all ${
+                          selectedColor === c
+                            ? 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white border-transparent shadow-md'
+                            : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:border-[#D4AF37]'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        style={{ fontFamily: 'Tajawal, sans-serif' }}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Quantity */}
+              <div className="flex justify-between items-center bg-[#FAF9F6] rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2 border-[#E5DCC5]">
+                <h3 className="font-bold text-[#8B7355] text-base sm:text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  الكمية
+                </h3>
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    disabled={isPurchaseDisabled}
+                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl font-bold text-lg sm:text-xl text-[#8B7355] shadow-md hover:shadow-lg hover:border-[#D4AF37] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  >
+                    -
+                  </button>
+                  <span className="text-xl sm:text-2xl font-black text-[#8B7355] min-w-[2rem] text-center" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() => setQuantity(quantity + 1)}
+                    disabled={isPurchaseDisabled}
+                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl font-bold text-lg sm:text-xl text-[#8B7355] shadow-md hover:shadow-lg hover:border-[#D4AF37] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* Add to cart */}
+              <button
+                onClick={handleAddToCart}
+                disabled={isPurchaseDisabled}
+                className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg shadow-xl transition-all flex items-center justify-center gap-2 sm:gap-3 ${
+                  addedToCart
+                    ? 'bg-green-500 text-white hover:bg-green-600'
+                    : 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white hover:from-[#6B5644] hover:to-[#8B6644] hover:shadow-2xl hover:scale-[1.02]'
+                } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100`}
+                style={{ fontFamily: 'Tajawal, sans-serif' }}
+              >
+                {addingToCart ? (
+                  <>
+                    <Loader2 size={20} className="sm:hidden animate-spin" />
+                    <Loader2 size={24} className="hidden sm:block animate-spin" />
+                    <span>جاري الإضافة...</span>
+                  </>
+                ) : addedToCart ? (
+                  <>
+                    <Check size={20} className="sm:hidden" />
+                    <Check size={24} className="hidden sm:block" />
+                    <span>تمت الإضافة ✓</span>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart size={20} className="sm:hidden" />
+                    <ShoppingCart size={24} className="hidden sm:block" />
+                    <span>أضف للسلة</span>
+                  </>
+                )}
+              </button>
+
+              {/* Status */}
+              <div
+                className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl font-medium flex items-center gap-2 sm:gap-3 text-sm sm:text-base ${
+                  isPurchaseDisabled
+                    ? 'bg-red-50 border-2 border-red-200 text-red-700'
+                    : 'bg-green-50 border-2 border-green-200 text-green-700'
+                }`}
+                style={{ fontFamily: 'Tajawal, sans-serif' }}
+              >
+                {isPurchaseDisabled ? (
+                  <AlertTriangle size={20} className="sm:hidden flex-shrink-0" />
+                ) : (
+                  <Check size={20} className="sm:hidden text-green-600 flex-shrink-0" />
+                )}
+                <span>{statusMessage}</span>
+              </div>
+
+              {/* Features */}
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-3 sm:pt-4 border-t-2 border-[#E5DCC5]">
+                <div className="text-center p-2 sm:p-3 bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC] rounded-lg sm:rounded-xl border border-[#E5DCC5]">
+                  <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 text-[#8B7355] mx-auto mb-1" />
+                  <p className="text-[10px] sm:text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    جودة عالية
+                  </p>
+                </div>
+                <div className="text-center p-2 sm:p-3 bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC] rounded-lg sm:rounded-xl border border-[#E5DCC5]">
+                  <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-[#D4AF37] mx-auto mb-1 fill-current" />
+                  <p className="text-[10px] sm:text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    صنع بحب
+                  </p>
+                </div>
+                <div className="text-center p-2 sm:p-3 bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC] rounded-lg sm:rounded-xl border border-[#E5DCC5]">
+                  <Star className="h-5 w-5 sm:h-6 sm:w-6 text-[#C4A57B] mx-auto mb-1 fill-current" />
+                  <p className="text-[10px] sm:text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    تصميم مميز
+                  </p>
+                </div>
+              </div>
+
+              {/* Inline error (if any) */}
+              {error && (
+                <div className="bg-red-50 border-2 border-red-200 text-red-700 p-3 rounded-xl text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  {error}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* WhatsApp */}
+        <div className="mt-6 sm:mt-8 text-center">
+          <p className="text-[#8B7355]/70 mb-3 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            هل لديك سؤال عن هذا المنتج؟
+          </p>
+          <a
+            href={`https://wa.me/201000070653?text=${encodeURIComponent(`مرحباً، أريد الاستفسار عن: ${product.name}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-green-500 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-medium hover:bg-green-600 transition-all shadow-lg hover:shadow-xl text-sm sm:text-base"
+            style={{ fontFamily: 'Tajawal, sans-serif' }}
+          >
+            <span>💬</span>
+            <span>تواصل معنا عبر واتساب</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProductPage;

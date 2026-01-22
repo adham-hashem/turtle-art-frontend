@@ -1,0 +1,31 @@
+import { Governorate } from '../types';
+
+export const governorates: Governorate[] = [
+  { name: 'القاهرة', deliveryFee: 30, deliveryTime: '1-2 أيام' },
+  { name: 'الجيزة', deliveryFee: 35, deliveryTime: '1-2 أيام' },
+  { name: 'الإسكندرية', deliveryFee: 40, deliveryTime: '2-3 أيام' },
+  { name: 'الدقهلية', deliveryFee: 25, deliveryTime: '1-2 أيام' },
+  { name: 'الشرقية', deliveryFee: 30, deliveryTime: '2-3 أيام' },
+  { name: 'القليوبية', deliveryFee: 30, deliveryTime: '1-2 أيام' },
+  { name: 'كفر الشيخ', deliveryFee: 35, deliveryTime: '2-3 أيام' },
+  { name: 'الغربية', deliveryFee: 35, deliveryTime: '2-3 أيام' },
+  { name: 'المنوفية', deliveryFee: 35, deliveryTime: '2-3 أيام' },
+  { name: 'البحيرة', deliveryFee: 40, deliveryTime: '2-3 أيام' },
+  { name: 'الإسماعيلية', deliveryFee: 40, deliveryTime: '2-3 أيام' },
+  { name: 'بورسعيد', deliveryFee: 45, deliveryTime: '2-3 أيام' },
+  { name: 'السويس', deliveryFee: 45, deliveryTime: '2-3 أيام' },
+  { name: 'المنيا', deliveryFee: 50, deliveryTime: '3-4 أيام' },
+  { name: 'بني سويف', deliveryFee: 45, deliveryTime: '2-3 أيام' },
+  { name: 'الفيوم', deliveryFee: 45, deliveryTime: '2-3 أيام' },
+  { name: 'أسيوط', deliveryFee: 55, deliveryTime: '3-4 أيام' },
+  { name: 'سوهاج', deliveryFee: 60, deliveryTime: '3-4 أيام' },
+  { name: 'قنا', deliveryFee: 65, deliveryTime: '4-5 أيام' },
+  { name: 'الأقصر', deliveryFee: 65, deliveryTime: '4-5 أيام' },
+  { name: 'أسوان', deliveryFee: 70, deliveryTime: '4-5 أيام' },
+  { name: 'البحر الأحمر', deliveryFee: 75, deliveryTime: '4-5 أيام' },
+  { name: 'الوادي الجديد', deliveryFee: 80, deliveryTime: '5-6 أيام' },
+  { name: 'مطروح', deliveryFee: 70, deliveryTime: '4-5 أيام' },
+  { name: 'شمال سيناء', deliveryFee: 80, deliveryTime: '5-6 أيام' },
+  { name: 'جنوب سيناء', deliveryFee: 85, deliveryTime: '5-6 أيام' },
+  { name: 'دمياط', deliveryFee: 40, deliveryTime: '2-3 أيام' }
+];
