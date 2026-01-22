@@ -116,7 +116,7 @@ const Footer: React.FC = () => {
         <div className="border-t-2 border-[#E5DCC5] pt-6">
           <div className="text-center space-y-3">
             <p className="text-[#8B7355]/70 text-sm font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-              تم التصميم والتطوير بواسطة Adham&apos;s Team
+              Contact the developers
             </p>
 
             {/* WhatsApp Icons for Adham's Team */}
