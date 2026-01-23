@@ -227,7 +227,7 @@ const HomePage: React.FC = () => {
         </div>
 
         {/* Navigation Buttons Section */}
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
             <button
               onClick={() => navigate('/menu')}
@@ -261,7 +261,7 @@ const HomePage: React.FC = () => {
               <span style={{ fontFamily: 'Tajawal, sans-serif' }}>التوزيعات</span>
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* Products Section */}
         <div className="max-w-7xl mx-auto px-4 pb-8">
