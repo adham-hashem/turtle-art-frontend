@@ -290,9 +290,6 @@ const HomePage: React.FC = () => {
           )}
         </div>
       </main>
-
-      {/* Bottom Navigation */}
-      <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
     </div>
   );
 };
