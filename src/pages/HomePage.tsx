@@ -42,34 +42,28 @@ const HomePage: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
+
       const token = localStorage.getItem('jwt_token') || 'jwt_token';
       const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
-      const response = await fetch(
-        `${apiUrl}/api/products?pageNumber=1&pageSize=10`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await fetch(`${apiUrl}/api/products?pageNumber=1&pageSize=10`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
       const contentType = response.headers.get('Content-Type');
 
       if (!response.ok) {
         const text = await response.text();
-        throw new Error(
-          `HTTP error! Status: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`HTTP error! Status: ${response.status} ${response.statusText}`);
       }
 
       if (!contentType?.includes('application/json')) {
         const text = await response.text();
-        throw new Error(
-          `Invalid response format: Expected JSON, received ${contentType}`
-        );
+        throw new Error(`Invalid response format: Expected JSON, received ${contentType}`);
       }
 
       const data: ApiResponse = await response.json();
@@ -97,8 +91,7 @@ const HomePage: React.FC = () => {
         isFeatured: item.isFeatured !== undefined ? item.isFeatured : false,
 
         inStock: item.isAvailable !== undefined ? item.isAvailable : true,
-        isOffer: (item.originalPrice !== undefined && 
-                  item.originalPrice > item.price) ? true : false,
+        isOffer: item.originalPrice !== undefined && item.originalPrice > item.price ? true : false,
 
         rating: item.rating !== undefined ? item.rating : 0,
         salesCount: item.salesCount !== undefined ? item.salesCount : 0,
@@ -111,11 +104,7 @@ const HomePage: React.FC = () => {
       setProducts(mappedProducts);
     } catch (err) {
       console.error('Error fetching products:', err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Error fetching products. Please try again later.'
-      );
+      setError(err instanceof Error ? err.message : 'Error fetching products. Please try again later.');
       setProducts([]);
     } finally {
       setLoading(false);
@@ -148,9 +137,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleAddToCart = (product: Product) => {
-    if (!product || !product.inStock) {
-      return;
-    }
+    if (!product || !product.inStock) return;
 
     const hasSizes = Array.isArray(product.sizes) && product.sizes.length > 0;
     const hasColors = Array.isArray(product.colors) && product.colors.length > 0;
@@ -172,7 +159,7 @@ const HomePage: React.FC = () => {
 
   const handleNavigate = (page: string) => {
     setCurrentPage(page);
-    
+
     switch (page) {
       case 'home':
         navigate('/');
@@ -197,27 +184,29 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] pt-20 pb-20" dir="rtl">
       <main>
-        {/* Animation styles */}
-        <style>{`
-          @keyframes bounce-down {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(8px); }
-          }
-          .animate-bounce-down {
-            animation: bounce-down 2s infinite;
-          }
-        `}</style>
-
-        {/* Hero Section */}
+        {/* Hero Section (like your example) */}
         <div className="relative w-full h-48 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#FAF9F6]/50" />
+          <img
+            src="/background.jpeg"
+            alt="Turtle Art"
+            className="w-full h-full object-cover"
+            loading="eager"
+          />
+
+          {/* ✅ overlay gradient for readability (same palette) */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-[#FAF9F6]/65" />
+
+          {/* ✅ a very light warm tint to match theme */}
+          <div className="absolute inset-0 bg-[#8B7355]/10 mix-blend-multiply" />
+
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <img
               src="/turtle_art_logo.jpeg"
               alt="Turtle Art Logo"
-              className="w-20 h-20 rounded-full object-cover shadow-2xl mb-3 animate-pulse"
+              className="w-20 h-20 rounded-full object-cover shadow-2xl mb-3 animate-pulse border-4 border-white/80"
             />
-            <button 
+
+            <button
               onClick={() => navigate('/menu')}
               className="px-6 py-2 bg-white/90 backdrop-blur-sm rounded-full text-[#8B7355] font-bold hover:bg-[#D4AF37] hover:text-white transition-all duration-300 shadow-lg transform hover:scale-105"
             >
@@ -226,56 +215,13 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Navigation Buttons Section */}
-        {/* <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-            <button
-              onClick={() => navigate('/menu')}
-              className="group bg-gradient-to-b from-[#8B7355] to-[#6B5644] hover:from-[#6B5644] hover:to-[#5A4736] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-sm shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 transition-all duration-200 flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2"
-            >
-              <span className="text-lg sm:text-xl">👜</span>
-              <span style={{ fontFamily: 'Tajawal, sans-serif' }}>المنيو</span>
-            </button>
-
-            <button
-              onClick={() => navigate('/custom')}
-              className="group bg-gradient-to-b from-[#C4A57B] to-[#B4956B] hover:from-[#B4956B] hover:to-[#A4855B] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-sm shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 transition-all duration-200 flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2"
-            >
-              <span className="text-lg sm:text-xl">🎨</span>
-              <span style={{ fontFamily: 'Tajawal, sans-serif' }}>تصاميم خاصة</span>
-            </button>
-
-            <button
-              onClick={() => navigate('/instant')}
-              className="group bg-gradient-to-b from-[#D4AF37] to-[#C49F27] hover:from-[#C49F27] hover:to-[#B48F17] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-sm shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 transition-all duration-200 flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2"
-            >
-              <span className="text-lg sm:text-xl">⚡</span>
-              <span style={{ fontFamily: 'Tajawal, sans-serif' }}>المتاح فوري</span>
-            </button>
-
-            <button
-              onClick={() => navigate('/giveaways')}
-              className="group bg-gradient-to-b from-[#A67C52] to-[#966C42] hover:from-[#966C42] hover:to-[#865C32] text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-sm shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 transition-all duration-200 flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2"
-            >
-              <span className="text-lg sm:text-xl">🎁</span>
-              <span style={{ fontFamily: 'Tajawal, sans-serif' }}>التوزيعات</span>
-            </button>
-          </div>
-        </div> */}
-
         {/* Products Section */}
         <div className="max-w-7xl mx-auto px-4 pb-8">
-          <div className="text-center mb-8">
-            <h1
-              className="text-3xl font-bold text-[#8B7355] mb-2"
-              style={{ fontFamily: 'Tajawal, sans-serif' }}
-            >
+          <div className="text-center mb-8 mt-6">
+            <h1 className="text-3xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               منتجاتنا المميزة 🤍
             </h1>
-            <p
-              className="text-[#8B7355]/70"
-              style={{ fontFamily: 'Tajawal, sans-serif' }}
-            >
+            <p className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               صُنع بحب وإتقان خصيصاً لكِ 👜✨
             </p>
           </div>
@@ -313,11 +259,7 @@ const HomePage: React.FC = () => {
                         key={product.id}
                         className="bg-white rounded-2xl hover:shadow-xl transition-all duration-300 border border-[#E5DCC5] hover:border-[#D4AF37] overflow-hidden"
                       >
-                        <ProductCard
-                          product={product}
-                          onViewProduct={handleViewProduct}
-                          onAddToCart={handleAddToCart}
-                        />
+                        <ProductCard product={product} onViewProduct={handleViewProduct} onAddToCart={handleAddToCart} />
                       </div>
                     ))}
                   </div>
