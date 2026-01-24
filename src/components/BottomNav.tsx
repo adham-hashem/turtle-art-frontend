@@ -12,8 +12,8 @@ export function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
 
   const navItems = [
     { id: 'home', label: 'الرئيسية', icon: Home },
-    { id: 'kids-bags', label: 'شنط الأطفال', icon: Baby },
-    { id: 'girls-bags', label: 'شنط الحريمي', icon: Sparkles },
+    { id: 'kids-bags', label: 'شنط أطفال', icon: Baby },
+    { id: 'girls-bags', label: 'شنط بناتي', icon: Sparkles },
     { id: 'giveaways', label: 'التوزيعات', icon: Gift },
     { id: 'custom-designs', label: 'التصميمات الخاصة', icon: Palette },
     { id: 'cart', label: 'السلة', icon: ShoppingBag },

@@ -86,6 +86,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )
       : 0;
 
+  const primaryImagePath = product.images[0]?.imagePath || '';
+  const resolvedImageSrc = primaryImagePath
+    ? primaryImagePath.startsWith('http')
+      ? primaryImagePath
+      : primaryImagePath.startsWith('/')
+        ? `${apiUrl}${primaryImagePath}`
+        : `${apiUrl}/${primaryImagePath}`
+    : '';
+
   return (
     <div
       className="bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden transition-all duration-300 group hover:shadow-2xl cursor-pointer transform hover:scale-[1.02] active:scale-[0.98] border-2 border-[#E5DCC5] hover:border-[#D4AF37]"
@@ -94,7 +103,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Image Section */}
       <div className="relative overflow-hidden bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC]">
         <img
-          src={`${apiUrl}${product.images[0]?.imagePath || ''}`}
+          src={resolvedImageSrc}
           alt={product.name}
           onError={(e) => {
             const target = e.target as HTMLImageElement;

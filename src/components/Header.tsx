@@ -109,7 +109,7 @@ const Header: React.FC = () => {
   const menuItems = [
     { label: 'الرئيسية', page: 'home', icon: '🏠' },
     { label: 'شنط أطفال', page: 'kids-bags', icon: '🧸' },
-    { label: 'شنط الحريمي', page: 'girls-bags', icon: '👛' },
+    { label: 'شنط بناتي', page: 'girls-bags', icon: '👛' },
     { label: 'مجموعة الأم والابنة', page: 'mother-daughter', icon: '👩‍👧' },
     { label: 'مجموعة رمضان', page: 'ramadan-collection', icon: '🌙' },
     { label: 'التصميمات الخاصة', page: 'custom-designs', icon: '🎨' },
