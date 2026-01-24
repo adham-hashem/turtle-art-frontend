@@ -84,15 +84,18 @@ function PublicLayout() {
       case 'kids-bags':
         navigate('/kids-bags');
         break;
-      case 'women-bags':
+      case 'girls-bags':
         // لو عندك route مختلف للنساء عدله هنا
-        navigate('/women-bags');
+        navigate('/girls-bags');
         break;
       case 'giveaways':
         navigate('/giveaways');
         break;
       case 'cart':
         navigate('/cart');
+        break;
+      case 'custom-designs':
+        navigate('/custom-designs');
         break;
       default:
         navigate('/');

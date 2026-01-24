@@ -6,7 +6,7 @@ import {
   CreditCard,
   Sparkles,
   CheckCircle,
-  Cake,
+  Gift,
   Heart,
   ArrowRight,
   User,
@@ -14,33 +14,36 @@ import {
   MapPin,
   MessageSquareText,
   Image as ImageIcon,
+  Palette,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-interface PaymentMethodOption {
-  value: string;
-  label: string;
-  icon: string;
-}
-
-// Must match backend enums (0/1/2)
+// Backend: PaymentMethod? (nullable)
+// We will send number when chosen, otherwise don't send it at all.
 type PaymentMethod = 0 | 1 | 2;
 
+interface PaymentMethodOption {
+  label: string;
+  icon: string;
+  value: PaymentMethod;
+}
+
 interface CustomOrderForm {
-  // Design
-  customText: string;
+  // Required by backend
+  requiredText: string;
+  preferredColors: string; // comma-separated
   designImage: File | null;
   imagePreview: string | null;
-  notes: string;
 
-  // Customer
+  // Optional
+  notes: string;
   customerName: string;
   customerPhone: string;
   additionalPhone: string;
   address: string;
 
-  // Payment
-  paymentMethod: PaymentMethod;
+  // Optional payment
+  paymentMethod: PaymentMethod | null;
 }
 
 const normalizeDigitsToEnglish = (value: string) => {
@@ -59,6 +62,7 @@ const normalizePhone = (value: string) => {
   return englishDigits.replace(/\D/g, '').slice(0, 11);
 };
 
+// Backend regex: ^01[0-2,5]\d{8}$ (same as you used before)
 const isValidEgyptPhone = (value: string) => /^01[0125][0-9]{8}$/.test(value);
 
 export default function CustomOrders() {
@@ -73,25 +77,28 @@ export default function CustomOrders() {
 
   const paymentMethods: PaymentMethodOption[] = useMemo(
     () => [
-      { value: 'cash', label: 'كاش', icon: '💵' },
-      { value: 'vodafoneCash', label: 'فودافون كاش', icon: '📱' },
-      { value: 'instapay', label: 'إنستا باي', icon: '🏦' },
+      { value: 0, label: 'كاش', icon: '💵' },
+      { value: 1, label: 'فودافون كاش', icon: '📱' },
+      { value: 2, label: 'إنستا باي', icon: '🏦' },
     ],
     []
   );
 
   const [formData, setFormData] = useState<CustomOrderForm>({
-    customText: '',
+    // required
+    requiredText: '',
+    preferredColors: '',
     designImage: null,
     imagePreview: null,
-    notes: '',
 
+    // optional
+    notes: '',
     customerName: '',
     customerPhone: '',
     additionalPhone: '',
     address: '',
 
-    paymentMethod: 0,
+    paymentMethod: null,
   });
 
   const getAuthToken = () => {
@@ -120,6 +127,67 @@ export default function CustomOrders() {
     reader.readAsDataURL(file);
   };
 
+  const validateStep1 = () => {
+    // Backend requires: DesignImage + RequiredText + PreferredColors
+    if (!formData.designImage) {
+      alert('رفع التصميم مطلوب (صورة مرجعية)');
+      return false;
+    }
+    if (!formData.requiredText.trim()) {
+      alert('النص المطلوب مطلوب');
+      return false;
+    }
+    if (formData.requiredText.trim().length > 200) {
+      alert('النص المطلوب يجب ألا يتجاوز 200 حرف');
+      return false;
+    }
+    if (!formData.preferredColors.trim()) {
+      alert('الألوان المفضلة مطلوبة');
+      return false;
+    }
+    if (formData.preferredColors.trim().length > 200) {
+      alert('الألوان المفضلة يجب ألا تتجاوز 200 حرف');
+      return false;
+    }
+    if (formData.notes.trim().length > 1000) {
+      alert('الملاحظات يجب أن لا تتجاوز 1000 حرف');
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep2 = () => {
+    const name = formData.customerName.trim();
+    const phone = normalizePhone(formData.customerPhone);
+    const addPhone = formData.additionalPhone ? normalizePhone(formData.additionalPhone) : '';
+
+    if (!name) {
+      alert('الاسم مطلوب');
+      return false;
+    }
+    if (name.length < 2 || name.length > 100) {
+      alert('الاسم يجب أن يكون بين 2 و 100 حرف');
+      return false;
+    }
+
+    if (!isValidEgyptPhone(phone)) {
+      alert('رقم الهاتف غير صحيح (11 رقم يبدأ بـ 010 أو 011 أو 012 أو 015)');
+      return false;
+    }
+
+    if (addPhone && !isValidEgyptPhone(addPhone)) {
+      alert('رقم الهاتف الإضافي غير صحيح');
+      return false;
+    }
+
+    if (formData.address.trim().length > 500) {
+      alert('العنوان يجب أن لا يتجاوز 500 حرف');
+      return false;
+    }
+
+    return true;
+  };
+
   const postOrder = async () => {
     const token = getAuthToken();
     if (!token) {
@@ -127,71 +195,57 @@ export default function CustomOrders() {
       return;
     }
 
+    // Validate required backend fields one more time
+    if (!validateStep1() || !validateStep2()) return;
+
     const normalizedPhone = normalizePhone(formData.customerPhone);
     const normalizedAdditionalPhone = formData.additionalPhone ? normalizePhone(formData.additionalPhone) : '';
 
-    if (!formData.customerName.trim()) {
-      alert('من فضلك أدخل الاسم بالكامل');
-      return;
-    }
-
-    if (!isValidEgyptPhone(normalizedPhone)) {
-      alert('من فضلك أدخل رقم موبايل مصري صحيح (11 رقم يبدأ بـ 010 أو 011 أو 012 أو 015)');
-      return;
-    }
-
-    if (normalizedAdditionalPhone && !isValidEgyptPhone(normalizedAdditionalPhone)) {
-      alert('رقم الهاتف الإضافي غير صحيح');
-      return;
-    }
-
-    if (!formData.designImage && !formData.customText.trim() && !formData.notes.trim()) {
-      alert('من فضلك اكتب تفاصيل التصميم أو ارفع صورة تصميم');
-      return;
-    }
-
     const fd = new FormData();
 
-    // Customer
+    // Required (CreateCustomOrderDto)
     fd.append('CustomerName', formData.customerName.trim());
     fd.append('CustomerPhone', normalizedPhone);
 
+    // REQUIRED: DesignImage
+    if (formData.designImage) {
+      fd.append('DesignImage', formData.designImage);
+    }
+
+    // REQUIRED
+    fd.append('RequiredText', formData.requiredText.trim());
+    fd.append('PreferredColors', formData.preferredColors.trim());
+
+    // Optional
     if (normalizedAdditionalPhone) fd.append('AdditionalPhone', normalizedAdditionalPhone);
     if (formData.address.trim()) fd.append('Address', formData.address.trim());
-
-    // Design
-    if (formData.customText.trim()) fd.append('CustomText', formData.customText.trim());
     if (formData.notes.trim()) fd.append('Notes', formData.notes.trim());
-    if (formData.designImage) fd.append('DesignImage', formData.designImage);
 
-    // Payment
-    fd.append('PaymentMethod', String(formData.paymentMethod));
-
-    const candidates = [`${apiUrl}/api/CustomOrders`, `${apiUrl}/api/custom-orders`];
-
-    let lastErr = '';
-    for (const url of candidates) {
-      // eslint-disable-next-line no-await-in-loop
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: fd,
-      });
-
-      if (res.ok) {
-        const result = await res.json().catch(() => ({}));
-        setOrderId(result.id ?? null);
-        setOrderNumber(result.orderNumber ?? null);
-        setOrderComplete(true);
-        return;
-      }
-
-      lastErr = await res.text().catch(() => '');
-      if (res.status === 404) continue;
-      break;
+    // Optional payment (nullable)
+    if (formData.paymentMethod !== null) {
+      fd.append('PaymentMethod', String(formData.paymentMethod));
     }
+
+    // Controller route: api/CustomOrders
+    const url = `${apiUrl}/api/CustomOrders`;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: fd,
+    });
+
+    if (res.ok) {
+      const result = await res.json().catch(() => ({}));
+      setOrderId(result.id ?? null);
+      setOrderNumber(result.orderNumber ?? null);
+      setOrderComplete(true);
+      return;
+    }
+
+    const lastErr = await res.text().catch(() => '');
 
     try {
       const parsed = JSON.parse(lastErr);
@@ -216,13 +270,10 @@ export default function CustomOrders() {
     }
   };
 
-  // ✅ Success Screen (Project Theme)
+  // ✅ Success Screen
   if (orderComplete) {
     return (
-      <div
-        className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center p-4"
-        dir="rtl"
-      >
+      <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center p-4" dir="rtl">
         <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 max-w-md w-full text-center border-2 border-[#E5DCC5]">
           <div className="relative mb-6">
             <div className="absolute inset-0 bg-[#D4AF37] rounded-full blur-xl opacity-25 animate-pulse"></div>
@@ -232,10 +283,10 @@ export default function CustomOrders() {
           </div>
 
           <h1 className="text-3xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-            تم استلام طلبك!
+            تم استلام طلبك بنجاح!
           </h1>
           <p className="text-[#8B7355]/70 mb-6" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-            سيتم التواصل معك قريباً لتأكيد التفاصيل
+            سيتم التواصل معك قريباً لتأكيد التفاصيل والسعر
           </p>
 
           <div className="bg-[#FAF9F6] rounded-2xl p-4 mb-6 border-2 border-[#E5DCC5]">
@@ -251,27 +302,39 @@ export default function CustomOrders() {
             <h3 className="font-bold text-[#8B7355] mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               ملخص الطلب
             </h3>
+
             <div className="space-y-2 text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               <div className="flex justify-between">
                 <span className="text-[#8B7355]/80">{formData.customerName}</span>
                 <span className="font-medium text-[#8B7355]">الاسم</span>
               </div>
+
               <div className="flex justify-between">
                 <span className="text-[#8B7355]/80">{formData.customerPhone}</span>
                 <span className="font-medium text-[#8B7355]">الهاتف</span>
               </div>
-              {(formData.customText || formData.notes) && (
+
+              <div className="flex justify-between">
+                <span className="text-[#8B7355]/80 line-clamp-2">{formData.requiredText}</span>
+                <span className="font-medium text-[#8B7355]">النص</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-[#8B7355]/80 line-clamp-2">{formData.preferredColors}</span>
+                <span className="font-medium text-[#8B7355]">الألوان</span>
+              </div>
+
+              {formData.notes && (
                 <div className="flex justify-between">
-                  <span className="text-[#8B7355]/80 line-clamp-2">{formData.customText || formData.notes}</span>
-                  <span className="font-medium text-[#8B7355]">تفاصيل</span>
+                  <span className="text-[#8B7355]/80 line-clamp-2">{formData.notes}</span>
+                  <span className="font-medium text-[#8B7355]">ملاحظات</span>
                 </div>
               )}
-              {formData.designImage && (
-                <div className="flex justify-between">
-                  <span className="text-[#8B7355]/80">تم رفع صورة</span>
-                  <span className="font-medium text-[#8B7355]">التصميم</span>
-                </div>
-              )}
+
+              <div className="flex justify-between">
+                <span className="text-[#8B7355]/80">{formData.designImage ? 'تم رفع صورة' : '—'}</span>
+                <span className="font-medium text-[#8B7355]">التصميم</span>
+              </div>
             </div>
           </div>
 
@@ -290,7 +353,6 @@ export default function CustomOrders() {
 
   const renderStep = () => {
     switch (step) {
-      // Step 1
       case 1:
         return (
           <div className="space-y-4">
@@ -299,14 +361,54 @@ export default function CustomOrders() {
                 تفاصيل التصميم
               </h2>
               <p className="text-[#8B7355]/70 text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                اكتب وصف التصميم أو ارفع صورة مرجعية
+                ارفع صورة مرجعية + اكتب النص المطلوب + اختَر الألوان المفضلة
               </p>
             </div>
 
+            {/* RequiredText */}
+            <div>
+              <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                النص المطلوب *
+              </label>
+              <input
+                type="text"
+                value={formData.requiredText}
+                onChange={(e) => setFormData((p) => ({ ...p, requiredText: e.target.value }))}
+                className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none transition-colors bg-white"
+                placeholder="مثال: سارة محمد"
+                maxLength={200}
+                style={{ fontFamily: 'Tajawal, sans-serif' }}
+              />
+              <p className="text-xs text-[#8B7355]/60 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                {formData.requiredText.length}/200
+              </p>
+            </div>
+
+            {/* PreferredColors */}
+            <div>
+              <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <Palette className="inline h-5 w-5 ml-2" />
+                الألوان المفضلة * (اكتبها مفصولة بفواصل)
+              </label>
+              <input
+                type="text"
+                value={formData.preferredColors}
+                onChange={(e) => setFormData((p) => ({ ...p, preferredColors: e.target.value }))}
+                className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none transition-colors bg-white"
+                placeholder="مثال: ذهبي, بيج, أبيض"
+                maxLength={200}
+                style={{ fontFamily: 'Tajawal, sans-serif' }}
+              />
+              <p className="text-xs text-[#8B7355]/60 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                {formData.preferredColors.length}/200
+              </p>
+            </div>
+
+            {/* Notes (optional) */}
             <div>
               <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 <MessageSquareText className="inline h-5 w-5 ml-2" />
-                وصف / ملاحظات (اختياري)
+                ملاحظات إضافية (اختياري)
               </label>
               <textarea
                 value={formData.notes}
@@ -314,36 +416,19 @@ export default function CustomOrders() {
                 rows={4}
                 maxLength={1000}
                 className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none resize-none bg-white"
-                placeholder="مثال: تورتة وردي وذهبي، اسم سارة، زينة فراشات..."
+                placeholder="مثال: خط عربي، مكان الاسم على الغطاء، إضافة رمز صغير..."
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               />
               <p className="text-xs text-[#8B7355]/60 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                {formData.notes.length}/1000 حرف
+                {formData.notes.length}/1000
               </p>
             </div>
 
-            <div>
-              <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                نص على المنتج (اختياري)
-              </label>
-              <input
-                type="text"
-                value={formData.customText}
-                onChange={(e) => setFormData((p) => ({ ...p, customText: e.target.value }))}
-                className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none transition-colors bg-white"
-                placeholder="مثال: كل سنة وأنت طيب يا أحمد"
-                maxLength={50}
-                style={{ fontFamily: 'Tajawal, sans-serif' }}
-              />
-              <p className="text-xs text-[#8B7355]/60 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                {formData.customText.length}/50 حرف
-              </p>
-            </div>
-
+            {/* DesignImage REQUIRED */}
             <div>
               <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 <Upload className="inline h-5 w-5 ml-2" />
-                صورة التصميم (اختياري)
+                صورة التصميم / مرجع * (مطلوب)
               </label>
 
               <div
@@ -395,10 +480,7 @@ export default function CustomOrders() {
             <button
               type="button"
               onClick={() => {
-                if (!formData.designImage && !formData.customText.trim() && !formData.notes.trim()) {
-                  alert('من فضلك اكتب تفاصيل التصميم أو ارفع صورة تصميم');
-                  return;
-                }
+                if (!validateStep1()) return;
                 setStep(2);
               }}
               className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white py-4 rounded-2xl text-lg font-bold hover:from-[#6B5644] hover:to-[#8B6644] transition-all shadow-lg hover:shadow-xl"
@@ -409,7 +491,6 @@ export default function CustomOrders() {
           </div>
         );
 
-      // Step 2
       case 2:
         return (
           <div className="space-y-4">
@@ -436,6 +517,7 @@ export default function CustomOrders() {
                   className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none bg-white"
                   placeholder="أحمد محمد"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  maxLength={100}
                 />
               </div>
 
@@ -498,13 +580,16 @@ export default function CustomOrders() {
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               />
               <p className="text-xs text-[#8B7355]/60 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                {formData.address.length}/500 حرف
+                {formData.address.length}/500
               </p>
             </div>
 
             <button
               type="button"
-              onClick={() => setStep(3)}
+              onClick={() => {
+                if (!validateStep2()) return;
+                setStep(3);
+              }}
               className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white py-4 rounded-2xl text-lg font-bold hover:from-[#6B5644] hover:to-[#8B6644] transition-all shadow-lg hover:shadow-xl"
               style={{ fontFamily: 'Tajawal, sans-serif' }}
             >
@@ -513,7 +598,6 @@ export default function CustomOrders() {
           </div>
         );
 
-      // Step 3
       case 3:
         return (
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -522,22 +606,46 @@ export default function CustomOrders() {
                 مراجعة وتأكيد
               </h2>
               <p className="text-[#8B7355]/70 text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                اختر طريقة الدفع ثم أكد الطلب
+                اختر طريقة الدفع (اختياري) ثم أكد الطلب
               </p>
             </div>
 
+            {/* Payment (optional) */}
             <div>
               <label className="block text-right text-[#8B7355] font-medium mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 <CreditCard className="inline h-5 w-5 ml-2" />
-                طريقة الدفع *
+                طريقة الدفع (اختياري)
               </label>
 
               <div className="space-y-2">
-                {paymentMethods.map((method, index) => (
+                {/* Option: no payment method */}
+                <label
+                  className={`flex items-center justify-end gap-3 p-4 border-2 rounded-2xl cursor-pointer transition-all ${
+                    formData.paymentMethod === null
+                      ? 'border-[#D4AF37] bg-[#FAF9F6]'
+                      : 'border-[#E5DCC5] hover:border-[#D4AF37] hover:bg-[#FAF9F6]'
+                  }`}
+                  style={{ fontFamily: 'Tajawal, sans-serif' }}
+                >
+                  <span className="text-[#8B7355] font-bold flex items-center gap-2">
+                    <span>✨</span>
+                    <span>سأحددها لاحقاً</span>
+                  </span>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="none"
+                    checked={formData.paymentMethod === null}
+                    onChange={() => setFormData((p) => ({ ...p, paymentMethod: null }))}
+                    className="w-5 h-5 accent-[#D4AF37]"
+                  />
+                </label>
+
+                {paymentMethods.map((method) => (
                   <label
                     key={method.value}
                     className={`flex items-center justify-end gap-3 p-4 border-2 rounded-2xl cursor-pointer transition-all ${
-                      formData.paymentMethod === index
+                      formData.paymentMethod === method.value
                         ? 'border-[#D4AF37] bg-[#FAF9F6]'
                         : 'border-[#E5DCC5] hover:border-[#D4AF37] hover:bg-[#FAF9F6]'
                     }`}
@@ -550,14 +658,9 @@ export default function CustomOrders() {
                     <input
                       type="radio"
                       name="paymentMethod"
-                      value={index}
-                      checked={formData.paymentMethod === index}
-                      onChange={(e) =>
-                        setFormData((p) => ({
-                          ...p,
-                          paymentMethod: parseInt(e.target.value, 10) as PaymentMethod,
-                        }))
-                      }
+                      value={String(method.value)}
+                      checked={formData.paymentMethod === method.value}
+                      onChange={() => setFormData((p) => ({ ...p, paymentMethod: method.value }))}
                       className="w-5 h-5 accent-[#D4AF37]"
                     />
                   </label>
@@ -565,13 +668,14 @@ export default function CustomOrders() {
               </div>
             </div>
 
+            {/* Summary */}
             <div className="bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] border-2 border-[#E5DCC5] rounded-3xl p-4">
               <h3
                 className="font-bold text-[#8B7355] mb-3 text-right flex items-center justify-end gap-2"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 <span>ملخص الطلب</span>
-                <Cake className="h-5 w-5 text-[#D4AF37]" />
+                <Gift className="h-5 w-5 text-[#D4AF37]" />
               </h3>
 
               <div className="space-y-2 text-sm text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>
@@ -595,12 +699,14 @@ export default function CustomOrders() {
                     <span className="text-[#8B7355]/70">العنوان</span>
                   </div>
                 )}
-                {formData.customText && (
-                  <div className="flex justify-between">
-                    <span className="text-[#8B7355]/80 line-clamp-2">{formData.customText}</span>
-                    <span className="text-[#8B7355]/70">النص</span>
-                  </div>
-                )}
+                <div className="flex justify-between">
+                  <span className="text-[#8B7355]/80 line-clamp-2">{formData.requiredText || '—'}</span>
+                  <span className="text-[#8B7355]/70">النص</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#8B7355]/80 line-clamp-2">{formData.preferredColors || '—'}</span>
+                  <span className="text-[#8B7355]/70">الألوان</span>
+                </div>
                 {formData.notes && (
                   <div className="flex justify-between">
                     <span className="text-[#8B7355]/80 line-clamp-2">{formData.notes}</span>
@@ -608,13 +714,21 @@ export default function CustomOrders() {
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-[#8B7355]/80">{formData.designImage ? 'تم رفع صورة' : 'بدون صورة'}</span>
+                  <span className="text-[#8B7355]/80">{formData.designImage ? 'تم رفع صورة' : '—'}</span>
                   <span className="text-[#8B7355]/70">التصميم</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#8B7355]/80">
+                    {formData.paymentMethod === null
+                      ? 'لاحقاً'
+                      : paymentMethods.find((p) => p.value === formData.paymentMethod)?.label || '—'}
+                  </span>
+                  <span className="text-[#8B7355]/70">الدفع</span>
                 </div>
               </div>
 
               <p className="text-xs text-[#8B7355]/60 text-right mt-4" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                * سيتم تحديد السعر النهائي بعد مراجعة التصميم والتواصل معك
+                * يتم تحديد السعر النهائي بعد مراجعة التصميم والتواصل معك
               </p>
             </div>
 
@@ -657,7 +771,7 @@ export default function CustomOrders() {
             <span>العودة للرئيسية</span>
           </Link>
 
-          {/* Header (Project Theme) */}
+          {/* Header */}
           <div className="text-center mb-8">
             <div className="relative inline-block mb-4">
               <div className="absolute -top-2 -right-2 text-[#D4AF37] animate-pulse">
@@ -667,14 +781,15 @@ export default function CustomOrders() {
                 <Heart className="h-6 w-6 fill-current" />
               </div>
               <div className="bg-gradient-to-r from-[#8B7355] to-[#A67C52] rounded-full p-4 shadow-xl">
-                <Cake className="h-12 w-12 text-white" />
+                <Gift className="h-12 w-12 text-white" />
               </div>
             </div>
+
             <h1 className="text-3xl md:text-4xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-              اطلب تصميم خاص
+              تصميم خاص حسب طلبك
             </h1>
             <p className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-              اطلب منتج بتصميمك (صورة أو وصف) 👜✨
+              ارفع التصميم + اكتب النص + حدّد الألوان… وهنرجعلك لتأكيد التفاصيل 👜✨
             </p>
           </div>
 
@@ -731,9 +846,9 @@ export default function CustomOrders() {
               </p>
             </div>
             <div className="bg-white/80 rounded-2xl p-4 text-center shadow-md border border-[#E5DCC5]">
-              <span className="text-2xl block mb-1">⭐</span>
+              <span className="text-2xl block mb-1">🎯</span>
               <p className="text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                جودة عالية
+                تنفيذ بدقة
               </p>
             </div>
             <div className="bg-white/80 rounded-2xl p-4 text-center shadow-md border border-[#E5DCC5]">

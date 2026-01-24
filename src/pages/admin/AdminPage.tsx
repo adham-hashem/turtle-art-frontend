@@ -27,7 +27,7 @@ const AdminPage: React.FC = () => {
     { to: '/admin/customers', icon: Users, label: 'إدارة العملاء' },
     { to: '/admin/discounts', icon: Tag, label: 'أكواد الخصم' },
     { to: '/admin/shipping', icon: Truck, label: 'رسوم الشحن' },
-    { to: '/admin/custom-orders-management', icon: Truck, label: 'طلبات مخصصة' }
+    { to: '/admin/custom-orders-management', icon: Truck, label: 'طلبات خاصة' }
   ];
 
   return (

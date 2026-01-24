@@ -35,8 +35,8 @@ interface ProductImage {
 type CategoryType =
   | 'KidsBags'
   | 'GirlsBags'
-  | 'MotherDaughterSet'
-  | 'RamadanCollection'
+  | 'MomAndDaughterSet'
+  | 'RamadanSet'
   | 'Giveaways';
 
 interface Product {
@@ -145,8 +145,8 @@ const ProductsManagement: React.FC = () => {
   const CATEGORY_OPTIONS: Array<{ value: CategoryType; label: string; icon: React.ReactNode }> = [
     { value: 'KidsBags', label: 'شنط أطفال', icon: <ShoppingBag size={16} /> },
     { value: 'GirlsBags', label: 'شنط الفتيات', icon: <ShoppingBag size={16} /> },
-    { value: 'MotherDaughterSet', label: 'مجموعة الأم والابنة', icon: <Users size={16} /> },
-    { value: 'RamadanCollection', label: 'مجموعة رمضان', icon: <Moon size={16} /> },
+    { value: 'MomAndDaughterSet', label: 'مجموعة الأم والابنة', icon: <Users size={16} /> },
+    { value: 'RamadanSet', label: 'مجموعة رمضان', icon: <Moon size={16} /> },
     { value: 'Giveaways', label: 'التوزيعات', icon: <Gift size={16} /> }
   ];
 
@@ -154,6 +154,21 @@ const ProductsManagement: React.FC = () => {
     if (!category) return '';
     const found = CATEGORY_OPTIONS.find(o => o.value === category);
     return found?.label ?? String(category);
+  };
+
+  const normalizeCategory = (category?: CategoryType | number | null) => {
+    if (category === null || category === undefined || category === '') return null;
+    if (typeof category === 'number') {
+      const byIndex: CategoryType[] = [
+        'KidsBags',
+        'GirlsBags',
+        'MomAndDaughterSet',
+        'RamadanSet',
+        'Giveaways'
+      ];
+      return byIndex[category] ?? null;
+    }
+    return category;
   };
 
   const getTabTitle = (tab: TabKey) => {
@@ -292,7 +307,7 @@ const ProductsManagement: React.FC = () => {
 
       const mappedProducts: Product[] = data.items.map(item => ({
         ...item,
-        category: (item as any).category ?? null,
+        category: normalizeCategory((item as any).category),
         isHidden: item.isHidden ?? false,
         isAvailable: item.isAvailable ?? false,
         isInstant: item.isInstant ?? false,
@@ -608,7 +623,7 @@ const ProductsManagement: React.FC = () => {
       images: (product.images ?? []).map(img => img.imagePath),
       sizes: [''],
       colors: [''],
-      category: (product.category as any) ?? '',
+      category: normalizeCategory(product.category) ?? '',
       isHidden: product.isHidden,
       isAvailable: product.isAvailable,
       season: '',
@@ -630,7 +645,9 @@ const ProductsManagement: React.FC = () => {
     const productToDelete = products.find(p => p.id === productId);
     if (
       !confirm(
-        `هل أنت متأكد من حذف المنتج "${productToDelete?.name}"?\n\nتحذير: إذا كان المنتج موجود في عربات التسوق أو الطلبات، فلن يمكن حذفه.`
+        `هل أنت متأكد من حذف المنتج "${productToDelete?.name}"?
+
+تحذير: إذا كان المنتج موجود في عربات التسوق أو الطلبات، فلن يمكن حذفه.`
       )
     ) {
       return;
@@ -677,7 +694,9 @@ const ProductsManagement: React.FC = () => {
       alert('تم حذف المنتج بنجاح!');
     } catch (error: any) {
       if (error.message.includes('عربات التسوق') || error.message.includes('CartItems')) {
-        alert(`❌ ${error.message}\n\n💡 نصيحة: يمكنك إخفاء المنتج بدلاً من حذفه عن طريق تعديله وإلغاء تفعيله.`);
+        alert(`❌ ${error.message}
+
+💡 نصيحة: يمكنك إخفاء المنتج بدلاً من حذفه عن طريق تعديله وإلغاء تفعيله.`);
       } else {
         alert(`حدث خطأ أثناء حذف المنتج: ${error.message}`);
       }
@@ -856,7 +875,7 @@ const ProductsManagement: React.FC = () => {
                       ['all', 'كل المنتجات'],
                       ['kidsBags', 'شنط أطفال'],
                       ['girlsBags', 'شنط الفتيات'],
-                      ['motherDaughterSet', 'مجموعة الأم والابنة'],
+                      ['motherDaughterSet', 'مجموعة الأم ولابنة'],
                       ['ramadanCollection', 'مجموعة رمضان'],
                       ['giveaways', 'التوزيعات'],
                       ['instant', 'المنتجات الفورية'],
@@ -920,14 +939,6 @@ const ProductsManagement: React.FC = () => {
                         <Plus size={20} />
                         <span>إضافة منتج</span>
                       </button>
-
-                      <button
-                        onClick={handleLogout}
-                        className="bg-[#F5F5DC] text-[#8B7355] border-2 border-[#E5DCC5] px-4 py-2 rounded-lg hover:bg-[#E5DCC5] transition-colors flex items-center shadow-md"
-                        style={{ fontFamily: 'Tajawal, sans-serif' }}
-                      >
-                        تسجيل خروج
-                      </button>
                     </div>
                   </div>
 
@@ -935,13 +946,13 @@ const ProductsManagement: React.FC = () => {
                   <div className="hidden lg:flex flex-wrap gap-2 mb-6">
                     {([
                       ['all', 'كل المنتجات'],
-                      ['kidsBags', 'شنط أطفال'],
-                      ['girlsBags', 'شنط الفتيات'],
-                      ['motherDaughterSet', 'مجموعة الأم والابنة'],
-                      ['ramadanCollection', 'مجموعة رمضان'],
-                      ['giveaways', 'التوزيعات'],
-                      ['instant', 'المنتجات الفورية'],
-                      ['breakfast', 'بوكس فطار']
+                      // ['kidsBags', 'شنط أطفال'],
+                      // ['girlsBags', 'شنط الفتيات'],
+                      // ['motherDaughterSet', 'مجموعة الأم والابنة'],
+                      // ['ramadanCollection', 'مجموعة رمضان'],
+                      // ['giveaways', 'التوزيعات'],
+                      // ['instant', 'المنتجات الفورية'],
+                      // ['breakfast', 'بوكس فطار']
                     ] as Array<[TabKey, string]>).map(([key, label]) => (
                       <button
                         key={key}
@@ -1130,7 +1141,7 @@ const ProductsManagement: React.FC = () => {
                                 </p>
                               )}
                           </div>
-
+{/* 
                           <div>
                             <label className="block text-sm font-medium text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                               النوع (Type)
@@ -1143,7 +1154,7 @@ const ProductsManagement: React.FC = () => {
                               style={{ fontFamily: 'Tajawal, sans-serif' }}
                               dir="rtl"
                             />
-                          </div>
+                          </div> */}
                         </div>
 
                         {/* Toggles */}
@@ -1184,7 +1195,7 @@ const ProductsManagement: React.FC = () => {
                             </span>
                           </label>
 
-                          <label className="flex items-center space-x-reverse space-x-3">
+                          {/* <label className="flex items-center space-x-reverse space-x-3">
                             <input
                               type="checkbox"
                               checked={newProduct.isBreakfast}
@@ -1194,9 +1205,9 @@ const ProductsManagement: React.FC = () => {
                             <span className="text-sm font-medium text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                               بوكس فطار
                             </span>
-                          </label>
+                          </label> */}
 
-                          <label className="flex items-center space-x-reverse space-x-3">
+                          {/* <label className="flex items-center space-x-reverse space-x-3">
                             <input
                               type="checkbox"
                               checked={newProduct.isFeatured}
@@ -1206,7 +1217,7 @@ const ProductsManagement: React.FC = () => {
                             <span className="text-sm font-medium text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                               منتج مميز
                             </span>
-                          </label>
+                          </label> */}
                         </div>
 
                         {/* Description */}

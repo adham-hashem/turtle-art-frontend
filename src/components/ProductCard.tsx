@@ -241,7 +241,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Quick Info Footer */}
-        <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-[#E5DCC5] sm:border-t-2">
+        {/* <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-[#E5DCC5] sm:border-t-2">
           <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-[#D4AF37] font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
             <Heart size={12} className="sm:hidden text-[#D4AF37] fill-[#F5F5DC]" />
             <Heart size={14} className="hidden sm:block text-[#D4AF37] fill-[#F5F5DC]" />
@@ -252,7 +252,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <Sparkles size={14} className="hidden sm:block text-[#C4A57B]" />
             <span>جودة عالية</span>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -441,12 +441,12 @@ const CartPage: React.FC = () => {
                       <h3 className="font-bold text-[#8B7355] text-sm sm:text-base md:text-lg truncate" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                         {item.product.name}
                       </h3>
-                      <p className="text-xs sm:text-sm text-[#8B7355]/70 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      {/* <p className="text-xs sm:text-sm text-[#8B7355]/70 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                         المقاس: <span className="font-medium text-[#D4AF37]">{item.size || 'غير محدد'}</span>
                       </p>
                       <p className="text-xs sm:text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                         اللون: <span className="font-medium text-[#D4AF37]">{item.color || 'غير محدد'}</span>
-                      </p>
+                      </p> */}
                       <p className="text-[#D4AF37] font-black text-base sm:text-lg md:text-xl mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                         {item.product.price.toFixed(2)} جنيه
                       </p>
