@@ -114,6 +114,8 @@ const Header: React.FC = () => {
     { label: 'مجموعة رمضان', page: 'ramadan-collection', icon: '🌙' },
     { label: 'التصميمات الخاصة', page: 'custom-designs', icon: '🎨' },
     { label: 'التوزيعات', page: 'giveaways', icon: '🎁' },
+    { label: 'طلباتي', page: 'my-orders', icon: '🛒' },
+    { label: 'طلباتي الخاصة', page: 'my-custom-orders', icon: '👜' },
   ];
 
   const handleLogout = () => {

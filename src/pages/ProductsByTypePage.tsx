@@ -35,6 +35,10 @@ export type ProductsByTypeConfig = {
 
   // BottomNav highlight key
   bottomNavKey?: 'home' | 'kids-bags' | 'women-bags' | 'giveaways' | 'cart';
+
+  // ✅ ADD THESE: Back button customization
+  backButtonUrl?: string;      // Default: '/'
+  backButtonText?: string;     // Default: 'العودة للرئيسية'
 };
 
 type Props = {
@@ -331,12 +335,12 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
       <div className="max-w-7xl mx-auto px-4">
         {/* Back */}
         <Link
-          to="/"
+          to={config.backButtonUrl || '/'}
           className="flex items-center space-x-reverse space-x-2 text-[#8B7355] hover:text-[#D4AF37] mb-6 transition-colors font-medium"
           style={{ fontFamily: 'Tajawal, sans-serif' }}
         >
           <ArrowRight size={20} />
-          <span>العودة للرئيسية</span>
+          <span>{config.backButtonText || 'العودة للرئيسية'}</span>
         </Link>
 
         {/* Header */}

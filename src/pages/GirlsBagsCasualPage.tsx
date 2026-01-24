@@ -8,9 +8,11 @@ export default function GirlsBagsCasualPage() {
         titleAr: 'شنط كاجوال',
         subtitleAr: 'شنط كاجوال عملية للاستخدام اليومي.',
         theme: 'default',
-        legacySegment: 'girls-bags/casual', // ✅ Matches backend: /api/products/girls-bags/casual
+        legacySegment: 'girls-bags/casual',
         restoreStateKey: 'fromGirlsBagsCasualPage',
         bottomNavKey: 'women-bags',
+        backButtonUrl: '/girls-bags',           // ✅ ADD
+        backButtonText: 'العودة إلى شنط بنات', // ✅ ADD
       }}
     />
   );

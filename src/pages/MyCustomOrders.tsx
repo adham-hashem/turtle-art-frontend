@@ -1,17 +1,9 @@
 // src/pages/MyCustomOrders.tsx
-// ✅ Updated to match the NEW backend you showed (design-based CustomOrder):
-// - flavorNames: string[] (instead of flavorName / flavorNameAr single string)
-// - occasionName + sizeName already returned (no occasionIcon/nameAr fields assumed)
-// - designImageUrl (not designImagePath) and image url is usually "/..." => prefix with apiUrl
-// - additionalPhone + address exist
-// - paymentMethod + status are enums (same numbers) but we render via local maps
-// - uses /api/CustomOrders/my-orders (kept) with accessToken
-// - removes unused fields, fixes modal open (you had selectedOrder but no click to set it)
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Cake,
+  ShoppingBag,
   Calendar,
   Clock,
   Phone,
@@ -24,6 +16,9 @@ import {
   XCircle,
   AlertCircle,
   Eye,
+  ArrowRight,
+  Palette,
+  MessageSquareText,
 } from 'lucide-react';
 
 enum CustomOrderStatus {
@@ -50,22 +45,16 @@ interface CustomOrder {
   additionalPhone?: string;
   address?: string;
 
-  occasionName: string;
-  sizeName: string;
-  flavorNames: string[];
-
-  customText?: string;
+  requiredText: string;
+  preferredColors: string;
   designImageUrl?: string;
-
-  pickupDate: string; // ISO date or string
-  pickupTime: string; // "HH:mm:ss" or "HH:mm"
 
   notes?: string;
 
   paymentMethod: PaymentMethod;
   status: CustomOrderStatus;
 
-  estimatedPrice: number;
+  estimatedPrice?: number;
   finalPrice?: number;
   adminNotes?: string;
 
@@ -99,8 +88,8 @@ const statusConfig: Record<
   },
   [CustomOrderStatus.InProgress]: {
     label: 'قيد التحضير',
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-50',
+    color: 'text-[#8B7355]',
+    bgColor: 'bg-[#FAF9F6]',
     icon: <Package className="h-5 w-5" />,
   },
   [CustomOrderStatus.Ready]: {
@@ -197,25 +186,21 @@ export default function MyCustomOrders() {
     return date.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
-  const formatTime = (timeString: string) => {
-    if (!timeString) return '';
-    return timeString.includes(':') ? timeString.substring(0, 5) : timeString;
-  };
-
   const resolveImageUrl = (path?: string) => {
     if (!path) return '';
     if (path.startsWith('http')) return path;
-    // backend often returns "/uploads/.."
     if (path.startsWith('/')) return `${apiUrl}${path}`;
     return `${apiUrl}/${path}`;
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 via-pink-50 to-amber-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center pt-24" dir="rtl">
         <div className="text-center">
-          <Sparkles className="h-12 w-12 text-purple-600 animate-spin mx-auto mb-4" />
-          <p className="text-purple-900 font-medium">جاري تحميل طلباتك...</p>
+          <Sparkles className="h-12 w-12 text-[#D4AF37] animate-spin mx-auto mb-4" />
+          <p className="text-[#8B7355] font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            جاري تحميل طلباتك...
+          </p>
         </div>
       </div>
     );
@@ -223,14 +208,19 @@ export default function MyCustomOrders() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 via-pink-50 to-amber-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl shadow-xl p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center p-4 pt-24" dir="rtl">
+        <div className="bg-white rounded-3xl shadow-xl p-8 max-w-md w-full text-center border-2 border-[#E5DCC5]">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">خطأ</h2>
-          <p className="text-red-600 mb-6">{error}</p>
+          <h2 className="text-2xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            خطأ
+          </h2>
+          <p className="text-red-600 mb-6" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            {error}
+          </p>
           <button
             onClick={fetchOrders}
-            className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-6 py-3 rounded-xl font-bold hover:from-purple-700 hover:to-pink-600 transition-all"
+            className="bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white px-6 py-3 rounded-xl font-bold hover:from-[#6B5644] hover:to-[#8B6644] transition-all shadow-lg"
+            style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             إعادة المحاولة
           </button>
@@ -239,50 +229,83 @@ export default function MyCustomOrders() {
     );
   }
 
-  const inProgressCount = orders.filter((o) => o.status === CustomOrderStatus.Confirmed || o.status === CustomOrderStatus.InProgress).length;
+  const inProgressCount = orders.filter(
+    (o) => o.status === CustomOrderStatus.Confirmed || o.status === CustomOrderStatus.InProgress
+  ).length;
   const completedCount = orders.filter((o) => o.status === CustomOrderStatus.Completed).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-pink-50 to-amber-50 py-8" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] pt-24 pb-8" dir="rtl">
       <div className="container mx-auto px-4 max-w-6xl">
+        {/* Back Button */}
+        <Link
+          to="/"
+          className="inline-flex items-center space-x-reverse space-x-2 text-[#8B7355] hover:text-[#D4AF37] mb-6 transition-colors"
+          style={{ fontFamily: 'Tajawal, sans-serif' }}
+        >
+          <ArrowRight size={20} />
+          <span>العودة للرئيسية</span>
+        </Link>
+
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4">
-            <Cake className="h-10 w-10 text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-[#8B7355] to-[#A67C52] rounded-full mb-4 shadow-xl">
+            <ShoppingBag className="h-10 w-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-purple-900 mb-2">طلباتي الخاصة</h1>
-          <p className="text-gray-600">تتبع طلبات التورتات المخصصة الخاصة بك</p>
+          <h1 className="text-4xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            طلباتي الخاصة
+          </h1>
+          <p className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            تتبع طلبات التصاميم المخصصة الخاصة بك
+          </p>
         </div>
 
         {/* Stats */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border-2 border-[#E5DCC5]">
           <div className="flex items-center justify-between">
             <div className="text-center flex-1">
-              <p className="text-3xl font-bold text-purple-600">{totalItems}</p>
-              <p className="text-sm text-gray-600">إجمالي الطلبات</p>
+              <p className="text-3xl font-bold text-[#D4AF37]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                {totalItems}
+              </p>
+              <p className="text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                إجمالي الطلبات
+              </p>
             </div>
-            <div className="w-px h-12 bg-gray-200"></div>
+            <div className="w-px h-12 bg-[#E5DCC5]"></div>
             <div className="text-center flex-1">
-              <p className="text-3xl font-bold text-blue-600">{inProgressCount}</p>
-              <p className="text-sm text-gray-600">قيد التنفيذ</p>
+              <p className="text-3xl font-bold text-blue-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                {inProgressCount}
+              </p>
+              <p className="text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                قيد التنفيذ
+              </p>
             </div>
-            <div className="w-px h-12 bg-gray-200"></div>
+            <div className="w-px h-12 bg-[#E5DCC5]"></div>
             <div className="text-center flex-1">
-              <p className="text-3xl font-bold text-green-600">{completedCount}</p>
-              <p className="text-sm text-gray-600">مكتملة</p>
+              <p className="text-3xl font-bold text-green-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                {completedCount}
+              </p>
+              <p className="text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                مكتملة
+              </p>
             </div>
           </div>
         </div>
 
         {/* Orders List */}
         {orders.length === 0 ? (
-          <div className="bg-white rounded-3xl shadow-xl p-12 text-center">
-            <Cake className="h-24 w-24 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-gray-700 mb-2">لا توجد طلبات بعد</h3>
-            <p className="text-gray-500 mb-6">ابدأ بطلب تورتة خاصة مميزة!</p>
+          <div className="bg-white rounded-3xl shadow-xl p-12 text-center border-2 border-[#E5DCC5]">
+            <ShoppingBag className="h-24 w-24 text-[#E5DCC5] mx-auto mb-4" />
+            <h3 className="text-2xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              لا توجد طلبات بعد
+            </h3>
+            <p className="text-[#8B7355]/70 mb-6" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              ابدأ بطلب تصميم مخصص مميز!
+            </p>
             <Link
               to="/custom"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white px-6 py-3 rounded-xl font-bold hover:from-purple-700 hover:to-pink-600 transition-all"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white px-6 py-3 rounded-xl font-bold hover:from-[#6B5644] hover:to-[#8B6644] transition-all shadow-lg"
+              style={{ fontFamily: 'Tajawal, sans-serif' }}
             >
               <Sparkles className="h-5 w-5" />
               <span>اطلب الآن</span>
@@ -296,78 +319,69 @@ export default function MyCustomOrders() {
               return (
                 <div
                   key={order.id}
-                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden"
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden border-2 border-[#E5DCC5]"
                 >
                   <div className="p-6">
                     {/* Header row */}
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <h3 className="text-xl font-bold text-purple-900">{order.occasionName}</h3>
-                        <p className="text-sm text-gray-500">رقم الطلب: {order.orderNumber}</p>
+                        <h3 className="text-xl font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                          طلب تصميم مخصص
+                        </h3>
+                        <p className="text-sm text-[#8B7355]/60" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                          رقم الطلب: {order.orderNumber}
+                        </p>
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${status.bgColor}`}>
+                        <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${status.bgColor} border-2 border-[#E5DCC5]`}>
                           <span className={status.color}>{status.icon}</span>
-                          <span className={`font-bold text-sm ${status.color}`}>{status.label}</span>
+                          <span className={`font-bold text-sm ${status.color}`} style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                            {status.label}
+                          </span>
                         </div>
 
                         <button
                           onClick={() => setSelectedOrder(order)}
-                          className="p-2 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors"
+                          className="p-2 rounded-xl bg-[#FAF9F6] hover:bg-[#F5F5DC] border-2 border-[#E5DCC5] transition-colors"
                           title="عرض التفاصيل"
                         >
-                          <Eye className="h-5 w-5 text-gray-700" />
+                          <Eye className="h-5 w-5 text-[#8B7355]" />
                         </button>
                       </div>
                     </div>
 
                     {/* Details */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <Package className="h-5 w-5 text-purple-500" />
-                        <span className="text-sm">
-                          <strong>الحجم:</strong> {order.sizeName}
+                      <div className="flex items-start gap-2 text-[#8B7355]">
+                        <MessageSquareText className="h-5 w-5 text-[#D4AF37] flex-shrink-0 mt-0.5" />
+                        <span className="text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                          <strong>النص المطلوب:</strong> {order.requiredText}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <Cake className="h-5 w-5 text-pink-500" />
-                        <span className="text-sm">
-                          <strong>النكهات:</strong>{' '}
-                          {order.flavorNames?.length ? order.flavorNames.join(' + ') : 'غير محدد'}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <Calendar className="h-5 w-5 text-blue-500" />
-                        <span className="text-sm">
-                          <strong>الاستلام:</strong> {formatDate(order.pickupDate)}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <Clock className="h-5 w-5 text-amber-500" />
-                        <span className="text-sm">
-                          <strong>الوقت:</strong> {formatTime(order.pickupTime)}
+                      <div className="flex items-start gap-2 text-[#8B7355]">
+                        <Palette className="h-5 w-5 text-[#A67C52] flex-shrink-0 mt-0.5" />
+                        <span className="text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                          <strong>الألوان:</strong> {order.preferredColors}
                         </span>
                       </div>
 
                       {order.address && (
-                        <div className="flex items-start gap-2 text-gray-700 md:col-span-2">
+                        <div className="flex items-start gap-2 text-[#8B7355] md:col-span-2">
                           <MapPin className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                          <span className="text-sm">
+                          <span className="text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                             <strong>العنوان:</strong> {order.address}
                           </span>
                         </div>
                       )}
                     </div>
 
-                    {/* Custom text */}
-                    {order.customText && (
-                      <div className="bg-purple-50 rounded-xl p-3 mb-4">
-                        <p className="text-sm text-gray-700">
-                          <strong className="text-purple-900">النص المطلوب:</strong> "{order.customText}"
+                    {/* Notes */}
+                    {order.notes && (
+                      <div className="bg-[#FAF9F6] rounded-xl p-3 mb-4 border border-[#E5DCC5]">
+                        <p className="text-sm text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                          <strong className="text-[#8B7355]">ملاحظاتك:</strong> "{order.notes}"
                         </p>
                       </div>
                     )}
@@ -378,34 +392,38 @@ export default function MyCustomOrders() {
                         <img
                           src={resolveImageUrl(order.designImageUrl)}
                           alt="Design"
-                          className="w-32 h-32 object-cover rounded-xl border-2 border-purple-200"
+                          className="w-32 h-32 object-cover rounded-xl border-2 border-[#E5DCC5] shadow-md"
                         />
                       </div>
                     )}
 
                     {/* Payment + Price */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                    <div className="flex items-center justify-between pt-4 border-t-2 border-[#E5DCC5]">
                       <div>
-                        <p className="text-sm text-gray-600">طريقة الدفع</p>
-                        <p className="font-bold text-gray-900">
+                        <p className="text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                          طريقة الدفع
+                        </p>
+                        <p className="font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                           {paymentMethodLabels[order.paymentMethod] || 'غير محدد'}
                         </p>
                       </div>
 
-                      <div className="text-left">
-                        <p className="text-sm text-gray-600">
-                          {order.finalPrice ? 'السعر النهائي' : 'السعر التقديري'}
-                        </p>
-                        <p className="text-2xl font-bold text-amber-600">
-                          {Number(order.finalPrice ?? order.estimatedPrice).toFixed(2)} جنيه
-                        </p>
-                      </div>
+                      {(order.finalPrice || order.estimatedPrice) && (
+                        <div className="text-left">
+                          <p className="text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                            {order.finalPrice ? 'السعر النهائي' : 'السعر التقديري'}
+                          </p>
+                          <p className="text-2xl font-bold text-[#D4AF37]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                            {Number(order.finalPrice ?? order.estimatedPrice).toFixed(2)} جنيه
+                          </p>
+                        </div>
+                      )}
                     </div>
 
                     {/* Admin notes */}
                     {order.adminNotes && (
-                      <div className="mt-4 bg-blue-50 rounded-xl p-3">
-                        <p className="text-sm text-blue-900">
+                      <div className="mt-4 bg-blue-50 rounded-xl p-3 border-2 border-blue-200">
+                        <p className="text-sm text-blue-900" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                           <strong>ملاحظات الإدارة:</strong> {order.adminNotes}
                         </p>
                       </div>
@@ -413,7 +431,7 @@ export default function MyCustomOrders() {
                   </div>
 
                   {/* Footer */}
-                  <div className="bg-gray-50 px-6 py-3 text-sm text-gray-500 flex items-center justify-between">
+                  <div className="bg-[#FAF9F6] px-6 py-3 text-sm text-[#8B7355]/70 flex items-center justify-between border-t-2 border-[#E5DCC5]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     <span>تاريخ الطلب: {formatDate(order.createdAt)}</span>
                     {order.updatedAt && order.updatedAt !== order.createdAt && (
                       <span>آخر تحديث: {formatDate(order.updatedAt)}</span>
@@ -431,21 +449,22 @@ export default function MyCustomOrders() {
             <button
               onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
               disabled={pageNumber === 1}
-              className="p-2 rounded-lg bg-white shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="p-2 rounded-lg bg-white shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all border-2 border-[#E5DCC5]"
             >
-              <ChevronRight className="h-5 w-5 text-purple-600" />
+              <ChevronRight className="h-5 w-5 text-[#8B7355]" />
             </button>
 
             <div className="flex gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map((page) => (
                 <button
                   key={page}
                   onClick={() => setPageNumber(page)}
-                  className={`w-10 h-10 rounded-lg font-bold transition-all ${
+                  className={`w-10 h-10 rounded-lg font-bold transition-all border-2 ${
                     pageNumber === page
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg'
-                      : 'bg-white text-gray-700 hover:bg-purple-50'
+                      ? 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white border-[#8B7355] shadow-lg'
+                      : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:bg-[#FAF9F6]'
                   }`}
+                  style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
                   {page}
                 </button>
@@ -455,9 +474,9 @@ export default function MyCustomOrders() {
             <button
               onClick={() => setPageNumber((prev) => Math.min(prev + 1, totalPages))}
               disabled={pageNumber === totalPages}
-              className="p-2 rounded-lg bg-white shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="p-2 rounded-lg bg-white shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all border-2 border-[#E5DCC5]"
             >
-              <ChevronLeft className="h-5 w-5 text-purple-600" />
+              <ChevronLeft className="h-5 w-5 text-[#8B7355]" />
             </button>
           </div>
         )}
@@ -469,12 +488,14 @@ export default function MyCustomOrders() {
             onClick={() => setSelectedOrder(null)}
           >
             <div
-              className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border-2 border-[#E5DCC5]"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-500 text-white p-6 rounded-t-3xl">
+              <div className="sticky top-0 bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white p-6 rounded-t-3xl">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold">تفاصيل الطلب</h2>
+                  <h2 className="text-2xl font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    تفاصيل الطلب
+                  </h2>
                   <button
                     onClick={() => setSelectedOrder(null)}
                     className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-all"
@@ -482,18 +503,26 @@ export default function MyCustomOrders() {
                     <XCircle className="h-6 w-6" />
                   </button>
                 </div>
-                <p className="text-purple-100 mt-1">رقم الطلب: {selectedOrder.orderNumber}</p>
+                <p className="text-white/80 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  رقم الطلب: {selectedOrder.orderNumber}
+                </p>
               </div>
 
               <div className="p-6 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">الاسم</p>
-                    <p className="font-bold text-gray-900">{selectedOrder.customerName}</p>
+                    <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      الاسم
+                    </p>
+                    <p className="font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      {selectedOrder.customerName}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">رقم الهاتف</p>
-                    <p className="font-bold text-gray-900 flex items-center gap-2">
+                    <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      رقم الهاتف
+                    </p>
+                    <p className="font-bold text-[#8B7355] flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       <Phone className="h-4 w-4" />
                       {selectedOrder.customerPhone}
                     </p>
@@ -502,8 +531,10 @@ export default function MyCustomOrders() {
 
                 {selectedOrder.additionalPhone && (
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">رقم إضافي</p>
-                    <p className="font-bold text-gray-900 flex items-center gap-2">
+                    <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      رقم إضافي
+                    </p>
+                    <p className="font-bold text-[#8B7355] flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       <Phone className="h-4 w-4" />
                       {selectedOrder.additionalPhone}
                     </p>
@@ -512,8 +543,10 @@ export default function MyCustomOrders() {
 
                 {selectedOrder.address && (
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">العنوان</p>
-                    <p className="font-bold text-gray-900 flex items-start gap-2 bg-gray-50 rounded-xl p-3">
+                    <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      العنوان
+                    </p>
+                    <p className="font-bold text-[#8B7355] flex items-start gap-2 bg-[#FAF9F6] rounded-xl p-3 border-2 border-[#E5DCC5]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
                       <span>{selectedOrder.address}</span>
                     </p>
@@ -522,102 +555,96 @@ export default function MyCustomOrders() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">المناسبة</p>
-                    <p className="font-bold text-gray-900">{selectedOrder.occasionName}</p>
+                    <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      النص المطلوب
+                    </p>
+                    <p className="font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      {selectedOrder.requiredText}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">الحالة</p>
-                    <p className="font-bold text-gray-900">
-                      {(statusConfig[selectedOrder.status] || statusConfig[0]).label}
+                    <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      الألوان المفضلة
+                    </p>
+                    <p className="font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      {selectedOrder.preferredColors}
                     </p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">الحجم</p>
-                    <p className="font-bold text-gray-900">{selectedOrder.sizeName}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">النكهات</p>
-                    <p className="font-bold text-gray-900">
-                      {selectedOrder.flavorNames?.length ? selectedOrder.flavorNames.join(' + ') : 'غير محدد'}
-                    </p>
-                  </div>
+                <div>
+                  <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    الحالة
+                  </p>
+                  <p className="font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    {(statusConfig[selectedOrder.status] || statusConfig[0]).label}
+                  </p>
                 </div>
-
-                {selectedOrder.customText && (
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">النص على التورتة</p>
-                    <p className="font-bold text-purple-900 bg-purple-50 rounded-xl p-3">
-                      "{selectedOrder.customText}"
-                    </p>
-                  </div>
-                )}
 
                 {selectedOrder.designImageUrl && (
                   <div>
-                    <p className="text-sm text-gray-500 mb-2">التصميم المطلوب</p>
+                    <p className="text-sm text-[#8B7355]/70 mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      التصميم المطلوب
+                    </p>
                     <img
                       src={resolveImageUrl(selectedOrder.designImageUrl)}
                       alt="Design"
-                      className="w-full max-w-md rounded-xl border-2 border-purple-200"
+                      className="w-full max-w-md rounded-xl border-2 border-[#E5DCC5] shadow-md"
                     />
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">تاريخ الاستلام</p>
-                    <p className="font-bold text-gray-900 flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      {formatDate(selectedOrder.pickupDate)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">وقت الاستلام</p>
-                    <p className="font-bold text-gray-900 flex items-center gap-2">
-                      <Clock className="h-4 w-4" />
-                      {formatTime(selectedOrder.pickupTime)}
-                    </p>
-                  </div>
-                </div>
-
                 {selectedOrder.notes && (
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">ملاحظاتك</p>
-                    <p className="text-gray-700 bg-gray-50 rounded-xl p-3">{selectedOrder.notes}</p>
+                    <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      ملاحظاتك
+                    </p>
+                    <p className="text-[#8B7355] bg-[#FAF9F6] rounded-xl p-3 border-2 border-[#E5DCC5]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      {selectedOrder.notes}
+                    </p>
                   </div>
                 )}
 
                 {selectedOrder.adminNotes && (
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">ملاحظات الإدارة</p>
-                    <p className="text-blue-900 bg-blue-50 rounded-xl p-3">{selectedOrder.adminNotes}</p>
+                    <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      ملاحظات الإدارة
+                    </p>
+                    <p className="text-blue-900 bg-blue-50 rounded-xl p-3 border-2 border-blue-200" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      {selectedOrder.adminNotes}
+                    </p>
                   </div>
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">طريقة الدفع</p>
-                    <p className="font-bold text-gray-900">
+                    <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      طريقة الدفع
+                    </p>
+                    <p className="font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       {paymentMethodLabels[selectedOrder.paymentMethod] || 'غير محدد'}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">
-                      {selectedOrder.finalPrice ? 'السعر النهائي' : 'السعر التقديري'}
-                    </p>
-                    <p className="text-2xl font-bold text-amber-600">
-                      {Number(selectedOrder.finalPrice ?? selectedOrder.estimatedPrice).toFixed(2)} جنيه
-                    </p>
-                  </div>
+                  {(selectedOrder.finalPrice || selectedOrder.estimatedPrice) && (
+                    <div>
+                      <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        {selectedOrder.finalPrice ? 'السعر النهائي' : 'السعر التقديري'}
+                      </p>
+                      <p className="text-2xl font-bold text-[#D4AF37]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        {Number(selectedOrder.finalPrice ?? selectedOrder.estimatedPrice).toFixed(2)} جنيه
+                      </p>
+                    </div>
+                  )}
                 </div>
 
-                <div className="pt-4 border-t border-gray-200">
-                  <p className="text-xs text-gray-500">تاريخ الطلب: {formatDate(selectedOrder.createdAt)}</p>
+                <div className="pt-4 border-t-2 border-[#E5DCC5]">
+                  <p className="text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    تاريخ الطلب: {formatDate(selectedOrder.createdAt)}
+                  </p>
                   {selectedOrder.updatedAt && selectedOrder.updatedAt !== selectedOrder.createdAt && (
-                    <p className="text-xs text-gray-500 mt-1">آخر تحديث: {formatDate(selectedOrder.updatedAt)}</p>
+                    <p className="text-xs text-[#8B7355]/70 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      آخر تحديث: {formatDate(selectedOrder.updatedAt)}
+                    </p>
                   )}
                 </div>
               </div>

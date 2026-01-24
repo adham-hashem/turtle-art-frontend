@@ -68,15 +68,15 @@ function useNavPageId() {
     if (pathname.startsWith('/kids-bags')) return 'kids-bags';
 
     // Girls bags (including evening/casual sub-routes)
-    if (pathname.startsWith('/girls-bags')) return 'women-bags';
+    if (pathname.startsWith('/girls-bags')) return 'girls-bags';
 
-    // لو عندك صفحة /women-bags فعلاً حطها هنا
+    // لو عندك صفحة /girls-bags فعلاً حطها هنا
     if (
-      pathname.startsWith('/women-bags') ||
+      pathname.startsWith('/girls-bags') ||
       pathname.startsWith('/mother-daughter') ||
       pathname.startsWith('/ramadan-collection')
     ) {
-      return 'women-bags';
+      return 'girls-bags';
     }
 
     if (pathname.startsWith('/giveaways')) return 'giveaways';
@@ -101,7 +101,7 @@ function PublicLayout() {
       case 'kids-bags':
         navigate('/kids-bags');
         break;
-      case 'women-bags':
+      case 'girls-bags':
         navigate('/girls-bags');
         break;
       case 'giveaways':

@@ -6,7 +6,7 @@ import {
   CreditCard,
   Sparkles,
   CheckCircle,
-  Cake,
+  ShoppingBag,
   Heart,
   ArrowRight,
   User,
@@ -15,6 +15,8 @@ import {
   MessageSquareText,
   Image as ImageIcon,
   Palette,
+  Star,
+  Package,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -289,11 +291,11 @@ export default function CustomOrders() {
     }
   };
 
-  // ✅ Success Screen (Project Theme)
+  // ✅ Success Screen
   if (orderComplete) {
     return (
       <div
-        className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center p-4"
+        className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center p-4 pt-24"
         dir="rtl"
       >
         <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 max-w-md w-full text-center border-2 border-[#E5DCC5]">
@@ -714,7 +716,7 @@ export default function CustomOrders() {
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 <span>ملخص الطلب</span>
-                <Cake className="h-5 w-5 text-[#D4AF37]" />
+                <Package className="h-5 w-5 text-[#D4AF37]" />
               </h3>
 
               <div className="space-y-2 text-sm text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>
@@ -792,8 +794,8 @@ export default function CustomOrders() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC]" dir="rtl">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] pt-24 pb-8" dir="rtl">
+      <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <Link
             to="/"
@@ -804,7 +806,7 @@ export default function CustomOrders() {
             <span>العودة للرئيسية</span>
           </Link>
 
-          {/* Header (Project Theme) */}
+          {/* Header */}
           <div className="text-center mb-8">
             <div className="relative inline-block mb-4">
               <div className="absolute -top-2 -right-2 text-[#D4AF37] animate-pulse">
@@ -814,7 +816,7 @@ export default function CustomOrders() {
                 <Heart className="h-6 w-6 fill-current" />
               </div>
               <div className="bg-gradient-to-r from-[#8B7355] to-[#A67C52] rounded-full p-4 shadow-xl">
-                <Cake className="h-12 w-12 text-white" />
+                <Palette className="h-12 w-12 text-white" />
               </div>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
