@@ -1,7 +1,15 @@
 // src/App.tsx
 
 import React, { useEffect, useMemo } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 import { AppProvider } from './contexts/AppContext';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -28,6 +36,8 @@ import OrderDetails from './pages/OrderDetails';
 // Category pages
 import KidsBagsPage from './pages/KidsBagsPage';
 import GirlsBagsPage from './pages/GirlsBagsPage';
+import GirlsBagsEveningPage from './pages/GirlsBagsEveningPage';
+import GirlsBagsCasualPage from './pages/GirlsBagsCasualPage';
 import MomDaughterSetPage from './pages/MomDaughterSetPage';
 import RamadanSetPage from './pages/RamadanSetPage';
 import GiveawaysPage from './pages/GiveawaysPage';
@@ -55,10 +65,17 @@ function useNavPageId() {
     // ✅ map routes to BottomNav ids
     if (pathname === '/' || pathname.startsWith('/product')) return 'home';
 
-    if (pathname.startsWith('/kids-bags') || pathname.startsWith('/girls-bags')) return 'kids-bags';
+    if (pathname.startsWith('/kids-bags')) return 'kids-bags';
+
+    // Girls bags (including evening/casual sub-routes)
+    if (pathname.startsWith('/girls-bags')) return 'women-bags';
 
     // لو عندك صفحة /women-bags فعلاً حطها هنا
-    if (pathname.startsWith('/women-bags') || pathname.startsWith('/mother-daughter') || pathname.startsWith('/ramadan-collection')) {
+    if (
+      pathname.startsWith('/women-bags') ||
+      pathname.startsWith('/mother-daughter') ||
+      pathname.startsWith('/ramadan-collection')
+    ) {
       return 'women-bags';
     }
 
@@ -84,8 +101,7 @@ function PublicLayout() {
       case 'kids-bags':
         navigate('/kids-bags');
         break;
-      case 'girls-bags':
-        // لو عندك route مختلف للنساء عدله هنا
+      case 'women-bags':
         navigate('/girls-bags');
         break;
       case 'giveaways':
@@ -158,14 +174,10 @@ function AppContent() {
       <Routes>
         {/* ✅ Admin routes without public layout */}
         <Route path="/admin" element={<AdminLayout />}>
-          <Route
-            index
-            element={
-              <ProtectedRoute requireAdmin>
-                <AdminPage />
-              </ProtectedRoute>
-            }
-          />
+          {/* ✅ IMPORTANT: /admin redirects to /admin/orders */}
+          <Route index element={<Navigate to="orders" replace />} />
+
+          {/* ✅ Admin nested pages */}
           <Route
             path="*"
             element={
@@ -174,7 +186,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Navigate to="notifications" replace />} />
             <Route path="notifications" element={<OrderNotifications />} />
             <Route path="products" element={<ProductsManagement />} />
             <Route path="orders" element={<OrdersManagement />} />
@@ -193,7 +204,12 @@ function AppContent() {
           {/* Public category pages */}
           <Route path="instant" element={<InstantPage />} />
           <Route path="kids-bags" element={<KidsBagsPage />} />
+
+          {/* Girls Bags main + sub-categories */}
           <Route path="girls-bags" element={<GirlsBagsPage />} />
+          <Route path="girls-bags/evening" element={<GirlsBagsEveningPage />} />
+          <Route path="girls-bags/casual" element={<GirlsBagsCasualPage />} />
+
           <Route path="mother-daughter" element={<MomDaughterSetPage />} />
           <Route path="ramadan-collection" element={<RamadanSetPage />} />
           <Route path="giveaways" element={<GiveawaysPage />} />

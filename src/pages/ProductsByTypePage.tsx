@@ -25,12 +25,13 @@ export type ProductsByTypeConfig = {
   // UI
   titleAr: string;
   subtitleAr: string;
+  theme?: string;
 
-  // API fallback (recommended for your backend categories)
-  legacySegment: string; // e.g. "kids-bags" => /api/products/kids-bags
+  // API endpoint segment (e.g. "kids-bags" => /api/products/kids-bags)
+  legacySegment: string;
 
   // Routing state key for restore
-  restoreStateKey: string; // e.g. "fromKidsBagsPage"
+  restoreStateKey: string;
 
   // BottomNav highlight key
   bottomNavKey?: 'home' | 'kids-bags' | 'women-bags' | 'giveaways' | 'cart';
@@ -139,6 +140,7 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
       setError(null);
 
       const pageSize = 10;
+      // ✅ FIXED: Use legacySegment directly (e.g., /api/products/kids-bags)
       const url = `${apiUrl}/api/products/${config.legacySegment}?pageNumber=${page}&pageSize=${pageSize}`;
 
       const res = await fetch(url, { headers: { ...buildAuthHeaders() } });
@@ -308,7 +310,7 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
         navigate('/kids-bags');
         break;
       case 'women-bags':
-        navigate('/girls-bags'); // ✅ mapping because your route is /girls-bags
+        navigate('/girls-bags');
         break;
       case 'giveaways':
         navigate('/giveaways');

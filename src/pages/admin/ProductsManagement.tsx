@@ -71,6 +71,8 @@ type TabKey =
   | 'all'
   | 'kidsBags'
   | 'girlsBags'
+  | 'girlsBagsEvening'
+  | 'girlsBagsCasual'
   | 'motherDaughterSet'
   | 'ramadanCollection'
   | 'giveaways'
@@ -103,6 +105,7 @@ const ProductsManagement: React.FC = () => {
     sizes: string[];
     colors: string[];
     category: CategoryType | '';
+    girlsBagType: 'Evening' | 'Casual' | '';
     images: string[];
     isHidden: boolean;
     isAvailable: boolean;
@@ -120,6 +123,7 @@ const ProductsManagement: React.FC = () => {
     sizes: [''],
     colors: [''],
     category: '',
+    girlsBagType: '',
     images: [''],
     isHidden: false,
     isAvailable: true,
@@ -179,6 +183,10 @@ const ProductsManagement: React.FC = () => {
         return 'شنط أطفال';
       case 'girlsBags':
         return 'شنط الفتيات';
+      case 'girlsBagsEvening': 
+        return 'شنط سهرة';
+      case 'girlsBagsCasual': 
+        return 'شنط كاجوال';
       case 'motherDaughterSet':
         return 'مجموعة الأم والابنة';
       case 'ramadanCollection':
@@ -194,41 +202,45 @@ const ProductsManagement: React.FC = () => {
     }
   };
 
-  // ==============================
-  // Tabs -> API endpoints mapping
-  // ==============================
-  const buildListEndpoint = (tab: TabKey, page: number) => {
-    const base = `${apiUrl}/api/products`;
+// ==============================
+// Tabs -> API endpoints mapping
+// ==============================
+const buildListEndpoint = (tab: TabKey, page: number) => {
+  const base = `${apiUrl}/api/products`;
 
-    const withPaging = (url: string) =>
-      `${url}${url.includes('?') ? '&' : '?'}pageNumber=${page}&pageSize=${pageSize}`;
+  const withPaging = (url: string) =>
+    `${url}${url.includes('?') ? '&' : '?'}pageNumber=${page}&pageSize=${pageSize}`;
 
-    switch (tab) {
-      case 'all':
-        return withPaging(base);
+  switch (tab) {
+    case 'all':
+      return withPaging(base);
 
-      // Category endpoints (NEW)
-      case 'kidsBags':
-        return withPaging(`${base}/category/kids-bags`);
-      case 'girlsBags':
-        return withPaging(`${base}/category/girls-bags`);
-      case 'motherDaughterSet':
-        return withPaging(`${base}/category/mother-daughter-set`);
-      case 'ramadanCollection':
-        return withPaging(`${base}/category/ramadan-collection`);
-      case 'giveaways':
-        return withPaging(`${base}/category/giveaways`);
+    // Category endpoints - FIXED: removed /category/ prefix
+    case 'kidsBags':
+      return withPaging(`${base}/kids-bags`);
+    case 'girlsBags':
+      return withPaging(`${base}/girls-bags`);
+    case 'girlsBagsEvening':
+      return withPaging(`${base}/girls-bags/evening`);
+    case 'girlsBagsCasual':
+      return withPaging(`${base}/girls-bags/casual`);
+    case 'motherDaughterSet':
+      return withPaging(`${base}/mom-daughter-set`);
+    case 'ramadanCollection':
+      return withPaging(`${base}/ramadan-set`);
+    case 'giveaways':
+      return withPaging(`${base}/giveaways`);
 
-      // Existing ones
-      case 'instant':
-        return withPaging(`${base}/instant`);
-      case 'breakfast':
-        return withPaging(`${base}/breakfast`);
+    // Existing ones
+    case 'instant':
+      return withPaging(`${base}/instant`);
+    case 'breakfast':
+      return withPaging(`${base}/breakfast`);
 
-      default:
-        return withPaging(base);
-    }
-  };
+    default:
+      return withPaging(base);
+  }
+};
 
   // ==============================
   // Auth & Init
@@ -381,6 +393,9 @@ const ProductsManagement: React.FC = () => {
 
       // IMPORTANT: category is now string enum name, send empty if not chosen
       formData.append('category', newProduct.category || '');
+      
+      // In both functions, add this line when building formData:
+      formData.append('girlsBagType', newProduct.girlsBagType || '');  // ✅ ADD THIS
 
       // season might still exist server-side; send empty if not chosen
       formData.append('season', newProduct.season || '');
@@ -499,6 +514,7 @@ const ProductsManagement: React.FC = () => {
 
       // UPDATED
       formData.append('category', newProduct.category || '');
+      formData.append('girlsBagType', newProduct.girlsBagType || '');
       formData.append('season', newProduct.season || '');
 
       if (newProduct.originalPrice && newProduct.originalPrice.trim() !== '') {
@@ -587,56 +603,58 @@ const ProductsManagement: React.FC = () => {
   // ==============================
   // RESET FORM
   // ==============================
-  const resetProductForm = () => {
-    setNewProduct({
-      code: '',
-      name: '',
-      price: '',
-      originalPrice: '',
-      description: '',
-      sizes: [''],
-      colors: [''],
-      category: '',
-      images: [''],
-      isHidden: false,
-      isAvailable: true,
-      season: '',
-      type: 0,
-      isInstant: false,
-      isBreakfast: false,
-      isFeatured: false
-    });
-  };
+const resetProductForm = () => {
+  setNewProduct({
+    code: '',
+    name: '',
+    price: '',
+    originalPrice: '',
+    description: '',
+    sizes: [''],
+    colors: [''],
+    category: '',
+    girlsBagType: '',
+    images: [''],
+    isHidden: false,
+    isAvailable: true,
+    season: '',
+    type: 0,
+    isInstant: false,
+    isBreakfast: false,
+    isFeatured: false
+  });
+};
 
   // ==============================
   // EDIT
   // ==============================
-  const handleEditProduct = (product: Product) => {
-    setEditingProduct(product);
+const handleEditProduct = (product: Product) => {
+  setEditingProduct(product);
 
-    setNewProduct({
-      code: product.code,
-      name: product.name,
-      price: product.price.toString(),
-      originalPrice: product.originalPrice?.toString() || '',
-      description: product.description,
-      images: (product.images ?? []).map(img => img.imagePath),
-      sizes: [''],
-      colors: [''],
-      category: normalizeCategory(product.category) ?? '',
-      isHidden: product.isHidden,
-      isAvailable: product.isAvailable,
-      season: '',
-      type: 0,
-      isInstant: product.isInstant || false,
-      isBreakfast: product.isBreakfast || false,
-      isFeatured: product.isFeatured || false
-    });
+  setNewProduct({
+    code: product.code,
+    name: product.name,
+    price: product.price.toString(),
+    originalPrice: product.originalPrice?.toString() || '',
+    description: product.description,
+    images: (product.images ?? []).map(img => img.imagePath),
+    sizes: [''],
+    colors: [''],
+    category: normalizeCategory(product.category) ?? '',
+    girlsBagType: (product as any).girlsBagType || '',
+    isHidden: product.isHidden,
+    isAvailable: product.isAvailable,
+    season: '',
+    type: 0,
+    isInstant: product.isInstant || false,
+    isBreakfast: product.isBreakfast || false,
+    isFeatured: product.isFeatured || false
+  });
 
-    setShowEditProduct(true);
-    setShowAddProduct(false);
-    setShowSidebar(false);
-  };
+  setShowEditProduct(true);
+  setShowAddProduct(false);
+  setShowSidebar(false);
+};
 
   // ==============================
   // DELETE
@@ -875,6 +893,8 @@ const ProductsManagement: React.FC = () => {
                       ['all', 'كل المنتجات'],
                       ['kidsBags', 'شنط أطفال'],
                       ['girlsBags', 'شنط الفتيات'],
+                      ['girlsBagsEvening', 'شنط سهرة'],
+                      ['girlsBagsCasual', 'شنط كاجوال'],
                       ['motherDaughterSet', 'مجموعة الأم ولابنة'],
                       ['ramadanCollection', 'مجموعة رمضان'],
                       ['giveaways', 'التوزيعات'],
@@ -948,6 +968,8 @@ const ProductsManagement: React.FC = () => {
                       ['all', 'كل المنتجات'],
                       // ['kidsBags', 'شنط أطفال'],
                       // ['girlsBags', 'شنط الفتيات'],
+                      // ['girlsBagsEvening', 'سهرة'],
+                      // ['girlsBagsCasual', 'كاجوال'],
                       // ['motherDaughterSet', 'مجموعة الأم والابنة'],
                       // ['ramadanCollection', 'مجموعة رمضان'],
                       // ['giveaways', 'التوزيعات'],
@@ -1113,6 +1135,7 @@ const ProductsManagement: React.FC = () => {
                         </div>
 
                         {/* Category (NEW) */}
+                        {/* Category */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
@@ -1132,16 +1155,29 @@ const ProductsManagement: React.FC = () => {
                                 </option>
                               ))}
                             </select>
-
-                            {!newProduct.isInstant &&
-                              !newProduct.isBreakfast &&
-                              !newProduct.category && (
-                                <p className="text-xs text-[#8B7355]/70 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                                  مطلوب للمنتجات العادية
-                                </p>
-                              )}
                           </div>
-{/* 
+
+                          {/* ✅ ADD THIS: GirlsBagType dropdown - only show when category is GirlsBags */}
+                          {newProduct.category === 'GirlsBags' && (
+                            <div>
+                              <label className="block text-sm font-medium text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                نوع الشنطة (اختياري)
+                              </label>
+                              <select
+                                value={newProduct.girlsBagType}
+                                onChange={e => setNewProduct(prev => ({ ...prev, girlsBagType: e.target.value as any }))}
+                                className="w-full px-3 py-3 border-2 border-[#E5DCC5] rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] text-right text-[#8B7355] bg-white"
+                                style={{ fontFamily: 'Tajawal, sans-serif' }}
+                                dir="rtl"
+                              >
+                                <option value="">— اختر النوع —</option>
+                                <option value="Evening">سهرة</option>
+                                <option value="Casual">كاجوال</option>
+                              </select>
+                            </div>
+                          )}
+                        </div>
+                          {/* 
                           <div>
                             <label className="block text-sm font-medium text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                               النوع (Type)
@@ -1155,7 +1191,7 @@ const ProductsManagement: React.FC = () => {
                               dir="rtl"
                             />
                           </div> */}
-                        </div>
+                        {/* </div> */}
 
                         {/* Toggles */}
                         <div className="flex flex-wrap gap-6 pt-2">
