@@ -6,7 +6,7 @@ import {
   CreditCard,
   Sparkles,
   CheckCircle,
-  Gift,
+  Cake,
   Heart,
   ArrowRight,
   User,
@@ -18,31 +18,30 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-// Backend: PaymentMethod? (nullable)
-// We will send number when chosen, otherwise don't send it at all.
+// Must match backend enums (0/1/2)
 type PaymentMethod = 0 | 1 | 2;
 
 interface PaymentMethodOption {
+  value: PaymentMethod;
   label: string;
   icon: string;
-  value: PaymentMethod;
 }
 
 interface CustomOrderForm {
   // Required by backend
   requiredText: string;
-  preferredColors: string; // comma-separated
+  preferredColors: string[];
   designImage: File | null;
   imagePreview: string | null;
-
-  // Optional
   notes: string;
+
+  // Customer
   customerName: string;
   customerPhone: string;
   additionalPhone: string;
   address: string;
 
-  // Optional payment
+  // Payment
   paymentMethod: PaymentMethod | null;
 }
 
@@ -62,8 +61,9 @@ const normalizePhone = (value: string) => {
   return englishDigits.replace(/\D/g, '').slice(0, 11);
 };
 
-// Backend regex: ^01[0-2,5]\d{8}$ (same as you used before)
 const isValidEgyptPhone = (value: string) => /^01[0125][0-9]{8}$/.test(value);
+
+const sanitizeColorList = (colors: string[]) => colors.map((color) => color.trim()).filter(Boolean);
 
 export default function CustomOrders() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -85,14 +85,12 @@ export default function CustomOrders() {
   );
 
   const [formData, setFormData] = useState<CustomOrderForm>({
-    // required
     requiredText: '',
-    preferredColors: '',
+    preferredColors: [''],
     designImage: null,
     imagePreview: null,
-
-    // optional
     notes: '',
+
     customerName: '',
     customerPhone: '',
     additionalPhone: '',
@@ -127,8 +125,25 @@ export default function CustomOrders() {
     reader.readAsDataURL(file);
   };
 
+  const addColorField = () => {
+    setFormData((p) => ({ ...p, preferredColors: [...p.preferredColors, ''] }));
+  };
+
+  const updateColorField = (index: number, value: string) => {
+    setFormData((p) => ({
+      ...p,
+      preferredColors: p.preferredColors.map((color, i) => (i === index ? value : color)),
+    }));
+  };
+
+  const removeColorField = (index: number) => {
+    setFormData((p) => {
+      const next = p.preferredColors.filter((_, i) => i !== index);
+      return { ...p, preferredColors: next.length ? next : [''] };
+    });
+  };
+
   const validateStep1 = () => {
-    // Backend requires: DesignImage + RequiredText + PreferredColors
     if (!formData.designImage) {
       alert('رفع التصميم مطلوب (صورة مرجعية)');
       return false;
@@ -141,14 +156,18 @@ export default function CustomOrders() {
       alert('النص المطلوب يجب ألا يتجاوز 200 حرف');
       return false;
     }
-    if (!formData.preferredColors.trim()) {
+
+    const normalizedColors = sanitizeColorList(formData.preferredColors);
+    if (normalizedColors.length === 0) {
       alert('الألوان المفضلة مطلوبة');
       return false;
     }
-    if (formData.preferredColors.trim().length > 200) {
+    const preferredColorsValue = normalizedColors.join(', ');
+    if (preferredColorsValue.length > 200) {
       alert('الألوان المفضلة يجب ألا تتجاوز 200 حرف');
       return false;
     }
+
     if (formData.notes.trim().length > 1000) {
       alert('الملاحظات يجب أن لا تتجاوز 1000 حرف');
       return false;
@@ -195,57 +214,57 @@ export default function CustomOrders() {
       return;
     }
 
-    // Validate required backend fields one more time
     if (!validateStep1() || !validateStep2()) return;
 
     const normalizedPhone = normalizePhone(formData.customerPhone);
     const normalizedAdditionalPhone = formData.additionalPhone ? normalizePhone(formData.additionalPhone) : '';
+    const preferredColorsValue = sanitizeColorList(formData.preferredColors).join(', ');
 
     const fd = new FormData();
 
-    // Required (CreateCustomOrderDto)
+    // Customer
     fd.append('CustomerName', formData.customerName.trim());
     fd.append('CustomerPhone', normalizedPhone);
 
-    // REQUIRED: DesignImage
-    if (formData.designImage) {
-      fd.append('DesignImage', formData.designImage);
-    }
-
-    // REQUIRED
-    fd.append('RequiredText', formData.requiredText.trim());
-    fd.append('PreferredColors', formData.preferredColors.trim());
-
-    // Optional
     if (normalizedAdditionalPhone) fd.append('AdditionalPhone', normalizedAdditionalPhone);
     if (formData.address.trim()) fd.append('Address', formData.address.trim());
-    if (formData.notes.trim()) fd.append('Notes', formData.notes.trim());
 
-    // Optional payment (nullable)
+    // Required
+    fd.append('RequiredText', formData.requiredText.trim());
+    fd.append('PreferredColors', preferredColorsValue);
+    if (formData.designImage) fd.append('DesignImage', formData.designImage);
+
+    // Optional
+    if (formData.notes.trim()) fd.append('Notes', formData.notes.trim());
     if (formData.paymentMethod !== null) {
       fd.append('PaymentMethod', String(formData.paymentMethod));
     }
 
-    // Controller route: api/CustomOrders
-    const url = `${apiUrl}/api/CustomOrders`;
+    const candidates = [`${apiUrl}/api/CustomOrders`, `${apiUrl}/api/custom-orders`];
 
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: fd,
-    });
+    let lastErr = '';
+    for (const url of candidates) {
+      // eslint-disable-next-line no-await-in-loop
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: fd,
+      });
 
-    if (res.ok) {
-      const result = await res.json().catch(() => ({}));
-      setOrderId(result.id ?? null);
-      setOrderNumber(result.orderNumber ?? null);
-      setOrderComplete(true);
-      return;
+      if (res.ok) {
+        const result = await res.json().catch(() => ({}));
+        setOrderId(result.id ?? null);
+        setOrderNumber(result.orderNumber ?? null);
+        setOrderComplete(true);
+        return;
+      }
+
+      lastErr = await res.text().catch(() => '');
+      if (res.status === 404) continue;
+      break;
     }
-
-    const lastErr = await res.text().catch(() => '');
 
     try {
       const parsed = JSON.parse(lastErr);
@@ -270,10 +289,13 @@ export default function CustomOrders() {
     }
   };
 
-  // ✅ Success Screen
+  // ✅ Success Screen (Project Theme)
   if (orderComplete) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center p-4" dir="rtl">
+      <div
+        className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center p-4"
+        dir="rtl"
+      >
         <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 max-w-md w-full text-center border-2 border-[#E5DCC5]">
           <div className="relative mb-6">
             <div className="absolute inset-0 bg-[#D4AF37] rounded-full blur-xl opacity-25 animate-pulse"></div>
@@ -283,10 +305,10 @@ export default function CustomOrders() {
           </div>
 
           <h1 className="text-3xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-            تم استلام طلبك بنجاح!
+            تم استلام طلبك!
           </h1>
           <p className="text-[#8B7355]/70 mb-6" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-            سيتم التواصل معك قريباً لتأكيد التفاصيل والسعر
+            سيتم التواصل معك قريباً لتأكيد التفاصيل
           </p>
 
           <div className="bg-[#FAF9F6] rounded-2xl p-4 mb-6 border-2 border-[#E5DCC5]">
@@ -302,39 +324,37 @@ export default function CustomOrders() {
             <h3 className="font-bold text-[#8B7355] mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               ملخص الطلب
             </h3>
-
             <div className="space-y-2 text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               <div className="flex justify-between">
                 <span className="text-[#8B7355]/80">{formData.customerName}</span>
                 <span className="font-medium text-[#8B7355]">الاسم</span>
               </div>
-
               <div className="flex justify-between">
                 <span className="text-[#8B7355]/80">{formData.customerPhone}</span>
                 <span className="font-medium text-[#8B7355]">الهاتف</span>
               </div>
-
               <div className="flex justify-between">
                 <span className="text-[#8B7355]/80 line-clamp-2">{formData.requiredText}</span>
                 <span className="font-medium text-[#8B7355]">النص</span>
               </div>
-
               <div className="flex justify-between">
-                <span className="text-[#8B7355]/80 line-clamp-2">{formData.preferredColors}</span>
+                <span className="text-[#8B7355]/80 line-clamp-2">
+                  {sanitizeColorList(formData.preferredColors).join(', ')}
+                </span>
                 <span className="font-medium text-[#8B7355]">الألوان</span>
               </div>
-
               {formData.notes && (
                 <div className="flex justify-between">
                   <span className="text-[#8B7355]/80 line-clamp-2">{formData.notes}</span>
                   <span className="font-medium text-[#8B7355]">ملاحظات</span>
                 </div>
               )}
-
-              <div className="flex justify-between">
-                <span className="text-[#8B7355]/80">{formData.designImage ? 'تم رفع صورة' : '—'}</span>
-                <span className="font-medium text-[#8B7355]">التصميم</span>
-              </div>
+              {formData.designImage && (
+                <div className="flex justify-between">
+                  <span className="text-[#8B7355]/80">تم رفع صورة</span>
+                  <span className="font-medium text-[#8B7355]">التصميم</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -353,6 +373,7 @@ export default function CustomOrders() {
 
   const renderStep = () => {
     switch (step) {
+      // Step 1
       case 1:
         return (
           <div className="space-y-4">
@@ -361,22 +382,22 @@ export default function CustomOrders() {
                 تفاصيل التصميم
               </h2>
               <p className="text-[#8B7355]/70 text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                ارفع صورة مرجعية + اكتب النص المطلوب + اختَر الألوان المفضلة
+                ارفع صورة مرجعية + اكتب النص المطلوب + اختر الألوان المفضلة
               </p>
             </div>
 
-            {/* RequiredText */}
             <div>
               <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <MessageSquareText className="inline h-5 w-5 ml-2" />
                 النص المطلوب *
               </label>
               <input
                 type="text"
                 value={formData.requiredText}
                 onChange={(e) => setFormData((p) => ({ ...p, requiredText: e.target.value }))}
-                className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none transition-colors bg-white"
-                placeholder="مثال: سارة محمد"
                 maxLength={200}
+                className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none resize-none bg-white"
+                placeholder="مثال: سارة محمد"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               />
               <p className="text-xs text-[#8B7355]/60 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
@@ -384,27 +405,49 @@ export default function CustomOrders() {
               </p>
             </div>
 
-            {/* PreferredColors */}
             <div>
               <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 <Palette className="inline h-5 w-5 ml-2" />
-                الألوان المفضلة * (اكتبها مفصولة بفواصل)
+                الألوان المفضلة * (اكتب كل لون في خانة)
               </label>
-              <input
-                type="text"
-                value={formData.preferredColors}
-                onChange={(e) => setFormData((p) => ({ ...p, preferredColors: e.target.value }))}
-                className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none transition-colors bg-white"
-                placeholder="مثال: ذهبي, بيج, أبيض"
-                maxLength={200}
-                style={{ fontFamily: 'Tajawal, sans-serif' }}
-              />
-              <p className="text-xs text-[#8B7355]/60 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                {formData.preferredColors.length}/200
-              </p>
+              <div className="space-y-2">
+                {formData.preferredColors.map((color, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={color}
+                      onChange={(e) => updateColorField(index, e.target.value)}
+                      className="flex-1 px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none transition-colors bg-white"
+                      placeholder={index === 0 ? 'مثال: ذهبي' : 'أدخل لون إضافي'}
+                      maxLength={200}
+                      style={{ fontFamily: 'Tajawal, sans-serif' }}
+                    />
+                    {formData.preferredColors.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeColorField(index)}
+                        className="text-red-500 text-sm hover:text-red-600"
+                        style={{ fontFamily: 'Tajawal, sans-serif' }}
+                      >
+                        حذف
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addColorField}
+                  className="text-[#8B7355] text-sm font-medium hover:text-[#D4AF37]"
+                  style={{ fontFamily: 'Tajawal, sans-serif' }}
+                >
+                  + إضافة لون
+                </button>
+                <p className="text-xs text-[#8B7355]/60 text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  {sanitizeColorList(formData.preferredColors).join(', ').length}/200
+                </p>
+              </div>
             </div>
 
-            {/* Notes (optional) */}
             <div>
               <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 <MessageSquareText className="inline h-5 w-5 ml-2" />
@@ -424,7 +467,6 @@ export default function CustomOrders() {
               </p>
             </div>
 
-            {/* DesignImage REQUIRED */}
             <div>
               <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 <Upload className="inline h-5 w-5 ml-2" />
@@ -491,6 +533,7 @@ export default function CustomOrders() {
           </div>
         );
 
+      // Step 2
       case 2:
         return (
           <div className="space-y-4">
@@ -517,7 +560,6 @@ export default function CustomOrders() {
                   className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none bg-white"
                   placeholder="أحمد محمد"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
-                  maxLength={100}
                 />
               </div>
 
@@ -580,7 +622,7 @@ export default function CustomOrders() {
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               />
               <p className="text-xs text-[#8B7355]/60 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                {formData.address.length}/500
+                {formData.address.length}/500 حرف
               </p>
             </div>
 
@@ -598,6 +640,7 @@ export default function CustomOrders() {
           </div>
         );
 
+      // Step 3
       case 3:
         return (
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -610,7 +653,6 @@ export default function CustomOrders() {
               </p>
             </div>
 
-            {/* Payment (optional) */}
             <div>
               <label className="block text-right text-[#8B7355] font-medium mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 <CreditCard className="inline h-5 w-5 ml-2" />
@@ -618,7 +660,6 @@ export default function CustomOrders() {
               </label>
 
               <div className="space-y-2">
-                {/* Option: no payment method */}
                 <label
                   className={`flex items-center justify-end gap-3 p-4 border-2 rounded-2xl cursor-pointer transition-all ${
                     formData.paymentMethod === null
@@ -640,7 +681,6 @@ export default function CustomOrders() {
                     className="w-5 h-5 accent-[#D4AF37]"
                   />
                 </label>
-
                 {paymentMethods.map((method) => (
                   <label
                     key={method.value}
@@ -668,14 +708,13 @@ export default function CustomOrders() {
               </div>
             </div>
 
-            {/* Summary */}
             <div className="bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] border-2 border-[#E5DCC5] rounded-3xl p-4">
               <h3
                 className="font-bold text-[#8B7355] mb-3 text-right flex items-center justify-end gap-2"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 <span>ملخص الطلب</span>
-                <Gift className="h-5 w-5 text-[#D4AF37]" />
+                <Cake className="h-5 w-5 text-[#D4AF37]" />
               </h3>
 
               <div className="space-y-2 text-sm text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>
@@ -704,7 +743,9 @@ export default function CustomOrders() {
                   <span className="text-[#8B7355]/70">النص</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#8B7355]/80 line-clamp-2">{formData.preferredColors || '—'}</span>
+                  <span className="text-[#8B7355]/80 line-clamp-2">
+                    {sanitizeColorList(formData.preferredColors).join(', ') || '—'}
+                  </span>
                   <span className="text-[#8B7355]/70">الألوان</span>
                 </div>
                 {formData.notes && (
@@ -714,21 +755,13 @@ export default function CustomOrders() {
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-[#8B7355]/80">{formData.designImage ? 'تم رفع صورة' : '—'}</span>
+                  <span className="text-[#8B7355]/80">{formData.designImage ? 'تم رفع صورة' : 'بدون صورة'}</span>
                   <span className="text-[#8B7355]/70">التصميم</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#8B7355]/80">
-                    {formData.paymentMethod === null
-                      ? 'لاحقاً'
-                      : paymentMethods.find((p) => p.value === formData.paymentMethod)?.label || '—'}
-                  </span>
-                  <span className="text-[#8B7355]/70">الدفع</span>
                 </div>
               </div>
 
               <p className="text-xs text-[#8B7355]/60 text-right mt-4" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                * يتم تحديد السعر النهائي بعد مراجعة التصميم والتواصل معك
+                * سيتم تحديد السعر النهائي بعد مراجعة التصميم والتواصل معك
               </p>
             </div>
 
@@ -771,7 +804,7 @@ export default function CustomOrders() {
             <span>العودة للرئيسية</span>
           </Link>
 
-          {/* Header */}
+          {/* Header (Project Theme) */}
           <div className="text-center mb-8">
             <div className="relative inline-block mb-4">
               <div className="absolute -top-2 -right-2 text-[#D4AF37] animate-pulse">
@@ -781,15 +814,14 @@ export default function CustomOrders() {
                 <Heart className="h-6 w-6 fill-current" />
               </div>
               <div className="bg-gradient-to-r from-[#8B7355] to-[#A67C52] rounded-full p-4 shadow-xl">
-                <Gift className="h-12 w-12 text-white" />
+                <Cake className="h-12 w-12 text-white" />
               </div>
             </div>
-
             <h1 className="text-3xl md:text-4xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-              تصميم خاص حسب طلبك
+              اطلب تصميم خاص
             </h1>
             <p className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-              ارفع التصميم + اكتب النص + حدّد الألوان… وهنرجعلك لتأكيد التفاصيل 👜✨
+              اطلب منتج بتصميمك (صورة أو وصف) 👜✨
             </p>
           </div>
 
@@ -846,9 +878,9 @@ export default function CustomOrders() {
               </p>
             </div>
             <div className="bg-white/80 rounded-2xl p-4 text-center shadow-md border border-[#E5DCC5]">
-              <span className="text-2xl block mb-1">🎯</span>
+              <span className="text-2xl block mb-1">⭐</span>
               <p className="text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                تنفيذ بدقة
+                جودة عالية
               </p>
             </div>
             <div className="bg-white/80 rounded-2xl p-4 text-center shadow-md border border-[#E5DCC5]">
