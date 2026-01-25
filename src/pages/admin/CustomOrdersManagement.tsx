@@ -3,563 +3,445 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Eye,
-  Edit,
-  Trash2,
-  Search,
-  Filter,
-  RefreshCw,
-  AlertCircle,
-  ShoppingBag,
-  Calendar,
-  User,
-  Phone,
-  CheckCircle,
-  Clock3,
-  Package,
-  DollarSign,
-  MapPin,
-  Image as ImageIcon,
+    Eye,
+    Edit,
+    Trash2,
+    Search,
+    Filter,
+    RefreshCw,
+    AlertCircle,
+    ShoppingBag,
+    Calendar,
+    User,
+    Phone,
+    CheckCircle,
+    Clock3,
+    Package,
+    DollarSign,
+    MapPin,
+    Image as ImageIcon,
+    Palette,
+    Type,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 // ===============================
-// Enums (keep matching backend ints)
+// Enums (✅ FIXED - matching backend exactly)
 // ===============================
 enum CustomOrderStatus {
-  Pending = 0,
-  Confirmed = 1,
-  InProgress = 2,
-  Ready = 3,
-  Completed = 4,
-  Cancelled = 5,
+    Pending = 0,
+    Reviewed = 1,
+    Confirmed = 2,
+    InProgress = 3,
+    Ready = 4,
+    Completed = 5,
+    Cancelled = 6,
 }
 
 enum PaymentMethod {
-  Cash = 0,
-  VodafoneCash = 1,
-  Instapay = 2,
+    Cash = 0,
+    VodafoneCash = 1,
+    Instapay = 2,
 }
 
-/**
- * ✅ Turtle Art / design-based custom orders:
- * - Keep old fields OPTIONAL so UI works with both old/new payloads without crashing
- * - Prefer designImageUrl/designNotes over cake fields
- */
 interface CustomOrder {
-  id: string;
-  orderNumber?: string | null;
-
-  customerName?: string | null;
-  customerPhone?: string | null;
-  additionalPhone?: string | null;
-  address?: string | null;
-
-  // OLD cake-style fields (optional)
-  occasionName?: string | null;
-  sizeName?: string | null;
-  flavorNames?: string[] | null;
-  customText?: string | null;
-  pickupDate?: string | null;
-  pickupTime?: string | null;
-
-  // NEW design-based fields
-  designImageUrl?: string | null;
-  referenceImageUrl?: string | null;
-  designNotes?: string | null;
-
-  // keep notes/adminNotes
-  notes?: string | null;
-  adminNotes?: string | null;
-
-  paymentMethod?: PaymentMethod | null;
-  status: CustomOrderStatus;
-
-  estimatedPrice?: number | null;
-  finalPrice?: number | null;
-
-  createdAt: string;
-  userId?: string | null;
+    id: string;
+    orderNumber: string;
+    customerName: string;
+    customerPhone: string;
+    additionalPhone?: string | null;
+    address?: string | null;
+    userId?: string | null;
+    requiredText: string;
+    preferredColors: string;
+    designImagePath?: string | null;
+    designImageUrl?: string | null;
+    designImageThumbnailUrl?: string | null;
+    notes?: string | null;
+    adminNotes?: string | null;
+    paymentMethod?: PaymentMethod | null;
+    paymentMethodLabel?: string | null;
+    status: CustomOrderStatus;
+    statusLabel?: string | null;
+    statusColor?: string | null;
+    estimatedPrice?: number | null;
+    finalPrice?: number | null;
+    createdAt: string;
+    createdAtFormatted?: string | null;
+    updatedAt?: string | null;
+    confirmedAt?: string | null;
+    completedAt?: string | null;
 }
 
 interface PaginatedResponse {
-  items: CustomOrder[];
-  totalItems: number;
-  pageNumber: number;
-  pageSize: number;
-  totalPages: number;
+    items: CustomOrder[];
+    totalItems: number;
+    pageNumber: number;
+    pageSize: number;
+    totalPages: number;
 }
 
 interface OrderStats {
-  totalOrders: number;
-  pendingOrders: number;
-  inProgressOrders: number;
-  completedOrders: number;
-  cancelledOrders: number;
-  todayOrders: number;
-  thisMonthOrders: number;
-  totalRevenue: number;
-  thisMonthRevenue: number;
-
-  mostPopularOccasion?: string | null;
-  mostPopularSize?: string | null;
-  mostPopularFlavor?: string | null;
+    totalOrders: number;
+    pendingOrders: number;
+    inProgressOrders: number;
+    completedOrders: number;
+    cancelledOrders: number;
+    todayOrders: number;
+    thisMonthOrders: number;
+    totalRevenue: number;
+    thisMonthRevenue: number;
 }
 
 const CustomOrdersManagement: React.FC = () => {
-  const { isAuthenticated, userRole } = useAuth();
-  const navigate = useNavigate();
+    const { isAuthenticated, userRole } = useAuth();
+    const navigate = useNavigate();
 
-  const [orders, setOrders] = useState<CustomOrder[]>([]);
-  const [stats, setStats] = useState<OrderStats | null>(null);
+    const [orders, setOrders] = useState<CustomOrder[]>([]);
+    const [stats, setStats] = useState<OrderStats | null>(null);
+    const [selectedOrder, setSelectedOrder] = useState<CustomOrder | null>(null);
+    const [showDetailsModal, setShowDetailsModal] = useState(false);
+    const [showStatusModal, setShowStatusModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-  const [selectedOrder, setSelectedOrder] = useState<CustomOrder | null>(null);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [showStatusModal, setShowStatusModal] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+    const pageSize = 10;
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState<CustomOrderStatus | ''>('');
+    const [dateFilter, setDateFilter] = useState('');
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const pageSize = 10;
+    const [newStatus, setNewStatus] = useState<CustomOrderStatus>(CustomOrderStatus.Pending);
+    const [finalPrice, setFinalPrice] = useState('');
+    const [adminNotes, setAdminNotes] = useState('');
 
-  // Filters
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<CustomOrderStatus | ''>('');
-  const [dateFilter, setDateFilter] = useState(''); // pickupDate OR createdAt depending backend
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+    useEffect(() => {
+        const t = setTimeout(() => setDebouncedSearch(searchTerm.trim()), 350);
+        return () => clearTimeout(t);
+    }, [searchTerm]);
 
-  // Status update
-  const [newStatus, setNewStatus] = useState<CustomOrderStatus>(CustomOrderStatus.Pending);
-  const [finalPrice, setFinalPrice] = useState('');
-  const [adminNotes, setAdminNotes] = useState('');
+    const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://turtle-art.runasp.net';
 
-  // Debounced search (prevents too many API calls while typing)
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(searchTerm.trim()), 350);
-    return () => clearTimeout(t);
-  }, [searchTerm]);
+    const ordersAbortRef = useRef<AbortController | null>(null);
+    const statsAbortRef = useRef<AbortController | null>(null);
 
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }
+        if (String(userRole).toLowerCase() !== 'admin') {
+            navigate('/');
+            return;
+        }
+    }, [isAuthenticated, userRole, navigate]);
 
-  // Abort to avoid race conditions when changing filters/pages quickly
-  const ordersAbortRef = useRef<AbortController | null>(null);
-  const statsAbortRef = useRef<AbortController | null>(null);
-
-  // ===============================
-  // Auth guard
-  // ===============================
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-    if (String(userRole).toLowerCase() !== 'admin') {
-      navigate('/');
-      return;
-    }
-  }, [isAuthenticated, userRole, navigate]);
-
-  // ===============================
-  // Helpers
-  // ===============================
-  const getAuthHeaders = () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      navigate('/login');
-      throw new Error('لا يوجد رمز مصادقة. يرجى تسجيل الدخول مرة أخرى.');
-    }
-    return {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            navigate('/login');
+            throw new Error('لا يوجد رمز مصادقة. يرجى تسجيل الدخول مرة أخرى.');
+        }
+        return {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        };
     };
-  };
 
-  const normalizeImageUrl = (url?: string | null) => {
-    if (!url) return '';
-    if (url.startsWith('http')) return url;
-    if (url.startsWith('/')) return `${apiUrl}${url}`;
-    return `${apiUrl}/${url}`;
-  };
-
-  const safeDate = (dateString?: string | null) => {
-    if (!dateString) return null;
-    const d = new Date(dateString);
-    if (Number.isNaN(d.getTime())) return null;
-    return d;
-  };
-
-  const formatDate = (dateString?: string | null) => {
-    if (!dateString) return '—';
-    const d = safeDate(dateString);
-    if (!d) return String(dateString);
-    return d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
-  };
-
-  const formatShortDate = (dateString?: string | null) => {
-    const d = safeDate(dateString);
-    if (!d) return '—';
-    return d.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' });
-  };
-
-  const formatTime = (timeString?: string | null) => {
-    if (!timeString) return '—';
-    if (timeString.includes(':')) return timeString.substring(0, 5);
-    return timeString;
-  };
-
-  const getStatusText = (status: CustomOrderStatus) => {
-    const statusMap: Record<number, string> = {
-      [CustomOrderStatus.Pending]: 'قيد الانتظار',
-      [CustomOrderStatus.Confirmed]: 'مؤكد',
-      [CustomOrderStatus.InProgress]: 'قيد التنفيذ',
-      [CustomOrderStatus.Ready]: 'جاهز',
-      [CustomOrderStatus.Completed]: 'مكتمل',
-      [CustomOrderStatus.Cancelled]: 'ملغي',
+    const normalizeImageUrl = (url?: string | null) => {
+        if (!url) return '';
+        if (url.startsWith('http')) return url;
+        if (url.startsWith('/')) return `${apiUrl}${url}`;
+        return `${apiUrl}/${url}`;
     };
-    return statusMap[status] ?? 'غير معروف';
-  };
 
-  const getStatusColor = (status: CustomOrderStatus) => {
-    const colorMap: Record<number, string> = {
-      [CustomOrderStatus.Pending]: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      [CustomOrderStatus.Confirmed]: 'bg-blue-100 text-blue-800 border-blue-200',
-      [CustomOrderStatus.InProgress]: 'bg-[#C4A57B]/20 text-[#8B7355] border-[#C4A57B]',
-      [CustomOrderStatus.Ready]: 'bg-green-100 text-green-800 border-green-200',
-      [CustomOrderStatus.Completed]: 'bg-gray-100 text-gray-800 border-gray-200',
-      [CustomOrderStatus.Cancelled]: 'bg-red-100 text-red-800 border-red-200',
+    const formatDate = (dateString?: string | null) => {
+        if (!dateString) return '—';
+        const d = new Date(dateString);
+        if (Number.isNaN(d.getTime())) return '—';
+        return d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
     };
-    return colorMap[status] ?? 'bg-gray-100 text-gray-800 border-gray-200';
-  };
 
-  const getPaymentMethodText = (method?: PaymentMethod | null) => {
-    if (method === null || method === undefined) return '—';
-    const methodMap: Record<number, string> = {
-      [PaymentMethod.Cash]: 'نقدي',
-      [PaymentMethod.VodafoneCash]: 'فودافون كاش',
-      [PaymentMethod.Instapay]: 'إنستاباي',
+    const formatShortDate = (dateString?: string | null) => {
+        if (!dateString) return '—';
+        const d = new Date(dateString);
+        if (Number.isNaN(d.getTime())) return '—';
+        return d.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' });
     };
-    return methodMap[method] ?? '—';
-  };
 
-  const orderDisplayNumber = (o: CustomOrder) => o.orderNumber || `#${o.id.slice(0, 8)}`;
+    const getStatusText = (status: CustomOrderStatus) => {
+        const statusMap: Record<number, string> = {
+            [CustomOrderStatus.Pending]: 'قيد الانتظار',
+            [CustomOrderStatus.Reviewed]: 'تمت المراجعة',
+            [CustomOrderStatus.Confirmed]: 'مؤكد',
+            [CustomOrderStatus.InProgress]: 'قيد التنفيذ',
+            [CustomOrderStatus.Ready]: 'جاهز',
+            [CustomOrderStatus.Completed]: 'مكتمل',
+            [CustomOrderStatus.Cancelled]: 'ملغي',
+        };
+        return statusMap[status] ?? 'غير معروف';
+    };
 
-  const mainDateForOrder = (o: CustomOrder) => o.pickupDate || o.createdAt;
+    const getStatusColor = (status: CustomOrderStatus) => {
+        const colorMap: Record<number, string> = {
+            [CustomOrderStatus.Pending]: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+            [CustomOrderStatus.Reviewed]: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+            [CustomOrderStatus.Confirmed]: 'bg-blue-100 text-blue-800 border-blue-200',
+            [CustomOrderStatus.InProgress]: 'bg-[#C4A57B]/20 text-[#8B7355] border-[#C4A57B]',
+            [CustomOrderStatus.Ready]: 'bg-green-100 text-green-800 border-green-200',
+            [CustomOrderStatus.Completed]: 'bg-gray-100 text-gray-800 border-gray-200',
+            [CustomOrderStatus.Cancelled]: 'bg-red-100 text-red-800 border-red-200',
+        };
+        return colorMap[status] ?? 'bg-gray-100 text-gray-800 border-gray-200';
+    };
 
-  const mainTitleForOrder = (o: CustomOrder) => {
-    // Turtle Art: prefer design request title
-    const occasion = o.occasionName?.trim();
-    const size = o.sizeName?.trim();
+    const getPaymentMethodText = (method?: PaymentMethod | null) => {
+        if (method === null || method === undefined) return '—';
+        const methodMap: Record<number, string> = {
+            [PaymentMethod.Cash]: 'نقدي',
+            [PaymentMethod.VodafoneCash]: 'فودافون كاش',
+            [PaymentMethod.Instapay]: 'إنستاباي',
+        };
+        return methodMap[method] ?? '—';
+    };
 
-    // If old cake fields exist show them; else "تصميم مخصص"
-    if (occasion && size) return `${occasion} - ${size}`;
-    if (occasion) return occasion;
-    if (o.designImageUrl || o.referenceImageUrl || o.designNotes || o.notes) return 'طلب تصميم مخصص';
-    return 'طلب مخصص';
-  };
+    const normalizeOrder = (x: any): CustomOrder => {
+        console.log('🔄 Order:', x.orderNumber || x.id, 'Status:', x.status, 'Type:', typeof x.status);
 
-  const hasDesignMedia = (o: CustomOrder) => Boolean(o.designImageUrl || o.referenceImageUrl);
+        // ✅ Map string status to enum number
+        const statusStringToEnum: Record<string, CustomOrderStatus> = {
+            'Pending': CustomOrderStatus.Pending,
+            'Reviewed': CustomOrderStatus.Reviewed,
+            'Confirmed': CustomOrderStatus.Confirmed,
+            'InProgress': CustomOrderStatus.InProgress,
+            'Ready': CustomOrderStatus.Ready,
+            'Completed': CustomOrderStatus.Completed,
+            'Cancelled': CustomOrderStatus.Cancelled,
+        };
 
-  // ===============================
-  // API endpoints (Turtle Art resilient)
-  // ===============================
-  const ORDERS_ENDPOINTS = useMemo(
-    () => [
-      '/api/custom-orders',
-      '/api/custom-design-orders', // some backends rename like this
-      '/api/CustomOrders', // old
-    ],
-    []
-  );
-
-  const STATS_ENDPOINTS = useMemo(
-    () => [
-      '/api/custom-orders/stats',
-      '/api/custom-design-orders/stats',
-      '/api/CustomOrders/stats',
-    ],
-    []
-  );
-
-  const STATUS_ENDPOINTS = useMemo(
-    () => [
-      (id: string) => `/api/custom-orders/${id}/status`,
-      (id: string) => `/api/custom-design-orders/${id}/status`,
-      (id: string) => `/api/CustomOrders/${id}/status`,
-    ],
-    []
-  );
-
-  const DELETE_ENDPOINTS = useMemo(
-    () => [
-      (id: string) => `/api/custom-orders/${id}`,
-      (id: string) => `/api/custom-design-orders/${id}`,
-      (id: string) => `/api/CustomOrders/${id}`,
-    ],
-    []
-  );
-
-  const buildOrdersUrl = (basePath: string) => {
-    let url = `${apiUrl}${basePath}?pageNumber=${currentPage}&pageSize=${pageSize}`;
-
-    if (statusFilter !== '') url += `&status=${statusFilter}`;
-
-    if (debouncedSearch) {
-      url += `&searchTerm=${encodeURIComponent(debouncedSearch)}`;
-      // Some backends use q
-      url += `&q=${encodeURIComponent(debouncedSearch)}`;
-    }
-
-    if (dateFilter) {
-      // Old/new possible params (safe to send multiple; backend ignores unknown)
-      url += `&pickupFromDate=${dateFilter}`;
-      url += `&fromDate=${dateFilter}`;
-      url += `&createdFromDate=${dateFilter}`;
-      url += `&date=${dateFilter}`;
-    }
-
-    return url;
-  };
-
-  const normalizeOrder = (x: any): CustomOrder => ({
-    id: String(x.id),
-    orderNumber: x.orderNumber ?? null,
-
-    customerName: x.customerName ?? x.name ?? null,
-    customerPhone: x.customerPhone ?? x.phone ?? null,
-    additionalPhone: x.additionalPhone ?? null,
-    address: x.address ?? null,
-
-    // old cake fields
-    occasionName: x.occasionName ?? x.occasion ?? null,
-    sizeName: x.sizeName ?? x.size ?? null,
-    flavorNames: Array.isArray(x.flavorNames) ? x.flavorNames : Array.isArray(x.flavors) ? x.flavors : null,
-    customText: x.customText ?? null,
-    pickupDate: x.pickupDate ?? x.pickup_date ?? null,
-    pickupTime: x.pickupTime ?? x.pickup_time ?? null,
-
-    // design-based fields
-    designImageUrl: x.designImageUrl ?? x.designImagePath ?? x.imageUrl ?? x.designImage ?? null,
-    referenceImageUrl: x.referenceImageUrl ?? x.referenceImagePath ?? null,
-    designNotes: x.designNotes ?? x.designNote ?? x.design_note ?? null,
-
-    notes: x.notes ?? null,
-    adminNotes: x.adminNotes ?? x.admin_notes ?? null,
-
-    paymentMethod: x.paymentMethod ?? null,
-    status: typeof x.status === 'number' ? x.status : CustomOrderStatus.Pending,
-
-    estimatedPrice: typeof x.estimatedPrice === 'number' ? x.estimatedPrice : typeof x.priceEstimate === 'number' ? x.priceEstimate : null,
-    finalPrice: typeof x.finalPrice === 'number' ? x.finalPrice : null,
-
-    createdAt: x.createdAt ?? x.created_at ?? new Date().toISOString(),
-    userId: x.userId ?? null,
-  });
-
-  // ===============================
-  // API calls
-  // ===============================
-  const fetchOrders = async () => {
-    ordersAbortRef.current?.abort();
-    const ac = new AbortController();
-    ordersAbortRef.current = ac;
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const candidates = ORDERS_ENDPOINTS.map((p) => buildOrdersUrl(p));
-
-      let response: Response | null = null;
-      let lastErrorText = '';
-
-      for (const url of candidates) {
-        // eslint-disable-next-line no-await-in-loop
-        const r = await fetch(url, { headers: getAuthHeaders(), signal: ac.signal });
-        if (r.ok) {
-          response = r;
-          break;
-        }
-        if (r.status === 404) {
-          lastErrorText = await r.text().catch(() => '');
-          continue;
-        }
-        lastErrorText = await r.text().catch(() => '');
-        response = r;
-        break;
-      }
-
-      if (!response) throw new Error('فشل في جلب الطلبات');
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          localStorage.removeItem('accessToken');
-          navigate('/login');
-          throw new Error('غير مصرح: يرجى تسجيل الدخول مرة أخرى.');
-        } else if (response.status === 403) {
-          navigate('/');
-          throw new Error('ممنوع: يتطلب صلاحيات إدارية.');
-        }
-        throw new Error(lastErrorText || 'فشل في جلب الطلبات');
-      }
-
-      const data: PaginatedResponse = await response.json();
-
-      const safeItems = (data.items ?? []).map(normalizeOrder);
-
-      setOrders(safeItems);
-      setTotalPages(data.totalPages ?? 1);
-      setTotalItems(data.totalItems ?? safeItems.length);
-      setCurrentPage(data.pageNumber ?? currentPage);
-    } catch (err) {
-      // Abort is not an actual error for the user
-      if (err instanceof DOMException && err.name === 'AbortError') return;
-      setError(err instanceof Error ? err.message : 'فشل في جلب الطلبات');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchStats = async () => {
-    statsAbortRef.current?.abort();
-    const ac = new AbortController();
-    statsAbortRef.current = ac;
-
-    try {
-      for (const path of STATS_ENDPOINTS) {
-        // eslint-disable-next-line no-await-in-loop
-        const r = await fetch(`${apiUrl}${path}`, { headers: getAuthHeaders(), signal: ac.signal });
-        if (r.ok) {
-          const data: OrderStats = await r.json();
-          setStats(data);
-          return;
-        }
-        if (r.status === 404) continue;
-        return;
-      }
-    } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') return;
-      // stats optional
-      console.error('Error fetching stats:', err);
-    }
-  };
-
-  // Auto-load when page / filters change (✅ fix: includes search + date too)
-  useEffect(() => {
-    if (!isAuthenticated || String(userRole).toLowerCase() !== 'admin') return;
-    fetchOrders();
-    fetchStats();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, userRole, currentPage, statusFilter, debouncedSearch, dateFilter]);
-
-  const handleUpdateStatus = async () => {
-    if (!selectedOrder || isLoading) return;
-
-    setIsLoading(true);
-    try {
-      const updateData = {
-        status: newStatus,
-        finalPrice: finalPrice ? parseFloat(finalPrice) : undefined,
-        adminNotes: adminNotes || undefined,
-      };
-
-      let lastErrorText = '';
-      for (const makePath of STATUS_ENDPOINTS) {
-        const url = `${apiUrl}${makePath(selectedOrder.id)}`;
-
-        // eslint-disable-next-line no-await-in-loop
-        const r = await fetch(url, {
-          method: 'PUT',
-          headers: getAuthHeaders(),
-          body: JSON.stringify(updateData),
-        });
-
-        if (r.ok) {
-          await fetchOrders();
-          await fetchStats();
-          setShowStatusModal(false);
-          setSelectedOrder(null);
-          alert('تم تحديث حالة الطلب بنجاح!');
-          return;
+        let parsedStatus: CustomOrderStatus = CustomOrderStatus.Pending;
+        if (typeof x.status === 'number') {
+            parsedStatus = x.status;
+        } else if (typeof x.status === 'string') {
+            // Try mapping string name first
+            if (statusStringToEnum[x.status] !== undefined) {
+                parsedStatus = statusStringToEnum[x.status];
+            } else {
+                // Fallback: try parsing as number
+                const statusNum = parseInt(x.status, 10);
+                if (!isNaN(statusNum)) {
+                    parsedStatus = statusNum as CustomOrderStatus;
+                }
+            }
         }
 
-        lastErrorText = await r.text().catch(() => '');
-        if (r.status === 404) continue;
-        break;
-      }
+        return {
+            id: String(x.id),
+            orderNumber: x.orderNumber || `#${String(x.id).slice(0, 8)}`,
+            customerName: x.customerName || '—',
+            customerPhone: x.customerPhone || '—',
+            additionalPhone: x.additionalPhone ?? null,
+            address: x.address ?? null,
+            userId: x.userId ?? null,
+            requiredText: x.requiredText || '—',
+            preferredColors: x.preferredColors || '—',
+            designImagePath: x.designImagePath ?? null,
+            designImageUrl: x.designImageUrl ?? null,
+            designImageThumbnailUrl: x.designImageThumbnailUrl ?? null,
+            notes: x.notes ?? null,
+            adminNotes: x.adminNotes ?? null,
+            paymentMethod: typeof x.paymentMethod === 'number' ? x.paymentMethod : null,
+            paymentMethodLabel: x.paymentMethodLabel ?? null,
+            status: parsedStatus,
+            statusLabel: x.statusLabel ?? null,
+            statusColor: x.statusColor ?? null,
+            estimatedPrice: typeof x.estimatedPrice === 'number' ? x.estimatedPrice : null,
+            finalPrice: typeof x.finalPrice === 'number' ? x.finalPrice : null,
+            createdAt: x.createdAt ?? new Date().toISOString(),
+            createdAtFormatted: x.createdAtFormatted ?? null,
+            updatedAt: x.updatedAt ?? null,
+            confirmedAt: x.confirmedAt ?? null,
+            completedAt: x.completedAt ?? null,
+        };
+    };
 
-      throw new Error(`فشل في تحديث حالة الطلب: ${lastErrorText || ''}`);
-    } catch (error) {
-      alert(error instanceof Error ? error.message : 'حدث خطأ أثناء تحديث الطلب');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const fetchOrders = async () => {
+        ordersAbortRef.current?.abort();
+        const ac = new AbortController();
+        ordersAbortRef.current = ac;
 
-  const handleDeleteOrder = async (id: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) return;
+        setIsLoading(true);
+        setError(null);
 
-    setIsLoading(true);
-    try {
-      let lastText = '';
+        try {
+            let url = `${apiUrl}/api/CustomOrders?Page=${currentPage}&PageSize=${pageSize}`;
+            if (statusFilter !== '') url += `&Status=${statusFilter}`;
+            if (debouncedSearch) url += `&SearchTerm=${encodeURIComponent(debouncedSearch)}`;
+            if (dateFilter) url += `&FromDate=${dateFilter}`;
 
-      for (const makePath of DELETE_ENDPOINTS) {
-        const url = `${apiUrl}${makePath(id)}`;
+            const response = await fetch(url, {
+                headers: getAuthHeaders(),
+                signal: ac.signal,
+                cache: 'no-store',
+            });
 
-        // eslint-disable-next-line no-await-in-loop
-        const r = await fetch(url, { method: 'DELETE', headers: getAuthHeaders() });
-        if (r.ok) {
-          await fetchOrders();
-          await fetchStats();
-          alert('تم حذف الطلب بنجاح!');
-          return;
+            if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem('accessToken');
+                    navigate('/login');
+                    throw new Error('غير مصرح: يرجى تسجيل الدخول مرة أخرى.');
+                } else if (response.status === 403) {
+                    navigate('/');
+                    throw new Error('ممنوع: يتطلب صلاحيات إدارية.');
+                }
+                throw new Error('فشل في جلب الطلبات');
+            }
+
+            const data: PaginatedResponse = await response.json();
+            console.log('📦 Fetched:', data.items?.length || 0, 'orders');
+
+            const safeItems = (data.items ?? []).map(normalizeOrder);
+
+            setOrders(safeItems);
+            setTotalPages(data.totalPages ?? 1);
+            setTotalItems(data.totalItems ?? safeItems.length);
+            setCurrentPage(data.pageNumber ?? currentPage);
+        } catch (err) {
+            if (err instanceof DOMException && err.name === 'AbortError') return;
+            setError(err instanceof Error ? err.message : 'فشل في جلب الطلبات');
+        } finally {
+            setIsLoading(false);
         }
+    };
 
-        lastText = await r.text().catch(() => '');
-        if (r.status === 404) continue;
-        break;
-      }
+    const fetchStats = async () => {
+        statsAbortRef.current?.abort();
+        const ac = new AbortController();
+        statsAbortRef.current = ac;
 
-      throw new Error(lastText || 'فشل في حذف الطلب');
-    } catch (error) {
-      alert(error instanceof Error ? error.message : 'حدث خطأ أثناء حذف الطلب');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        try {
+            const response = await fetch(`${apiUrl}/api/CustomOrders/stats`, {
+                headers: getAuthHeaders(),
+                signal: ac.signal,
+                cache: 'no-store',
+            });
 
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages && page !== currentPage) setCurrentPage(page);
-  };
+            if (response.ok) {
+                const data: OrderStats = await response.json();
+                setStats(data);
+            }
+        } catch (err) {
+            if (err instanceof DOMException && err.name === 'AbortError') return;
+            console.warn('Stats failed (non-critical):', err);
+        }
+    };
 
-  const handleResetFilters = () => {
-    setSearchTerm('');
-    setStatusFilter('');
-    setDateFilter('');
-    setCurrentPage(1);
-  };
+    useEffect(() => {
+        if (!isAuthenticated || String(userRole).toLowerCase() !== 'admin') return;
+        fetchOrders();
+        fetchStats();
+    }, [isAuthenticated, userRole, currentPage, statusFilter, debouncedSearch, dateFilter]);
 
-  const handleRefresh = () => {
-    fetchOrders();
-    fetchStats();
-  };
+    const handleUpdateStatus = async () => {
+        if (!selectedOrder || isLoading) return;
 
-  // footer range text
-  const pageRangeText = useMemo(() => {
-    const from = (currentPage - 1) * pageSize + 1;
-    const to = Math.min(currentPage * pageSize, totalItems);
-    if (!totalItems) return '—';
-    return `عرض ${from} إلى ${to} من ${totalItems}`;
-  }, [currentPage, pageSize, totalItems]);
+        setIsLoading(true);
+        try {
+            const updateData: any = { status: newStatus };
 
-  // ===============================
-  // Render
-  // ===============================
-  return (
-    <div className="p-3 sm:p-4 md:p-6 bg-gradient-to-b from-[#FAF9F6] via-[#F5F5DC] to-[#E5DCC5] min-h-screen" dir="rtl">
+            if (finalPrice && finalPrice.trim()) {
+                updateData.finalPrice = parseFloat(finalPrice);
+            }
+
+            if (adminNotes && adminNotes.trim()) {
+                updateData.adminNotes = adminNotes;
+            }
+
+            console.log('📤 Update:', updateData);
+
+            const response = await fetch(`${apiUrl}/api/CustomOrders/${selectedOrder.id}/status`, {
+                method: 'PUT',
+                headers: getAuthHeaders(),
+                body: JSON.stringify(updateData),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`فشل في تحديث حالة الطلب: ${errorText}`);
+            }
+
+            const responseData = await response.json();
+            console.log('✅ Response:', responseData);
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            await fetchOrders();
+            await fetchStats();
+
+            setShowStatusModal(false);
+            setSelectedOrder(null);
+            alert('تم تحديث حالة الطلب بنجاح!');
+        } catch (error) {
+            console.error('❌ Error:', error);
+            alert(error instanceof Error ? error.message : 'حدث خطأ أثناء تحديث الطلب');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDeleteOrder = async (id: string) => {
+        if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) return;
+
+        setIsLoading(true);
+        try {
+            const response = await fetch(`${apiUrl}/api/CustomOrders/${id}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders(),
+            });
+
+            if (!response.ok) {
+                throw new Error('فشل في حذف الطلب');
+            }
+
+            await fetchOrders();
+            await fetchStats();
+            alert('تم حذف الطلب بنجاح!');
+        } catch (error) {
+            alert(error instanceof Error ? error.message : 'حدث خطأ أثناء حذف الطلب');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= totalPages && page !== currentPage) setCurrentPage(page);
+    };
+
+    const handleResetFilters = () => {
+        setSearchTerm('');
+        setStatusFilter('');
+        setDateFilter('');
+        setCurrentPage(1);
+    };
+
+    const handleRefresh = () => {
+        fetchOrders();
+        fetchStats();
+    };
+
+    const pageRangeText = useMemo(() => {
+        const from = (currentPage - 1) * pageSize + 1;
+        const to = Math.min(currentPage * pageSize, totalItems);
+        if (!totalItems) return '—';
+        return `عرض ${from} إلى ${to} من ${totalItems}`;
+    }, [currentPage, pageSize, totalItems]);
+
+return (
+    <div className="p-3 sm:p-4 md:p-6 bg-gradient-to-b from-[#FAF9F6] via-[#F5F5DC] to-[#E5DCC5] min-h-screen pb-24" dir="rtl">
       {/* Header */}
       <div className="mb-4 sm:mb-6 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 sm:gap-3">
@@ -681,9 +563,6 @@ const CustomOrdersManagement: React.FC = () => {
               placeholder="رقم الطلب، اسم العميل، رقم الهاتف..."
               dir="rtl"
             />
-            <p className="mt-1 text-[11px] text-[#8B7355]/60" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-              يتم البحث تلقائيًا أثناء الكتابة
-            </p>
           </div>
 
           <div>
@@ -703,6 +582,7 @@ const CustomOrdersManagement: React.FC = () => {
             >
               <option value="">الكل</option>
               <option value={CustomOrderStatus.Pending}>قيد الانتظار</option>
+              <option value={CustomOrderStatus.Reviewed}>تمت المراجعة</option>
               <option value={CustomOrderStatus.Confirmed}>مؤكد</option>
               <option value={CustomOrderStatus.InProgress}>قيد التنفيذ</option>
               <option value={CustomOrderStatus.Ready}>جاهز</option>
@@ -714,7 +594,7 @@ const CustomOrdersManagement: React.FC = () => {
           <div>
             <label className="block text-xs sm:text-sm font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               <Calendar className="inline h-3 w-3 sm:h-4 sm:w-4 ml-1" />
-              تاريخ (استلام / إنشاء)
+              تاريخ الإنشاء من
             </label>
             <input
               type="date"
@@ -778,7 +658,7 @@ const CustomOrdersManagement: React.FC = () => {
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
                     <span className="text-base sm:text-lg font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      {orderDisplayNumber(order)}
+                      {order.orderNumber}
                     </span>
 
                     <span
@@ -788,11 +668,11 @@ const CustomOrdersManagement: React.FC = () => {
                       {getStatusText(order.status)}
                     </span>
 
-                    {hasDesignMedia(order) && (
+                    {(order.designImageUrl || order.designImagePath) && (
                       <span
                         className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold border bg-purple-50 text-purple-700 border-purple-200"
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
-                        title="يوجد صور تصميم"
+                        title="يوجد صورة تصميم"
                       >
                         <ImageIcon className="h-3 w-3" />
                         تصميم
@@ -806,36 +686,33 @@ const CustomOrdersManagement: React.FC = () => {
                   >
                     <div className="flex items-center gap-1">
                       <User className="h-3 w-3 sm:h-4 sm:w-4 text-[#D4AF37] flex-shrink-0" />
-                      <span className="truncate">{order.customerName || '—'}</span>
+                      <span className="truncate">{order.customerName}</span>
                     </div>
 
                     <div className="flex items-center gap-1">
                       <Phone className="h-3 w-3 sm:h-4 sm:w-4 text-[#D4AF37] flex-shrink-0" />
-                      <span className="truncate">{order.customerPhone || '—'}</span>
+                      <span className="truncate">{order.customerPhone}</span>
                     </div>
 
                     <div className="flex items-center gap-1">
-                      <ShoppingBag className="h-3 w-3 sm:h-4 sm:w-4 text-[#D4AF37] flex-shrink-0" />
-                      <span className="truncate">{mainTitleForOrder(order)}</span>
+                      <Type className="h-3 w-3 sm:h-4 sm:w-4 text-[#D4AF37] flex-shrink-0" />
+                      <span className="truncate">{order.requiredText}</span>
                     </div>
 
                     <div className="flex items-center gap-1">
                       <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-[#D4AF37] flex-shrink-0" />
-                      <span className="hidden sm:inline">{formatDate(mainDateForOrder(order))}</span>
-                      <span className="sm:hidden">{formatShortDate(mainDateForOrder(order))}</span>
+                      <span className="hidden sm:inline">{formatDate(order.createdAt)}</span>
+                      <span className="sm:hidden">{formatShortDate(order.createdAt)}</span>
                     </div>
                   </div>
 
                   <div className="mt-2 flex flex-wrap gap-2 sm:gap-3 text-xs sm:text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     <span className="font-semibold text-[#D4AF37]">{(order.finalPrice ?? order.estimatedPrice ?? 0)} ج</span>
-
                     <span className="text-[#8B7355]/70">{getPaymentMethodText(order.paymentMethod)}</span>
-
-                    {order.flavorNames && order.flavorNames.length > 0 && (
-                      <span className="text-[#C4A57B] text-xs">{order.flavorNames.join(' + ')}</span>
-                    )}
-
-                    {order.pickupTime && <span className="text-[#8B7355]/70 text-xs">وقت: {formatTime(order.pickupTime)}</span>}
+                    <div className="flex items-center gap-1 text-[#C4A57B]">
+                      <Palette className="h-3 w-3" />
+                      <span className="text-xs">{order.preferredColors}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -939,7 +816,7 @@ const CustomOrdersManagement: React.FC = () => {
 
       {/* Details Modal */}
       {showDetailsModal && selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 sm:p-4 z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 sm:p-4 z-50" style={{ paddingBottom: '120px' }}>
           <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 border-2 border-[#E5DCC5]">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
@@ -956,7 +833,7 @@ const CustomOrdersManagement: React.FC = () => {
                   رقم الطلب
                 </p>
                 <p className="text-lg sm:text-xl font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                  {orderDisplayNumber(selectedOrder)}
+                  {selectedOrder.orderNumber}
                 </p>
               </div>
 
@@ -966,7 +843,7 @@ const CustomOrdersManagement: React.FC = () => {
                     اسم العميل
                   </p>
                   <p className="font-bold text-[#8B7355] text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                    {selectedOrder.customerName || '—'}
+                    {selectedOrder.customerName}
                   </p>
                 </div>
 
@@ -975,7 +852,7 @@ const CustomOrdersManagement: React.FC = () => {
                     رقم الهاتف
                   </p>
                   <p className="font-bold text-[#8B7355] text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                    {selectedOrder.customerPhone || '—'}
+                    {selectedOrder.customerPhone}
                   </p>
                 </div>
               </div>
@@ -1004,104 +881,39 @@ const CustomOrdersManagement: React.FC = () => {
                 </div>
               )}
 
-              {/* OLD cake fields (only show if exist) */}
-              {(selectedOrder.occasionName ||
-                selectedOrder.sizeName ||
-                (selectedOrder.flavorNames && selectedOrder.flavorNames.length > 0)) && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                  <div>
-                    <p className="text-xs sm:text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      المناسبة
-                    </p>
-                    <p className="font-bold text-[#8B7355] text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      {selectedOrder.occasionName || '—'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-xs sm:text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      الحجم
-                    </p>
-                    <p className="font-bold text-[#8B7355] text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      {selectedOrder.sizeName || '—'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-xs sm:text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      النكهات
-                    </p>
-                    <p className="font-bold text-[#8B7355] text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      {selectedOrder.flavorNames && selectedOrder.flavorNames.length > 0 ? selectedOrder.flavorNames.join(' + ') : '—'}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {selectedOrder.customText && (
-                <div>
-                  <p className="text-xs sm:text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                    النص المخصص
-                  </p>
-                  <p className="font-bold text-[#8B7355] bg-amber-50 p-3 rounded-xl text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                    "{selectedOrder.customText}"
-                  </p>
-                </div>
-              )}
-
-              {/* Design images (Turtle Art) */}
-              {(selectedOrder.designImageUrl || selectedOrder.referenceImageUrl) && (
-                <div className="space-y-3">
-                  {selectedOrder.designImageUrl && (
-                    <div>
-                      <p className="text-xs sm:text-sm text-[#8B7355]/70 mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                        صورة التصميم
-                      </p>
-                      <img
-                        src={normalizeImageUrl(selectedOrder.designImageUrl)}
-                        alt="Design"
-                        className="w-full max-w-md rounded-xl border-2 border-[#E5DCC5]"
-                      />
-                    </div>
-                  )}
-
-                  {selectedOrder.referenceImageUrl && (
-                    <div>
-                      <p className="text-xs sm:text-sm text-[#8B7355]/70 mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                        صورة مرجعية
-                      </p>
-                      <img
-                        src={normalizeImageUrl(selectedOrder.referenceImageUrl)}
-                        alt="Reference"
-                        className="w-full max-w-md rounded-xl border-2 border-[#E5DCC5]"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Dates */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <p className="text-xs sm:text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                    تاريخ (استلام / إنشاء)
+                    النص المطلوب
                   </p>
-                  <p className="font-bold text-[#8B7355] text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                    {formatDate(mainDateForOrder(selectedOrder))}
+                  <p className="font-bold text-[#8B7355] bg-amber-50 p-3 rounded-xl text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    "{selectedOrder.requiredText}"
                   </p>
                 </div>
 
-                {selectedOrder.pickupTime && (
-                  <div>
-                    <p className="text-xs sm:text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      وقت الاستلام
-                    </p>
-                    <p className="font-bold text-[#8B7355] text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      {formatTime(selectedOrder.pickupTime)}
-                    </p>
-                  </div>
-                )}
+                <div>
+                  <p className="text-xs sm:text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    الألوان المفضلة
+                  </p>
+                  <p className="font-bold text-[#8B7355] bg-purple-50 p-3 rounded-xl text-sm sm:text-base flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <Palette className="h-4 w-4 text-purple-600" />
+                    {selectedOrder.preferredColors}
+                  </p>
+                </div>
               </div>
+
+              {(selectedOrder.designImageUrl || selectedOrder.designImagePath) && (
+                <div>
+                  <p className="text-xs sm:text-sm text-[#8B7355]/70 mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    صورة التصميم
+                  </p>
+                  <img
+                    src={normalizeImageUrl(selectedOrder.designImageUrl || selectedOrder.designImagePath)}
+                    alt="Design"
+                    className="w-full max-w-md rounded-xl border-2 border-[#E5DCC5]"
+                  />
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div>
@@ -1126,7 +938,6 @@ const CustomOrdersManagement: React.FC = () => {
                 </div>
               </div>
 
-              {/* Prices */}
               <div className="bg-amber-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2 border-amber-200">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-[#8B7355]/70 text-xs sm:text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
@@ -1149,14 +960,13 @@ const CustomOrdersManagement: React.FC = () => {
                 )}
               </div>
 
-              {/* Notes */}
-              {(selectedOrder.notes || selectedOrder.designNotes) && (
+              {selectedOrder.notes && (
                 <div>
                   <p className="text-xs sm:text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     ملاحظات العميل
                   </p>
                   <p className="text-[#8B7355] bg-gray-50 p-3 rounded-xl text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                    {selectedOrder.notes || selectedOrder.designNotes}
+                    {selectedOrder.notes}
                   </p>
                 </div>
               )}
@@ -1211,7 +1021,7 @@ const CustomOrdersManagement: React.FC = () => {
 
       {/* Status Update Modal */}
       {showStatusModal && selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 sm:p-4 z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 sm:p-4 z-50" style={{ paddingBottom: '120px' }}>
           <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl max-w-md w-full p-4 sm:p-6 border-2 border-[#E5DCC5]">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
@@ -1235,6 +1045,7 @@ const CustomOrdersManagement: React.FC = () => {
                   dir="rtl"
                 >
                   <option value={CustomOrderStatus.Pending}>قيد الانتظار</option>
+                  <option value={CustomOrderStatus.Reviewed}>تمت المراجعة</option>
                   <option value={CustomOrderStatus.Confirmed}>مؤكد</option>
                   <option value={CustomOrderStatus.InProgress}>قيد التنفيذ</option>
                   <option value={CustomOrderStatus.Ready}>جاهز</option>
