@@ -87,14 +87,14 @@ const Footer: React.FC = () => {
             الرئيسية
           </a>
           <span className="text-[#E5DCC5]">•</span>
-          <a
+          {/* <a
             href="/products"
             className="text-sm text-[#8B7355] hover:text-[#D4AF37] font-medium transition-colors"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             المنتجات
           </a>
-          <span className="text-[#E5DCC5]">•</span>
+          <span className="text-[#E5DCC5]">•</span> */}
           <a
             href="/cart"
             className="text-sm text-[#8B7355] hover:text-[#D4AF37] font-medium transition-colors"

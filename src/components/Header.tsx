@@ -351,6 +351,7 @@ const Header: React.FC = () => {
           <div
             className="fixed top-0 right-0 w-72 h-full bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] shadow-2xl transform transition-transform duration-300 ease-out overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
+            style={{ paddingBottom: '120px' }}
           >
             <div className="p-6">
               <div className="flex justify-between items-center mb-8">
