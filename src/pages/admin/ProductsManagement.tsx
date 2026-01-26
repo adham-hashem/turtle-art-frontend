@@ -195,8 +195,8 @@ const ProductsManagement: React.FC = () => {
         return 'التوزيعات';
       case 'instant':
         return 'المنتجات الفورية';
-      case 'breakfast':
-        return 'بوكس فطار';
+      // case 'breakfast':
+      //   return 'بوكس فطار';
       default:
         return 'المنتجات';
     }
@@ -848,12 +848,12 @@ const handleEditProduct = (product: Product) => {
           <h1 className="text-lg font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
             إدارة المنتجات
           </h1>
-          <button
+          {/* <button
             onClick={() => setShowSidebar(!showSidebar)}
             className="p-2 text-[#8B7355] hover:bg-[#F5F5DC] rounded-lg"
           >
             {showSidebar ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -899,7 +899,7 @@ const handleEditProduct = (product: Product) => {
                       ['ramadanCollection', 'مجموعة رمضان'],
                       ['giveaways', 'التوزيعات'],
                       ['instant', 'المنتجات الفورية'],
-                      ['breakfast', 'بوكس فطار']
+                      // ['breakfast', 'بوكس فطار']
                     ] as Array<[TabKey, string]>).map(([key, label]) => (
                       <button
                         key={key}
@@ -1026,7 +1026,7 @@ const handleEditProduct = (product: Product) => {
                         ['ramadanCollection', 'رمضان'],
                         ['giveaways', 'توزيعات'],
                         ['instant', 'فوري'],
-                        ['breakfast', 'فطار']
+                        // ['breakfast', 'فطار']
                       ] as Array<[TabKey, string]>).map(([key, label]) => (
                         <button
                           key={key}
@@ -1446,7 +1446,7 @@ const handleEditProduct = (product: Product) => {
                                         فوري
                                       </span>
                                     )}
-
+{/* 
                                     {product.isBreakfast && (
                                       <span
                                         className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800"
@@ -1455,7 +1455,7 @@ const handleEditProduct = (product: Product) => {
                                         <Coffee size={12} className="ml-1" />
                                         فطار
                                       </span>
-                                    )}
+                                    )} */}
 
                                     {product.isFeatured && (
                                       <span
