@@ -21,13 +21,14 @@ const AdminPage: React.FC = () => {
   };
 
   const navItems = [
+    { to: '/admin/notifications', icon: Bell, label: 'إشعارات الطلبات' },
+    { to: '/admin/custom-order-notifications', icon: Bell, label: 'إشعارات الطلبات الخاصة' },
     { to: '/admin/orders', icon: ShoppingCart, label: 'إدارة الطلبات' },
+    { to: '/admin/custom-orders-management', icon: Truck, label: 'طلبات خاصة' },
     { to: '/admin/products', icon: Package, label: 'إدارة المنتجات' },
     { to: '/admin/customers', icon: Users, label: 'إدارة العملاء' },
     { to: '/admin/discounts', icon: Tag, label: 'أكواد الخصم' },
     { to: '/admin/shipping', icon: Truck, label: 'رسوم الشحن' },
-    { to: '/admin/custom-orders-management', icon: Truck, label: 'طلبات خاصة' },
-    { to: '/admin/notifications', icon: Bell, label: 'إشعارات الطلبات' }
   ];
 
   return (

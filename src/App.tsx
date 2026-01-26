@@ -175,7 +175,7 @@ function AppContent() {
         {/* ✅ Admin routes without public layout */}
         <Route path="/admin" element={<AdminLayout />}>
           {/* ✅ IMPORTANT: /admin redirects to /admin/orders */}
-          <Route index element={<Navigate to="/admin/orders" replace />} />
+          <Route index element={<Navigate to="/admin/notifications" replace />} />
 
           {/* ✅ Admin nested pages */}
           <Route
