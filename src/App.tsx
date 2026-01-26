@@ -57,6 +57,7 @@ import CompleteProfile from './pages/CompleteProfile';
 import ProfilePage from './pages/ProfilePage';
 import CustomOrders from './pages/CustomOrders';
 import MyCustomOrders from './pages/MyCustomOrders';
+import CustomOrderNotifications from './pages/admin/CustomOrderNotifications';
 
 function useNavPageId() {
   const { pathname } = useLocation();
@@ -187,6 +188,7 @@ function AppContent() {
             }
           >
             <Route path="notifications" element={<OrderNotifications />} />
+            <Route path="custom-order-notifications" element={<CustomOrderNotifications />} />
             <Route path="products" element={<ProductsManagement />} />
             <Route path="orders" element={<OrdersManagement />} />
             <Route path="customers" element={<CustomersManagement />} />
