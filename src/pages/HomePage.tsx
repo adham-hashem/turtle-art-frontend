@@ -187,7 +187,7 @@ const HomePage: React.FC = () => {
         {/* Hero Section (like your example) */}
         <div className="relative w-full h-48 overflow-hidden">
           <img
-            src="/background.jpeg"
+            src="/background2.jpeg"
             alt="Turtle Art"
             className="w-full h-full object-cover"
             loading="eager"

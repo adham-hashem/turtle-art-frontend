@@ -108,6 +108,15 @@ const LoginPage: React.FC = () => {
     setError('فشل تسجيل الدخول باستخدام جوجل. يرجى المحاولة مرة أخرى.');
   };
 
+  // Detect Safari/iOS browsers - One Tap doesn't work well on these
+  const isSafariOrIOS = (): boolean => {
+    const ua = navigator.userAgent;
+    const iOS = /iPad|iPhone|iPod/.test(ua);
+    const webkit = /WebKit/.test(ua);
+    const safari = /Safari/.test(ua) && !/Chrome/.test(ua) && !/CriOS/.test(ua);
+    return (iOS && webkit) || safari;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FAF9F6] via-[#F5F5DC] to-[#E5DCC5] flex items-center justify-center p-4 pt-24 pb-8 relative overflow-hidden">
       {/* Background Decorations */}
@@ -234,7 +243,7 @@ const LoginPage: React.FC = () => {
                       text="continue_with"
                       shape="pill"
                       locale="ar"
-                      useOneTap
+                      useOneTap={!isSafariOrIOS()} // Disable One Tap for Safari/iOS
                     />
                   </div>
                 </div>

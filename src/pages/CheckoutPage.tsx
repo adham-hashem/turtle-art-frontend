@@ -75,11 +75,9 @@ const CheckoutPage: React.FC = () => {
     phone: '',
     address: '',
     governorate: '',
-    paymentMethod: 'cash' as 'cash' | 'visa',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    cardName: '',
+    paymentMethod: 'instapay' as 'instapay' | 'vodafonecash',
+    senderDetails: '',
+    paymentProofImage: null as File | null,
     discountCode: '',
     notes: '',
   });
@@ -139,7 +137,7 @@ const CheckoutPage: React.FC = () => {
                 ...img,
                 imagePath:
                   img.imagePath.startsWith('/Uploads') ||
-                  img.imagePath.startsWith('/images')
+                    img.imagePath.startsWith('/images')
                     ? `${apiUrl}${img.imagePath}`
                     : img.imagePath,
               })) || [],
@@ -302,15 +300,14 @@ const CheckoutPage: React.FC = () => {
     }
     if (!formData.address.trim()) newErrors.address = 'العنوان مطلوب';
     if (!formData.governorate.trim()) newErrors.governorate = 'المحافظة مطلوبة';
-    if (formData.paymentMethod === 'visa') {
-      if (!formData.cardNumber.trim())
-        newErrors.cardNumber = 'رقم البطاقة مطلوب';
-      if (!formData.expiryDate.trim())
-        newErrors.expiryDate = 'تاريخ الانتهاء مطلوب';
-      if (!formData.cvv.trim()) newErrors.cvv = 'رمز الأمان مطلوب';
-      if (!formData.cardName.trim())
-        newErrors.cardName = 'اسم حامل البطاقة مطلوب';
+
+    // Validate sender details
+    if (!formData.senderDetails.trim()) {
+      newErrors.senderDetails = formData.paymentMethod === 'vodafonecash'
+        ? 'رقم الموبايل المُحوِّل مطلوب'
+        : 'بيانات المُحوِّل مطلوبة';
     }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formData]);
@@ -372,14 +369,38 @@ const CheckoutPage: React.FC = () => {
           throw new Error('authentication_required');
         }
 
+        // Upload payment proof image if provided
+        let paymentProofImageUrl = null;
+        if (formData.paymentProofImage) {
+          const imageFormData = new FormData();
+          imageFormData.append('file', formData.paymentProofImage);
+          imageFormData.append('upload_preset', 'turtle_art_preset'); // Update with your Cloudinary preset
+
+          try {
+            const cloudinaryResponse = await fetch('https://api.cloudinary.com/v1_1/dptvzuqzp/image/upload', {
+              method: 'POST',
+              body: imageFormData,
+            });
+            if (cloudinaryResponse.ok) {
+              const cloudinaryData = await cloudinaryResponse.json();
+              paymentProofImageUrl = cloudinaryData.secure_url;
+            }
+          } catch (error) {
+            console.error('Failed to upload payment proof:', error);
+            // Continue even if image upload fails
+          }
+        }
+
         const requestBody = {
           fullname: formData.fullName.trim(),
           phonenumber: formData.phone.trim(),
           address: formData.address.trim(),
           governorate: formData.governorate.trim(),
           discountCode: discount?.code || null,
-          paymentMethod: formData.paymentMethod === 'cash' ? 0 : 1,
-          notes: formData.notes.trim() || null,
+          paymentMethod: formData.paymentMethod === 'instapay' ? 0 : 1,
+          senderDetails: formData.senderDetails.trim(),
+          paymentProofImage: paymentProofImageUrl,
+          paymentNotes: formData.notes.trim() || null,
           items: state.cart.map((item) => ({
             productId: item.product.id,
             quantity: item.quantity,
@@ -433,16 +454,14 @@ const CheckoutPage: React.FC = () => {
         };
         const mapPaymentMethod = (
           method: number
-        ): 'Cash' | 'Card' | 'OnlinePayment' => {
+        ): 'InstaPay' | 'VodafoneCash' => {
           switch (method) {
             case 0:
-              return 'Cash';
+              return 'InstaPay';
             case 1:
-              return 'Card';
-            case 2:
-              return 'OnlinePayment';
+              return 'VodafoneCash';
             default:
-              return 'Cash';
+              return 'InstaPay';
           }
         };
 
@@ -464,7 +483,7 @@ const CheckoutPage: React.FC = () => {
           discountAmount: Number(discountAmount.toFixed(2)),
           paymentMethod: mapPaymentMethod(
             orderResult.paymentMethod ||
-              (formData.paymentMethod === 'cash' ? 0 : 1)
+            (formData.paymentMethod === 'instapay' ? 0 : 1)
           ),
           status: mapStatus(orderResult.status || 0),
           createdAt: orderResult.date || new Date().toISOString(),
@@ -675,7 +694,7 @@ const CheckoutPage: React.FC = () => {
                 <Sparkles className="h-5 w-5 text-[#D4AF37]" />
                 <span>ملخص الطلب</span>
               </h2>
-              
+
               <div className="space-y-2 sm:space-y-3 mb-4">
                 {state.cart.map((item) => (
                   <div
@@ -770,11 +789,10 @@ const CheckoutPage: React.FC = () => {
                   type="text"
                   value={formData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none transition-colors text-sm sm:text-base ${
-                    errors.fullName
-                      ? 'border-red-500 focus:border-red-600'
-                      : 'border-[#E5DCC5] focus:border-[#D4AF37]'
-                  }`}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none transition-colors text-sm sm:text-base ${errors.fullName
+                    ? 'border-red-500 focus:border-red-600'
+                    : 'border-[#E5DCC5] focus:border-[#D4AF37]'
+                    }`}
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                   disabled={isSubmitting}
                 />
@@ -795,11 +813,10 @@ const CheckoutPage: React.FC = () => {
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   placeholder="01xxxxxxxxx"
-                  className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none transition-colors text-sm sm:text-base ${
-                    errors.phone
-                      ? 'border-red-500 focus:border-red-600'
-                      : 'border-[#E5DCC5] focus:border-[#D4AF37]'
-                  }`}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none transition-colors text-sm sm:text-base ${errors.phone
+                    ? 'border-red-500 focus:border-red-600'
+                    : 'border-[#E5DCC5] focus:border-[#D4AF37]'
+                    }`}
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                   disabled={isSubmitting}
                 />
@@ -819,11 +836,10 @@ const CheckoutPage: React.FC = () => {
                   value={formData.address}
                   onChange={(e) => handleInputChange('address', e.target.value)}
                   rows={3}
-                  className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none resize-none transition-colors text-sm sm:text-base ${
-                    errors.address
-                      ? 'border-red-500 focus:border-red-600'
-                      : 'border-[#E5DCC5] focus:border-[#D4AF37]'
-                  }`}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none resize-none transition-colors text-sm sm:text-base ${errors.address
+                    ? 'border-red-500 focus:border-red-600'
+                    : 'border-[#E5DCC5] focus:border-[#D4AF37]'
+                    }`}
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                   disabled={isSubmitting}
                 />
@@ -855,11 +871,10 @@ const CheckoutPage: React.FC = () => {
                     onChange={(e) =>
                       handleInputChange('governorate', e.target.value)
                     }
-                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none transition-colors text-sm sm:text-base ${
-                      errors.governorate
-                        ? 'border-red-500 focus:border-red-600'
-                        : 'border-[#E5DCC5] focus:border-[#D4AF37]'
-                    }`}
+                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none transition-colors text-sm sm:text-base ${errors.governorate
+                      ? 'border-red-500 focus:border-red-600'
+                      : 'border-[#E5DCC5] focus:border-[#D4AF37]'
+                      }`}
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                     dir="rtl"
                     disabled={isSubmitting}
@@ -892,11 +907,10 @@ const CheckoutPage: React.FC = () => {
                       handleInputChange('discountCode', e.target.value)
                     }
                     placeholder="أدخل الكود"
-                    className={`flex-1 px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none transition-colors text-sm sm:text-base ${
-                      errorDiscount
-                        ? 'border-red-500 focus:border-red-600'
-                        : 'border-[#E5DCC5] focus:border-[#D4AF37]'
-                    }`}
+                    className={`flex-1 px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none transition-colors text-sm sm:text-base ${errorDiscount
+                      ? 'border-red-500 focus:border-red-600'
+                      : 'border-[#E5DCC5] focus:border-[#D4AF37]'
+                      }`}
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                     disabled={loadingDiscount || isSubmitting}
                   />
@@ -904,11 +918,10 @@ const CheckoutPage: React.FC = () => {
                     type="button"
                     onClick={handleApplyDiscount}
                     disabled={loadingDiscount || isSubmitting}
-                    className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all text-sm sm:text-base ${
-                      loadingDiscount || isSubmitting
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'bg-[#D4AF37] text-white hover:bg-[#C49F27]'
-                    }`}
+                    className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all text-sm sm:text-base ${loadingDiscount || isSubmitting
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-[#D4AF37] text-white hover:bg-[#C49F27]'
+                      }`}
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                   >
                     {loadingDiscount ? (
@@ -931,38 +944,29 @@ const CheckoutPage: React.FC = () => {
                 )}
               </div>
 
-              {/* Notes */}
-              <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                  ملاحظات إضافية
-                </label>
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => handleInputChange('notes', e.target.value)}
-                  rows={3}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl text-right focus:border-[#D4AF37] focus:outline-none resize-none text-sm sm:text-base"
-                  style={{ fontFamily: 'Tajawal, sans-serif' }}
-                  placeholder="ملاحظات خاصة بالطلب..."
-                  disabled={isSubmitting}
-                />
-              </div>
-
               {/* Payment Method */}
               <div>
                 <label className="block text-right text-[#8B7355] font-bold mb-3 text-sm sm:text-base flex items-center justify-end gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   <span>طريقة الدفع *</span>
                   <CreditCard className="h-4 w-4 sm:h-5 sm:w-5" />
                 </label>
-                <label className="flex items-center justify-end gap-3 p-3 sm:p-4 border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl cursor-pointer hover:bg-[#FAF9F6] transition-colors">
-                  <span className="text-[#8B7355] font-medium text-sm sm:text-base flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                    <span>الدفع عند الاستلام</span>
-                    <Truck className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </span>
+
+                {/* InstaPay Option */}
+                <label className="flex items-center justify-end gap-3 p-3 sm:p-4 border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl cursor-pointer hover:bg-[#FAF9F6] transition-colors mb-3">
+                  <div className="text-right flex-1">
+                    <div className="text-[#8B7355] font-medium text-sm sm:text-base flex items-center gap-2 justify-end" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      <span>InstaPay</span>
+                      <CreditCard className="h-4 w-4 sm:h-5 sm:w-5" />
+                    </div>
+                    <p className="text-xs text-[#8B7355]/70 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      التحويل على: <span className="font-semibold">saramostapha@instapay</span>
+                    </p>
+                  </div>
                   <input
                     type="radio"
                     name="paymentMethod"
-                    value="cash"
-                    checked={formData.paymentMethod === 'cash'}
+                    value="instapay"
+                    checked={formData.paymentMethod === 'instapay'}
                     onChange={(e) =>
                       handleInputChange('paymentMethod', e.target.value)
                     }
@@ -970,6 +974,94 @@ const CheckoutPage: React.FC = () => {
                     disabled={isSubmitting}
                   />
                 </label>
+
+                {/* Vodafone Cash Option */}
+                <label className="flex items-center justify-end gap-3 p-3 sm:p-4 border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl cursor-pointer hover:bg-[#FAF9F6] transition-colors">
+                  <div className="text-right flex-1">
+                    <div className="text-[#8B7355] font-medium text-sm sm:text-base flex items-center gap-2 justify-end" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      <span>Vodafone Cash</span>
+                      <Truck className="h-4 w-4 sm:h-5 sm:w-5" />
+                    </div>
+                    <p className="text-xs text-[#8B7355]/70 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      التحويل على: <span className="font-semibold">01021964426</span>
+                    </p>
+                  </div>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="vodafonecash"
+                    checked={formData.paymentMethod === 'vodafonecash'}
+                    onChange={(e) =>
+                      handleInputChange('paymentMethod', e.target.value)
+                    }
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]"
+                    disabled={isSubmitting}
+                  />
+                </label>
+              </div>
+
+              {/* Sender Details */}
+              <div>
+                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  {formData.paymentMethod === 'vodafonecash'
+                    ? 'رقم الموبايل الذي تم التحويل منه *'
+                    : 'بيانات المُحوِّل (رقم الموبايل أو عنوان InstaPay) *'
+                  }
+                </label>
+                <input
+                  type="text"
+                  value={formData.senderDetails}
+                  onChange={(e) => handleInputChange('senderDetails', e.target.value)}
+                  placeholder={formData.paymentMethod === 'vodafonecash' ? '01xxxxxxxxx' : 'yourname@instapay أو 01xxxxxxxxx'}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none transition-colors text-sm sm:text-base ${errors.senderDetails
+                    ? 'border-red-500 focus:border-red-600'
+                    : 'border-[#E5DCC5] focus:border-[#D4AF37]'
+                    }`}
+                  style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  disabled={isSubmitting}
+                />
+                {errors.senderDetails && (
+                  <p className="text-red-600 text-xs sm:text-sm mt-1 text-right font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    {errors.senderDetails}
+                  </p>
+                )}
+              </div>
+
+              {/* Payment Proof Upload */}
+              <div>
+                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  رفع صورة إثبات الدفع (اختياري)
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setFormData(prev => ({ ...prev, paymentProofImage: file }));
+                  }}
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl text-right focus:border-[#D4AF37] focus:outline-none text-sm sm:text-base"
+                  style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  disabled={isSubmitting}
+                />
+                <p className="text-xs text-[#8B7355]/70 mt-1 text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  رفع لقطة شاشة للتحويل يساعد في سرعة تأكيد الطلب
+                </p>
+              </div>
+
+              {/* Notes renamed to Payment Notes */}
+              <div>
+                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  ملاحظات حول الدفع
+                </label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => handleInputChange('notes', e.target.value)}
+                  rows={3}
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl text-right focus:border-[#D4AF37] focus:outline-none resize-none text-sm sm:text-base"
+                  style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  placeholder="أي ملاحظات إضافية حول عملية الدفع..."
+                  disabled={isSubmitting}
+                />
               </div>
 
               {/* Submit Button */}
@@ -981,14 +1073,13 @@ const CheckoutPage: React.FC = () => {
                   state.cart.length === 0 ||
                   !selectedGovernorate
                 }
-                className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl text-base sm:text-lg font-bold transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 ${
-                  isSubmitting ||
+                className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl text-base sm:text-lg font-bold transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 ${isSubmitting ||
                   loadingShippingFees ||
                   state.cart.length === 0 ||
                   !selectedGovernorate
-                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white hover:from-[#6B5644] hover:to-[#8B6644]'
-                }`}
+                  ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white hover:from-[#6B5644] hover:to-[#8B6644]'
+                  }`}
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 {isSubmitting ? (

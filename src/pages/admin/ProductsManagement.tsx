@@ -28,6 +28,14 @@ interface ProductImage {
   isMain: boolean;
 }
 
+interface ProductExtension {
+  id: string;
+  productId: string;
+  name: string;
+  additionalPrice: number;
+  isActive: boolean;
+}
+
 /**
  * UPDATED: Product now has Category + supports new category types
  * - Category is now a string union (matches API enum string names)
@@ -48,6 +56,7 @@ interface Product {
   description: string;
   createdAt: string;
   images: ProductImage[];
+  extensions?: ProductExtension[];
   category?: CategoryType | null;
 
   isHidden: boolean;
@@ -136,6 +145,11 @@ const ProductsManagement: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]); // Track images to delete
+
+  // Extensions state
+  const [productExtensions, setProductExtensions] = useState<ProductExtension[]>([]);
+  const [newExtension, setNewExtension] = useState({ name: '', price: '' });
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
@@ -183,9 +197,9 @@ const ProductsManagement: React.FC = () => {
         return 'شنط أطفال';
       case 'girlsBags':
         return 'شنط الفتيات';
-      case 'girlsBagsEvening': 
+      case 'girlsBagsEvening':
         return 'شنط سهرة';
-      case 'girlsBagsCasual': 
+      case 'girlsBagsCasual':
         return 'شنط كاجوال';
       case 'motherDaughterSet':
         return 'مجموعة الأم والابنة';
@@ -202,45 +216,45 @@ const ProductsManagement: React.FC = () => {
     }
   };
 
-// ==============================
-// Tabs -> API endpoints mapping
-// ==============================
-const buildListEndpoint = (tab: TabKey, page: number) => {
-  const base = `${apiUrl}/api/products`;
+  // ==============================
+  // Tabs -> API endpoints mapping
+  // ==============================
+  const buildListEndpoint = (tab: TabKey, page: number) => {
+    const base = `${apiUrl}/api/products`;
 
-  const withPaging = (url: string) =>
-    `${url}${url.includes('?') ? '&' : '?'}pageNumber=${page}&pageSize=${pageSize}`;
+    const withPaging = (url: string) =>
+      `${url}${url.includes('?') ? '&' : '?'}pageNumber=${page}&pageSize=${pageSize}`;
 
-  switch (tab) {
-    case 'all':
-      return withPaging(base);
+    switch (tab) {
+      case 'all':
+        return withPaging(base);
 
-    // Category endpoints - FIXED: removed /category/ prefix
-    case 'kidsBags':
-      return withPaging(`${base}/kids-bags`);
-    case 'girlsBags':
-      return withPaging(`${base}/girls-bags`);
-    case 'girlsBagsEvening':
-      return withPaging(`${base}/girls-bags/evening`);
-    case 'girlsBagsCasual':
-      return withPaging(`${base}/girls-bags/casual`);
-    case 'motherDaughterSet':
-      return withPaging(`${base}/mom-daughter-set`);
-    case 'ramadanCollection':
-      return withPaging(`${base}/ramadan-set`);
-    case 'giveaways':
-      return withPaging(`${base}/giveaways`);
+      // Category endpoints - FIXED: removed /category/ prefix
+      case 'kidsBags':
+        return withPaging(`${base}/kids-bags`);
+      case 'girlsBags':
+        return withPaging(`${base}/girls-bags`);
+      case 'girlsBagsEvening':
+        return withPaging(`${base}/girls-bags/evening`);
+      case 'girlsBagsCasual':
+        return withPaging(`${base}/girls-bags/casual`);
+      case 'motherDaughterSet':
+        return withPaging(`${base}/mom-daughter-set`);
+      case 'ramadanCollection':
+        return withPaging(`${base}/ramadan-set`);
+      case 'giveaways':
+        return withPaging(`${base}/giveaways`);
 
-    // Existing ones
-    case 'instant':
-      return withPaging(`${base}/instant`);
-    case 'breakfast':
-      return withPaging(`${base}/breakfast`);
+      // Existing ones
+      case 'instant':
+        return withPaging(`${base}/instant`);
+      case 'breakfast':
+        return withPaging(`${base}/breakfast`);
 
-    default:
-      return withPaging(base);
-  }
-};
+      default:
+        return withPaging(base);
+    }
+  };
 
   // ==============================
   // Auth & Init
@@ -393,7 +407,7 @@ const buildListEndpoint = (tab: TabKey, page: number) => {
 
       // IMPORTANT: category is now string enum name, send empty if not chosen
       formData.append('category', newProduct.category || '');
-      
+
       // In both functions, add this line when building formData:
       formData.append('girlsBagType', newProduct.girlsBagType || '');  // ✅ ADD THIS
 
@@ -561,6 +575,11 @@ const buildListEndpoint = (tab: TabKey, page: number) => {
         newImages.forEach(file => formData.append('imageFiles', file));
       }
 
+      // Send deleted image IDs
+      if (deletedImageIds.length > 0) {
+        deletedImageIds.forEach(id => formData.append('imageIdsToDelete[]', id));
+      }
+
       const response = await fetch(`${apiUrl}/api/products/${editingProduct.id}`, {
         method: 'PUT',
         headers: {
@@ -590,6 +609,7 @@ const buildListEndpoint = (tab: TabKey, page: number) => {
 
       setShowEditProduct(false);
       setEditingProduct(null);
+      setDeletedImageIds([]); // Reset deleted image IDs
       resetProductForm();
       alert('تم تحديث المنتج بنجاح!');
     } catch (error: any) {
@@ -603,58 +623,62 @@ const buildListEndpoint = (tab: TabKey, page: number) => {
   // ==============================
   // RESET FORM
   // ==============================
-const resetProductForm = () => {
-  setNewProduct({
-    code: '',
-    name: '',
-    price: '',
-    originalPrice: '',
-    description: '',
-    sizes: [''],
-    colors: [''],
-    category: '',
-    girlsBagType: '',
-    images: [''],
-    isHidden: false,
-    isAvailable: true,
-    season: '',
-    type: 0,
-    isInstant: false,
-    isBreakfast: false,
-    isFeatured: false
-  });
-};
+  const resetProductForm = () => {
+    setNewProduct({
+      code: '',
+      name: '',
+      price: '',
+      originalPrice: '',
+      description: '',
+      sizes: [''],
+      colors: [''],
+      category: '',
+      girlsBagType: '',
+      images: [''],
+      isHidden: false,
+      isAvailable: true,
+      season: '',
+      type: 0,
+      isInstant: false,
+      isBreakfast: false,
+      isFeatured: false
+    });
+  };
 
   // ==============================
   // EDIT
   // ==============================
-const handleEditProduct = (product: Product) => {
-  setEditingProduct(product);
+  const handleEditProduct = async (product: Product) => {
+    setEditingProduct(product);
+    setDeletedImageIds([]); // Reset deleted image IDs when starting edit
 
-  setNewProduct({
-    code: product.code,
-    name: product.name,
-    price: product.price.toString(),
-    originalPrice: product.originalPrice?.toString() || '',
-    description: product.description,
-    images: (product.images ?? []).map(img => img.imagePath),
-    sizes: [''],
-    colors: [''],
-    category: normalizeCategory(product.category) ?? '',
-    girlsBagType: (product as any).girlsBagType || '',
-    isHidden: product.isHidden,
-    isAvailable: product.isAvailable,
-    season: '',
-    type: 0,
-    isInstant: product.isInstant || false,
-    isBreakfast: product.isBreakfast || false,
-    isFeatured: product.isFeatured || false
-  });
+    setNewProduct({
+      code: product.code,
+      name: product.name,
+      price: product.price.toString(),
+      originalPrice: product.originalPrice?.toString() || '',
+      description: product.description,
+      images: (product.images ?? []).map(img => img.imagePath),
+      sizes: [''],
+      colors: [''],
+      category: normalizeCategory(product.category) ?? '',
+      girlsBagType: (product as any).girlsBagType || '',
+      isHidden: product.isHidden,
+      isAvailable: product.isAvailable,
+      season: '',
+      type: 0,
+      isInstant: product.isInstant || false,
+      isBreakfast: product.isBreakfast || false,
+      isFeatured: product.isFeatured || false
+    });
 
-  setShowEditProduct(true);
-  setShowAddProduct(false);
-  setShowSidebar(false);
-};
+    // Fetch extensions for this product
+    await fetchProductExtensions(product.id);
+
+    setShowEditProduct(true);
+    setShowAddProduct(false);
+    setShowSidebar(false);
+  };
 
   // ==============================
   // DELETE
@@ -724,6 +748,83 @@ const handleEditProduct = (product: Product) => {
   };
 
   // ==============================
+  // PRODUCT EXTENSIONS
+  // ==============================
+  const fetchProductExtensions = async (productId: string) => {
+    try {
+      const response = await fetch(`${apiUrl}/api/products/${productId}/extensions`);
+      if (response.ok) {
+        const data = await response.json();
+        setProductExtensions(data);
+      } else {
+        setProductExtensions([]);
+      }
+    } catch (error) {
+      console.error('Error fetching extensions:', error);
+      setProductExtensions([]);
+    }
+  };
+
+  const handleAddExtension = async () => {
+    if (!editingProduct || !newExtension.name || !newExtension.price) {
+      alert('الرجاء إدخال اسم الإضافة والسعر');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiUrl}/api/products/${editingProduct.id}/extensions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          productId: editingProduct.id,
+          name: newExtension.name,
+          additionalPrice: parseFloat(newExtension.price),
+          isActive: true
+        })
+      });
+
+      if (response.ok) {
+        await fetchProductExtensions(editingProduct.id);
+        setNewExtension({ name: '', price: '' });
+        alert('تم إضافة الإضافة بنجاح');
+      } else {
+        alert('فشل إضافة الإضافة');
+      }
+    } catch (error) {
+      console.error('Error adding extension:', error);
+      alert('حدث خطأ أثناء إضافة الإضافة');
+    }
+  };
+
+  const handleDeleteExtension = async (extensionId: string) => {
+    if (!editingProduct || !confirm('هل أنت متأكد من حذف هذه الإضافة؟')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiUrl}/api/products/${editingProduct.id}/extensions/${extensionId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        await fetchProductExtensions(editingProduct.id);
+        alert('تم حذف الإضافة بنجاح');
+      } else {
+        alert('فشل حذف الإضافة');
+      }
+    } catch (error) {
+      console.error('Error deleting extension:', error);
+      alert('حدث خطأ أثناء حذف الإضافة');
+    }
+  };
+
+  // ==============================
   // Images / Sizes / Colors helpers
   // ==============================
   const handleImageUpload = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
@@ -744,6 +845,17 @@ const handleEditProduct = (product: Product) => {
 
   const removeImageField = (index: number) => {
     setNewProduct(prev => {
+      const imageToRemove = prev.images[index];
+
+      // If it's an existing image (not a data URL), track its ID for deletion
+      if (imageToRemove && !imageToRemove.startsWith('data:image') && editingProduct) {
+        // Extract image ID from the original product
+        const originalImage = editingProduct.images?.[index];
+        if (originalImage?.id) {
+          setDeletedImageIds(prev => [...prev, originalImage.id]);
+        }
+      }
+
       const next = prev.images.filter((_, i) => i !== index);
       return { ...prev, images: next.length ? next : [''] };
     });
@@ -907,11 +1019,10 @@ const handleEditProduct = (product: Product) => {
                           switchTab(key);
                           setShowSidebar(false);
                         }}
-                        className={`w-full text-right px-3 py-2 rounded-lg border-2 transition-colors ${
-                          activeTab === key
-                            ? 'bg-[#8B7355] text-white border-[#8B7355]'
-                            : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:bg-[#F5F5DC]'
-                        }`}
+                        className={`w-full text-right px-3 py-2 rounded-lg border-2 transition-colors ${activeTab === key
+                          ? 'bg-[#8B7355] text-white border-[#8B7355]'
+                          : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:bg-[#F5F5DC]'
+                          }`}
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
                         {label}
@@ -979,11 +1090,10 @@ const handleEditProduct = (product: Product) => {
                       <button
                         key={key}
                         onClick={() => switchTab(key)}
-                        className={`px-3 py-2 rounded-lg border-2 text-sm transition-colors ${
-                          activeTab === key
-                            ? 'bg-[#8B7355] text-white border-[#8B7355]'
-                            : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:bg-[#F5F5DC]'
-                        }`}
+                        className={`px-3 py-2 rounded-lg border-2 text-sm transition-colors ${activeTab === key
+                          ? 'bg-[#8B7355] text-white border-[#8B7355]'
+                          : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:bg-[#F5F5DC]'
+                          }`}
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
                         {label}
@@ -1008,13 +1118,13 @@ const handleEditProduct = (product: Product) => {
                         <span>إضافة منتج</span>
                       </button>
 
-                      <button
+                      {/* <button
                         onClick={handleLogout}
                         className="bg-[#F5F5DC] border-2 border-[#E5DCC5] text-[#8B7355] px-4 py-3 rounded-lg hover:bg-[#E5DCC5] transition-colors shadow-md"
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
                         خروج
-                      </button>
+                      </button> */}
                     </div>
 
                     <div className="mt-3 flex flex-wrap gap-2">
@@ -1031,11 +1141,10 @@ const handleEditProduct = (product: Product) => {
                         <button
                           key={key}
                           onClick={() => switchTab(key)}
-                          className={`px-3 py-2 rounded-lg border-2 text-sm transition-colors ${
-                            activeTab === key
-                              ? 'bg-[#8B7355] text-white border-[#8B7355]'
-                              : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:bg-[#F5F5DC]'
-                          }`}
+                          className={`px-3 py-2 rounded-lg border-2 text-sm transition-colors ${activeTab === key
+                            ? 'bg-[#8B7355] text-white border-[#8B7355]'
+                            : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:bg-[#F5F5DC]'
+                            }`}
                           style={{ fontFamily: 'Tajawal, sans-serif' }}
                         >
                           {label}
@@ -1075,11 +1184,10 @@ const handleEditProduct = (product: Product) => {
                               type="text"
                               value={newProduct.code}
                               onChange={e => setNewProduct(prev => ({ ...prev, code: e.target.value }))}
-                              className={`w-full px-3 py-3 border-2 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] text-right text-[#8B7355] ${
-                                newProduct.code && checkProductCodeExists(newProduct.code, editingProduct?.id)
-                                  ? 'border-red-500 bg-red-50'
-                                  : 'border-[#E5DCC5]'
-                              }`}
+                              className={`w-full px-3 py-3 border-2 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] text-right text-[#8B7355] ${newProduct.code && checkProductCodeExists(newProduct.code, editingProduct?.id)
+                                ? 'border-red-500 bg-red-50'
+                                : 'border-[#E5DCC5]'
+                                }`}
                               style={{ fontFamily: 'Tajawal, sans-serif' }}
                               dir="rtl"
                             />
@@ -1177,7 +1285,7 @@ const handleEditProduct = (product: Product) => {
                             </div>
                           )}
                         </div>
-                          {/* 
+                        {/* 
                           <div>
                             <label className="block text-sm font-medium text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                               النوع (Type)
@@ -1326,6 +1434,85 @@ const handleEditProduct = (product: Product) => {
                           </div>
                         </div>
 
+                        {/* Product Extensions - Only show when EDITING */}
+                        {showEditProduct && editingProduct && (
+                          <div>
+                            <label className="block text-sm font-medium text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                              الإضافات المتاحة (Extensions)
+                            </label>
+
+                            {/* List of existing extensions */}
+                            {productExtensions.length > 0 && (
+                              <div className="space-y-2 mb-4">
+                                {productExtensions.map((ext) => (
+                                  <div
+                                    key={ext.id}
+                                    className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg"
+                                  >
+                                    <div>
+                                      <span className="text-sm font-medium text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                        {ext.name}
+                                      </span>
+                                      <span className="text-sm text-[#8B7355]/70 mr-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                        (+{ext.additionalPrice} جنيه)
+                                      </span>
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeleteExtension(ext.id)}
+                                      className="text-red-600 hover:text-red-700 text-sm px-3 py-1"
+                                      style={{ fontFamily: 'Tajawal, sans-serif' }}
+                                    >
+                                      حذف
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Add new extension form */}
+                            <div className="p-4 bg-[#F5F5DC] rounded-lg border-2 border-[#E5DCC5]">
+                              <h4 className="text-sm font-medium text-[#8B7355] mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                إضافة إضافة جديدة
+                              </h4>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                  <input
+                                    type="text"
+                                    placeholder="اسم الإضافة (مثل: سلسلة ذهبية)"
+                                    value={newExtension.name}
+                                    onChange={(e) => setNewExtension(prev => ({ ...prev, name: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-[#E5DCC5] rounded-lg focus:ring-2 focus:ring-[#D4AF37] text-right text-[#8B7355]"
+                                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                                    dir="rtl"
+                                  />
+                                </div>
+                                <div className="flex gap-2">
+                                  <input
+                                    type="number"
+                                    placeholder="السعر الإضافي"
+                                    value={newExtension.price}
+                                    onChange={(e) => setNewExtension(prev => ({ ...prev, price: e.target.value }))}
+                                    className="flex-1 px-3 py-2 border border-[#E5DCC5] rounded-lg focus:ring-2 focus:ring-[#D4AF37] text-right text-[#8B7355]"
+                                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                                    dir="rtl"
+                                    step="0.01"
+                                    min="0"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={handleAddExtension}
+                                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm transition-colors"
+                                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                                  >
+                                    + إضافة
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
                         {/* Submit Buttons */}
                         <div className="flex justify-end space-x-reverse space-x-3 pt-4">
                           <button
@@ -1446,7 +1633,7 @@ const handleEditProduct = (product: Product) => {
                                         فوري
                                       </span>
                                     )}
-{/* 
+                                    {/* 
                                     {product.isBreakfast && (
                                       <span
                                         className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800"
@@ -1558,11 +1745,10 @@ const handleEditProduct = (product: Product) => {
                                   key={index}
                                   onClick={() => handlePageChange(page as number)}
                                   disabled={isLoading}
-                                  className={`px-3 py-2 rounded-lg transition-colors ${
-                                    currentPage === page
-                                      ? 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white shadow-md'
-                                      : 'bg-white border-2 border-[#E5DCC5] hover:bg-[#F5F5DC] text-[#8B7355]'
-                                  } ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}
+                                  className={`px-3 py-2 rounded-lg transition-colors ${currentPage === page
+                                    ? 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white shadow-md'
+                                    : 'bg-white border-2 border-[#E5DCC5] hover:bg-[#F5F5DC] text-[#8B7355]'
+                                    } ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}
                                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                                 >
                                   {page}

@@ -37,7 +37,7 @@ const Footer: React.FC = () => {
         {/* Social Media Links */}
         <div className="flex justify-center items-center gap-4 mb-8">
           <a
-            href="https://www.instagram.com/turtleart_eg"
+            href="https://www.instagram.com/turtle.aart"
             target="_blank"
             rel="noopener noreferrer"
             className="p-3 bg-gradient-to-br from-[#8B7355] to-[#A67C52] text-white rounded-full hover:scale-110 transition-transform shadow-lg hover:shadow-xl"
@@ -47,7 +47,7 @@ const Footer: React.FC = () => {
           </a>
 
           <a
-            href="https://www.facebook.com/turtleart"
+            href="https://www.facebook.com/Turtle.aart"
             target="_blank"
             rel="noopener noreferrer"
             className="p-3 bg-[#D4AF37] text-white rounded-full hover:scale-110 transition-transform shadow-lg hover:shadow-xl"
@@ -57,7 +57,7 @@ const Footer: React.FC = () => {
           </a>
 
           <a
-            href="https://www.tiktok.com/@turtleart_eg"
+            href="https://www.tiktok.com/@turtle_aart"
             target="_blank"
             rel="noopener noreferrer"
             className="p-3 bg-[#8B7355] text-white rounded-full hover:scale-110 transition-transform shadow-lg hover:shadow-xl"
@@ -87,14 +87,7 @@ const Footer: React.FC = () => {
             الرئيسية
           </a>
           <span className="text-[#E5DCC5]">•</span>
-          {/* <a
-            href="/products"
-            className="text-sm text-[#8B7355] hover:text-[#D4AF37] font-medium transition-colors"
-            style={{ fontFamily: 'Tajawal, sans-serif' }}
-          >
-            المنتجات
-          </a>
-          <span className="text-[#E5DCC5]">•</span> */}
+
           <a
             href="/cart"
             className="text-sm text-[#8B7355] hover:text-[#D4AF37] font-medium transition-colors"
@@ -103,6 +96,7 @@ const Footer: React.FC = () => {
             السلة
           </a>
           <span className="text-[#E5DCC5]">•</span>
+
           <a
             href="/my-orders"
             className="text-sm text-[#8B7355] hover:text-[#D4AF37] font-medium transition-colors"

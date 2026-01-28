@@ -33,6 +33,14 @@ interface ProductImage {
   isMain: boolean;
 }
 
+interface ProductExtension {
+  id: string;
+  productId: string;
+  name: string;
+  additionalPrice: number;
+  isActive: boolean;
+}
+
 interface Product {
   id: string;
   name: string;
@@ -53,6 +61,7 @@ interface Product {
   sizes: string[];
   colors: string[];
   images: ProductImage[];
+  extensions?: ProductExtension[];
 
   rowVersion?: string;
 }
@@ -88,6 +97,7 @@ const ProductPage: React.FC = () => {
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [selectedExtensions, setSelectedExtensions] = useState<string[]>([]);
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -124,6 +134,18 @@ const ProductPage: React.FC = () => {
 
   const hasSizes = Array.isArray(product?.sizes) && (product?.sizes?.length || 0) > 0;
   const hasColors = Array.isArray(product?.colors) && (product?.colors?.length || 0) > 0;
+  const hasExtensions = Array.isArray(product?.extensions) && (product?.extensions?.length || 0) > 0;
+
+  // Calculate total price including extensions
+  const extensionsTotal = useMemo(() => {
+    if (!hasExtensions || selectedExtensions.length === 0) return 0;
+    return selectedExtensions.reduce((total, extId) => {
+      const ext = product?.extensions?.find(e => e.id === extId);
+      return total + (ext?.additionalPrice || 0);
+    }, 0);
+  }, [selectedExtensions, product?.extensions, hasExtensions]);
+
+  const totalPrice = (product?.price || 0) + extensionsTotal;
 
   const isPurchaseDisabled =
     addingToCart || !product || product.isHidden || !product.isAvailable || !!productRestricted;
@@ -304,6 +326,7 @@ const ProductPage: React.FC = () => {
         quantity,
         size: hasSizes ? selectedSize : '',
         color: hasColors ? selectedColor : '',
+        selectedExtensions: selectedExtensions.length > 0 ? JSON.stringify(selectedExtensions) : null
       };
 
       const response = await fetch(`${apiUrl}/api/cart/items`, {
@@ -445,11 +468,10 @@ const ProductPage: React.FC = () => {
 
           <button
             onClick={handleShare}
-            className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl transition-all font-medium shadow-md text-sm sm:text-base ${
-              copied
-                ? 'bg-green-500 text-white shadow-green-300'
-                : 'bg-white text-[#8B7355] border-2 border-[#E5DCC5] hover:border-[#D4AF37] hover:text-[#D4AF37] hover:shadow-lg'
-            }`}
+            className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl transition-all font-medium shadow-md text-sm sm:text-base ${copied
+              ? 'bg-green-500 text-white shadow-green-300'
+              : 'bg-white text-[#8B7355] border-2 border-[#E5DCC5] hover:border-[#D4AF37] hover:text-[#D4AF37] hover:shadow-lg'
+              }`}
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             {copied ? (
@@ -549,9 +571,8 @@ const ProductPage: React.FC = () => {
                       <button
                         key={i}
                         onClick={() => setCurrentImageIndex(i)}
-                        className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all ${
-                          currentImageIndex === i ? 'bg-[#8B7355] scale-125' : 'bg-gray-300 hover:bg-[#C4A57B]'
-                        }`}
+                        className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all ${currentImageIndex === i ? 'bg-[#8B7355] scale-125' : 'bg-gray-300 hover:bg-[#C4A57B]'
+                          }`}
                       />
                     ))}
                   </div>
@@ -566,11 +587,10 @@ const ProductPage: React.FC = () => {
                       <button
                         key={image.id || i}
                         onClick={() => setCurrentImageIndex(i)}
-                        className={`h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 flex-shrink-0 rounded-lg sm:rounded-xl overflow-hidden border-3 transition-all shadow-md hover:shadow-xl ${
-                          currentImageIndex === i
-                            ? 'border-[#D4AF37] shadow-[#D4AF37]/30 scale-105'
-                            : 'border-white hover:border-[#C4A57B]'
-                        }`}
+                        className={`h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 flex-shrink-0 rounded-lg sm:rounded-xl overflow-hidden border-3 transition-all shadow-md hover:shadow-xl ${currentImageIndex === i
+                          ? 'border-[#D4AF37] shadow-[#D4AF37]/30 scale-105'
+                          : 'border-white hover:border-[#C4A57B]'
+                          }`}
                       >
                         <img src={image.imagePath} alt={`thumb-${i}`} className="w-full h-full object-cover" />
                       </button>
@@ -620,9 +640,9 @@ const ProductPage: React.FC = () => {
 
               {/* Price */}
               <div className="bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC] rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2 border-[#E5DCC5]">
-                <div className="flex items-baseline gap-2 sm:gap-3">
+                <div className="flex items-baseline gap-2 sm:gap-3 flex-wrap">
                   <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#D4AF37]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                    {Number(product.price || 0).toFixed(2)}
+                    {Number(totalPrice || 0).toFixed(2)}
                   </span>
                   <span className="text-lg sm:text-xl text-[#8B7355] font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     جنيه
@@ -634,6 +654,18 @@ const ProductPage: React.FC = () => {
                     </span>
                   )}
                 </div>
+
+                {/* Show breakdown if extensions selected */}
+                {selectedExtensions.length > 0 && (
+                  <div className="mt-2 pt-2 border-t border-[#E5DCC5]">
+                    <p className="text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      سعر المنتج: {Number(product.price || 0).toFixed(2)} جنيه
+                    </p>
+                    <p className="text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      الإضافات: +{Number(extensionsTotal).toFixed(2)} جنيه
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Size selector */}
@@ -649,11 +681,10 @@ const ProductPage: React.FC = () => {
                         type="button"
                         onClick={() => setSelectedSize(s)}
                         disabled={isPurchaseDisabled}
-                        className={`px-4 py-2 rounded-xl border-2 text-sm font-bold transition-all ${
-                          selectedSize === s
-                            ? 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white border-transparent shadow-md'
-                            : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:border-[#D4AF37]'
-                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        className={`px-4 py-2 rounded-xl border-2 text-sm font-bold transition-all ${selectedSize === s
+                          ? 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white border-transparent shadow-md'
+                          : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:border-[#D4AF37]'
+                          } disabled:opacity-50 disabled:cursor-not-allowed`}
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
                         {s}
@@ -676,11 +707,10 @@ const ProductPage: React.FC = () => {
                         type="button"
                         onClick={() => setSelectedColor(c)}
                         disabled={isPurchaseDisabled}
-                        className={`px-4 py-2 rounded-xl border-2 text-sm font-bold transition-all ${
-                          selectedColor === c
-                            ? 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white border-transparent shadow-md'
-                            : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:border-[#D4AF37]'
-                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        className={`px-4 py-2 rounded-xl border-2 text-sm font-bold transition-all ${selectedColor === c
+                          ? 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white border-transparent shadow-md'
+                          : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:border-[#D4AF37]'
+                          } disabled:opacity-50 disabled:cursor-not-allowed`}
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
                         {c}
@@ -689,6 +719,60 @@ const ProductPage: React.FC = () => {
                   </div>
                 </div>
               )}
+
+              {/* Extensions selector */}
+              {hasExtensions && (
+                <div className="bg-[#FAF9F6] rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2 border-[#E5DCC5]">
+                  <div className="flex items-center gap-2 mb-3">
+                    <h3 className="font-bold text-[#8B7355] text-base sm:text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      الإضافات المتاحة
+                    </h3>
+                    <span className="text-xs text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-1 rounded-full" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      اختياري
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    {product.extensions!.map((ext) => {
+                      const isSelected = selectedExtensions.includes(ext.id);
+                      return (
+                        <label
+                          key={ext.id}
+                          className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-all ${isSelected
+                            ? 'bg-gradient-to-r from-[#8B7355]/10 to-[#A67C52]/10 border-[#D4AF37]'
+                            : 'bg-white border-[#E5DCC5] hover:border-[#C4A57B]'
+                            } ${isPurchaseDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          <div className="flex items-center gap-3 flex-1">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={(e) => {
+                                if (isPurchaseDisabled) return;
+                                if (e.target.checked) {
+                                  setSelectedExtensions([...selectedExtensions, ext.id]);
+                                } else {
+                                  setSelectedExtensions(selectedExtensions.filter(id => id !== ext.id));
+                                }
+                              }}
+                              disabled={isPurchaseDisabled}
+                              className="w-5 h-5 rounded border-2 border-[#8B7355] text-[#8B7355] focus:ring-2 focus:ring-[#D4AF37]"
+                            />
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                {ext.name}
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-sm font-bold text-[#D4AF37]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                            +{ext.additionalPrice.toFixed(2)} جنيه
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
 
               {/* Quantity */}
               <div className="flex justify-between items-center bg-[#FAF9F6] rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2 border-[#E5DCC5]">
@@ -722,11 +806,10 @@ const ProductPage: React.FC = () => {
               <button
                 onClick={handleAddToCart}
                 disabled={isPurchaseDisabled}
-                className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg shadow-xl transition-all flex items-center justify-center gap-2 sm:gap-3 ${
-                  addedToCart
-                    ? 'bg-green-500 text-white hover:bg-green-600'
-                    : 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white hover:from-[#6B5644] hover:to-[#8B6644] hover:shadow-2xl hover:scale-[1.02]'
-                } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100`}
+                className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg shadow-xl transition-all flex items-center justify-center gap-2 sm:gap-3 ${addedToCart
+                  ? 'bg-green-500 text-white hover:bg-green-600'
+                  : 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white hover:from-[#6B5644] hover:to-[#8B6644] hover:shadow-2xl hover:scale-[1.02]'
+                  } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100`}
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 {addingToCart ? (
@@ -752,11 +835,10 @@ const ProductPage: React.FC = () => {
 
               {/* Status */}
               <div
-                className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl font-medium flex items-center gap-2 sm:gap-3 text-sm sm:text-base ${
-                  isPurchaseDisabled
-                    ? 'bg-red-50 border-2 border-red-200 text-red-700'
-                    : 'bg-green-50 border-2 border-green-200 text-green-700'
-                }`}
+                className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl font-medium flex items-center gap-2 sm:gap-3 text-sm sm:text-base ${isPurchaseDisabled
+                  ? 'bg-red-50 border-2 border-red-200 text-red-700'
+                  : 'bg-green-50 border-2 border-green-200 text-green-700'
+                  }`}
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 {isPurchaseDisabled ? (
