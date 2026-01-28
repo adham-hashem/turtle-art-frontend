@@ -477,13 +477,32 @@ const ProductsManagement: React.FC = () => {
         }
       }
 
+      const createdProduct = await response.json();
+
       // reset to page 1 of active tab
       setCurrentPage(1);
       await refreshProductsList(activeTab, 1);
 
+      // Close add dialog
       setShowAddProduct(false);
       resetProductForm();
-      alert('تم إضافة المنتج بنجاح!');
+
+      // Auto-open edit mode with the newly created product to add extensions
+      if (createdProduct && createdProduct.id) {
+        setEditingProduct(createdProduct);
+        setShowEditProduct(true);
+        setNewProduct({
+          ...createdProduct,
+          images: createdProduct.imageUrls || [],
+          sizes: createdProduct.sizes || [],
+          colors: createdProduct.colors || [],
+        });
+        // Load extensions for the new product
+        await fetchProductExtensions(createdProduct.id);
+        alert('تم إضافة المنتج بنجاح! يمكنك الآن إضافة الإضافات (Extensions)');
+      } else {
+        alert('تم إضافة المنتج بنجاح!');
+      }
     } catch (error: any) {
       console.error('Error adding product:', error);
       alert(error.message || 'حدث خطأ أثناء إضافة المنتج');
@@ -1172,6 +1191,27 @@ const ProductsManagement: React.FC = () => {
                           <X size={20} />
                         </button>
                       </div>
+
+                      {/* Info message for adding extensions - only show when adding new product */}
+                      {showAddProduct && (
+                        <div className="mb-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                          <div className="flex items-start gap-3">
+                            <div className="text-blue-600 mt-0.5">
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-blue-800" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                📌 ملحوظة هامة
+                              </p>
+                              <p className="text-sm text-blue-700 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                يمكنك إضافة الإضافات (Extensions) للمنتج بعد حفظه من خلال تعديله. بعد إضافة المنتج، ستفتح نافذة التعديل تلقائياً لإضافة الإضافات.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                       <div className="space-y-4">
                         {/* Basic Info */}
