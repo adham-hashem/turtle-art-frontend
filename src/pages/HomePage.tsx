@@ -266,7 +266,7 @@ const HomePage: React.FC = () => {
 
                   <div className="text-center">
                     <button
-                      onClick={() => navigate('/menu')}
+                      onClick={() => navigate('/products')}
                       className="px-6 py-2 bg-white/90 backdrop-blur-sm rounded-full text-[#8B7355] font-bold hover:bg-[#D4AF37] hover:text-white transition-all duration-300 shadow-lg transform hover:scale-105"
                     >
                       <span style={{ fontFamily: 'Tajawal, sans-serif' }}>عرض كل المنتجات</span>

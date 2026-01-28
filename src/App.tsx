@@ -58,6 +58,7 @@ import ProfilePage from './pages/ProfilePage';
 import CustomOrders from './pages/CustomOrders';
 import MyCustomOrders from './pages/MyCustomOrders';
 import CustomOrderNotifications from './pages/admin/CustomOrderNotifications';
+import AllProductsPage from './pages/AllProductsPage';
 
 function useNavPageId() {
   const { pathname } = useLocation();
@@ -202,6 +203,8 @@ function AppContent() {
         {/* ✅ Public routes with layout */}
         <Route path="/" element={<PublicLayout />}>
           <Route index element={<HomePage />} />
+
+          <Route path="/products" element={<AllProductsPage />} />
 
           {/* Public category pages */}
           <Route path="instant" element={<InstantPage />} />
