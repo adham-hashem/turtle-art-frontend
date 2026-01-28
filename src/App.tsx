@@ -17,6 +17,8 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import { BottomNav } from './components/BottomNav';
 
+import ExternalBrowserGuard from './components/ExternalBrowserGuard';
+
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { onForegroundMessage } from './services/firebase';
@@ -172,138 +174,143 @@ function AppContent() {
   }, []);
 
   return (
-    <Router>
-      <Routes>
-        {/* ✅ Admin routes without public layout */}
-        <Route path="/admin" element={<AdminLayout />}>
-          {/* ✅ IMPORTANT: /admin redirects to /admin/orders */}
-          <Route index element={<Navigate to="/admin/notifications" replace />} />
+    <>
+      {/* ✅ runs ASAP before routing */}
+      <ExternalBrowserGuard />
 
-          {/* ✅ Admin nested pages */}
-          <Route
-            path="*"
-            element={
-              <ProtectedRoute requireAdmin>
-                <AdminPage />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="notifications" element={<OrderNotifications />} />
-            <Route path="custom-order-notifications" element={<CustomOrderNotifications />} />
-            <Route path="products" element={<ProductsManagement />} />
-            <Route path="orders" element={<OrdersManagement />} />
-            <Route path="customers" element={<CustomersManagement />} />
-            <Route path="discounts" element={<DiscountCodesManagement />} />
-            <Route path="shipping" element={<ShippingManagement />} />
-            <Route path="custom-orders-management" element={<CustomOrdersManagement />} />
-            <Route path="cake-configuration" element={<CakeConfigurationManagement />} />
+      <Router>
+        <Routes>
+          {/* ✅ Admin routes without public layout */}
+          <Route path="/admin" element={<AdminLayout />}>
+            {/* ✅ IMPORTANT: /admin redirects to /admin/notifications */}
+            <Route index element={<Navigate to="/admin/notifications" replace />} />
+
+            {/* ✅ Admin nested pages */}
+            <Route
+              path="*"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminPage />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="notifications" element={<OrderNotifications />} />
+              <Route path="custom-order-notifications" element={<CustomOrderNotifications />} />
+              <Route path="products" element={<ProductsManagement />} />
+              <Route path="orders" element={<OrdersManagement />} />
+              <Route path="customers" element={<CustomersManagement />} />
+              <Route path="discounts" element={<DiscountCodesManagement />} />
+              <Route path="shipping" element={<ShippingManagement />} />
+              <Route path="custom-orders-management" element={<CustomOrdersManagement />} />
+              <Route path="cake-configuration" element={<CakeConfigurationManagement />} />
+            </Route>
           </Route>
-        </Route>
 
-        {/* ✅ Public routes with layout */}
-        <Route path="/" element={<PublicLayout />}>
-          <Route index element={<HomePage />} />
+          {/* ✅ Public routes with layout */}
+          <Route path="/" element={<PublicLayout />}>
+            <Route index element={<HomePage />} />
 
-          <Route path="/products" element={<AllProductsPage />} />
+            <Route path="/products" element={<AllProductsPage />} />
 
-          {/* Public category pages */}
-          <Route path="instant" element={<InstantPage />} />
-          <Route path="kids-bags" element={<KidsBagsPage />} />
+            {/* Public category pages */}
+            <Route path="instant" element={<InstantPage />} />
+            <Route path="kids-bags" element={<KidsBagsPage />} />
 
-          {/* Girls Bags main + sub-categories */}
-          <Route path="girls-bags" element={<GirlsBagsPage />} />
-          <Route path="girls-bags/evening" element={<GirlsBagsEveningPage />} />
-          <Route path="girls-bags/casual" element={<GirlsBagsCasualPage />} />
+            {/* Girls Bags main + sub-categories */}
+            <Route path="girls-bags" element={<GirlsBagsPage />} />
+            <Route path="girls-bags/evening" element={<GirlsBagsEveningPage />} />
+            <Route path="girls-bags/casual" element={<GirlsBagsCasualPage />} />
 
-          <Route path="mother-daughter" element={<MomDaughterSetPage />} />
-          <Route path="ramadan-collection" element={<RamadanSetPage />} />
-          <Route path="giveaways" element={<GiveawaysPage />} />
+            <Route path="mother-daughter" element={<MomDaughterSetPage />} />
+            <Route path="ramadan-collection" element={<RamadanSetPage />} />
+            <Route path="giveaways" element={<GiveawaysPage />} />
 
-          {/* Auth */}
-          <Route path="login" element={<LoginPage />} />
+            {/* Auth */}
+            <Route path="login" element={<LoginPage />} />
 
-          {/* Product */}
-          <Route path="product/:id" element={<ProductPage />} />
+            {/* Product */}
+            <Route path="product/:id" element={<ProductPage />} />
 
-          {/* Protected */}
-          <Route
-            path="custom-designs"
-            element={
-              <ProtectedRoute>
-                <CustomOrders />
-              </ProtectedRoute>
-            }
-          />
+            {/* Protected */}
+            <Route
+              path="custom-designs"
+              element={
+                <ProtectedRoute>
+                  <CustomOrders />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="complete-profile"
-            element={
-              <ProtectedRoute>
-                <CompleteProfile />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="complete-profile"
+              element={
+                <ProtectedRoute>
+                  <CompleteProfile />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="profile"
-            element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="cart"
-            element={
-              <ProtectedRoute>
-                <CartPage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="cart"
+              element={
+                <ProtectedRoute>
+                  <CartPage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="checkout"
-            element={
-              <ProtectedRoute>
-                <CheckoutPage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="checkout"
+              element={
+                <ProtectedRoute>
+                  <CheckoutPage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="my-orders"
-            element={
-              <ProtectedRoute>
-                <MyOrders />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="my-orders"
+              element={
+                <ProtectedRoute>
+                  <MyOrders />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="my-custom-orders"
-            element={
-              <ProtectedRoute>
-                <MyCustomOrders />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="my-custom-orders"
+              element={
+                <ProtectedRoute>
+                  <MyCustomOrders />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="order/:id"
-            element={
-              <ProtectedRoute>
-                <OrderDetails />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="order/:id"
+              element={
+                <ProtectedRoute>
+                  <OrderDetails />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Route>
-      </Routes>
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
 
-      <ToastContainer />
-    </Router>
+        <ToastContainer />
+      </Router>
+    </>
   );
 }
 
