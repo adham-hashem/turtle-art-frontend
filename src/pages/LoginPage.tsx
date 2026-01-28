@@ -222,111 +222,6 @@ const LoginPage: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-6">
-                {/* Credentials Login Form */}
-                <form onSubmit={handleCredentialsLogin} className="space-y-4">
-                  {/* Identifier (Email / Username) */}
-                  <div>
-                    <label
-                      className="block text-sm font-medium text-[#8B7355] mb-2"
-                      style={{ fontFamily: 'Tajawal, sans-serif' }}
-                    >
-                      البريد الإلكتروني أو اسم المستخدم
-                    </label>
-
-                    <div className="relative">
-                      <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                        <User className="h-5 w-5 text-[#8B7355]/60" />
-                      </div>
-
-                      <input
-                        type="text"
-                        value={identifier}
-                        onChange={(e) => {
-                          setIdentifier(e.target.value);
-                          setFieldErrors((prev) => ({ ...prev, identifier: undefined }));
-                        }}
-                        placeholder="example@email.com أو username"
-                        className={`w-full pr-11 pl-4 py-3 rounded-xl border bg-white/80 outline-none transition
-                          ${fieldErrors.identifier ? 'border-red-300 focus:border-red-400' : 'border-[#E5DCC5] focus:border-[#D4AF37]'}
-                        `}
-                        style={{ fontFamily: 'Tajawal, sans-serif' }}
-                        autoComplete="username"
-                      />
-                    </div>
-
-                    {fieldErrors.identifier && (
-                      <p className="mt-2 text-xs text-red-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                        {fieldErrors.identifier}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Password */}
-                  <div>
-                    <label
-                      className="block text-sm font-medium text-[#8B7355] mb-2"
-                      style={{ fontFamily: 'Tajawal, sans-serif' }}
-                    >
-                      كلمة المرور
-                    </label>
-
-                    <div className="relative">
-                      <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                        <Lock className="h-5 w-5 text-[#8B7355]/60" />
-                      </div>
-
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        value={password}
-                        onChange={(e) => {
-                          setPassword(e.target.value);
-                          setFieldErrors((prev) => ({ ...prev, password: undefined }));
-                        }}
-                        placeholder="••••••••"
-                        className={`w-full pr-11 pl-12 py-3 rounded-xl border bg-white/80 outline-none transition
-                          ${fieldErrors.password ? 'border-red-300 focus:border-red-400' : 'border-[#E5DCC5] focus:border-[#D4AF37]'}
-                        `}
-                        style={{ fontFamily: 'Tajawal, sans-serif' }}
-                        autoComplete="current-password"
-                      />
-
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword((v) => !v)}
-                        className="absolute inset-y-0 left-3 flex items-center text-[#8B7355]/70 hover:text-[#8B7355] transition"
-                        aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
-                      >
-                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                      </button>
-                    </div>
-
-                    {fieldErrors.password && (
-                      <p className="mt-2 text-xs text-red-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                        {fieldErrors.password}
-                      </p>
-                    )}
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-3 rounded-xl font-bold text-white shadow-lg transition transform hover:scale-[1.01]
-                      bg-gradient-to-r from-[#8B7355] via-[#A67C52] to-[#C4A57B] hover:from-[#7b654c] hover:via-[#936b45] hover:to-[#b69569]
-                    "
-                    style={{ fontFamily: 'Tajawal, sans-serif' }}
-                  >
-                    تسجيل الدخول
-                  </button>
-                </form>
-
-                {/* Divider */}
-                <div className="flex items-center gap-3">
-                  <div className="h-px bg-[#E5DCC5] flex-1" />
-                  <span className="text-xs text-[#8B7355]/60" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                    أو
-                  </span>
-                  <div className="h-px bg-[#E5DCC5] flex-1" />
-                </div>
-
                 {/* Google Login */}
                 <div className="flex justify-center">
                   <div className="transform hover:scale-105 transition-transform duration-200">
@@ -351,14 +246,6 @@ const LoginPage: React.FC = () => {
                     <span className="text-[#D4AF37] hover:underline cursor-pointer">سياسة الخصوصية</span> و{' '}
                     <span className="text-[#D4AF37] hover:underline cursor-pointer">شروط الاستخدام</span>
                   </p>
-                </div>
-
-                {/* Register link (optional) */}
-                <div className="text-center text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                  <span className="text-[#8B7355]/70">ليس لديك حساب؟ </span>
-                  <Link to="/register" className="text-[#D4AF37] font-bold hover:underline">
-                    إنشاء حساب
-                  </Link>
                 </div>
               </div>
             )}
