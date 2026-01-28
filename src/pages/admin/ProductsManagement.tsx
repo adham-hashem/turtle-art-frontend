@@ -1515,7 +1515,7 @@ const ProductsManagement: React.FC = () => {
                               <h4 className="text-sm font-medium text-[#8B7355] mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                 إضافة إضافة جديدة
                               </h4>
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <div className="grid grid-cols-1 gap-3">
                                 <div>
                                   <input
                                     type="text"
@@ -1527,13 +1527,13 @@ const ProductsManagement: React.FC = () => {
                                     dir="rtl"
                                   />
                                 </div>
-                                <div className="flex gap-2">
+                                <div className="grid grid-cols-2 gap-2">
                                   <input
                                     type="number"
                                     placeholder="السعر الإضافي"
                                     value={newExtension.price}
                                     onChange={(e) => setNewExtension(prev => ({ ...prev, price: e.target.value }))}
-                                    className="flex-1 px-3 py-2 border border-[#E5DCC5] rounded-lg focus:ring-2 focus:ring-[#D4AF37] text-right text-[#8B7355]"
+                                    className="w-full px-3 py-2 border border-[#E5DCC5] rounded-lg focus:ring-2 focus:ring-[#D4AF37] text-right text-[#8B7355]"
                                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                                     dir="rtl"
                                     step="0.01"
@@ -1542,10 +1542,10 @@ const ProductsManagement: React.FC = () => {
                                   <button
                                     type="button"
                                     onClick={handleAddExtension}
-                                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm transition-colors"
+                                    className="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm transition-colors flex items-center justify-center gap-1"
                                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                                   >
-                                    + إضافة
+                                    <span>+ إضافة</span>
                                   </button>
                                 </div>
                               </div>
