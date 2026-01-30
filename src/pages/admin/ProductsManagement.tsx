@@ -972,11 +972,11 @@ const ProductsManagement: React.FC = () => {
   // Render
   // ==============================
   return (
-    <div className="min-h-screen bg-[#FAF9F6]" dir="rtl">
+    <div className="min-h-screen bg-gray-50" dir="rtl">
       {/* Mobile Header */}
-      <div className="lg:hidden bg-white shadow-sm border-b-2 border-[#E5DCC5]">
+      <div className="lg:hidden bg-white shadow-sm border-b border-gray-200">
         <div className="flex items-center justify-between p-4">
-          <h1 className="text-lg font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+          <h1 className="text-lg font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
             إدارة المنتجات
           </h1>
           {/* <button
@@ -995,23 +995,23 @@ const ProductsManagement: React.FC = () => {
             <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl" onClick={e => e.stopPropagation()}>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <h3 className="text-lg font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     إحصائيات سريعة
                   </h3>
-                  <button onClick={() => setShowSidebar(false)} className="p-2 text-[#8B7355] hover:bg-[#F5F5DC] rounded-lg">
+                  <button onClick={() => setShowSidebar(false)} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg">
                     <X size={20} />
                   </button>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="bg-gradient-to-br from-[#F5F5DC] to-[#E5DCC5] p-4 rounded-lg border-2 border-[#E5DCC5]">
-                    <p className="text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <div className="bg-gray-100 p-4 rounded-lg border border-gray-200">
+                    <p className="text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       إجمالي المنتجات (هذه الصفحة)
                     </p>
-                    <p className="text-2xl font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <p className="text-2xl font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       {products.length}
                     </p>
-                    <p className="text-xs text-[#8B7355]/60 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <p className="text-xs text-gray-400 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       التبويب: {getTabTitle(activeTab)}
                     </p>
                   </div>
@@ -1038,9 +1038,9 @@ const ProductsManagement: React.FC = () => {
                           switchTab(key);
                           setShowSidebar(false);
                         }}
-                        className={`w-full text-right px-3 py-2 rounded-lg border-2 transition-colors ${activeTab === key
-                          ? 'bg-[#8B7355] text-white border-[#8B7355]'
-                          : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:bg-[#F5F5DC]'
+                        className={`w-full text-right px-3 py-2 rounded-lg border transition-colors ${activeTab === key
+                          ? 'bg-primary-green text-black border-primary-green'
+                          : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
                           }`}
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
@@ -1059,20 +1059,20 @@ const ProductsManagement: React.FC = () => {
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
               {/* Main Content */}
               <div className="flex-1">
-                <div className="bg-white rounded-lg lg:rounded-2xl shadow-lg border-2 border-[#E5DCC5] p-4 lg:p-6">
+                <div className="bg-white rounded-lg lg:rounded-2xl shadow-sm border border-gray-200 p-4 lg:p-6">
                   {/* Desktop Header */}
                   <div className="hidden lg:flex items-center justify-between mb-6">
                     <div>
-                      <h2 className="text-2xl font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      <h2 className="text-2xl font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                         إدارة المنتجات
                       </h2>
-                      <p className="text-sm text-[#8B7355]/70 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      <p className="text-sm text-gray-500 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                         التبويب الحالي: {getTabTitle(activeTab)} | الصفحة: {currentPage}/{totalPages}
                       </p>
                     </div>
 
                     <div className="flex items-center space-x-reverse space-x-4">
-                      <div className="text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      <div className="text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                         الرمز: {token ? '✅ متوفر' : '❌ غير متوفر'}
                       </div>
 
@@ -1083,7 +1083,7 @@ const ProductsManagement: React.FC = () => {
                           setEditingProduct(null);
                         }}
                         disabled={isLoading}
-                        className="bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white px-4 py-2 rounded-lg hover:from-[#6B5644] hover:to-[#8B6644] transition-colors flex items-center space-x-reverse space-x-2 disabled:opacity-50 shadow-md"
+                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center space-x-reverse space-x-2 disabled:opacity-50 shadow-sm"
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
                         <Plus size={20} />
@@ -1109,9 +1109,9 @@ const ProductsManagement: React.FC = () => {
                       <button
                         key={key}
                         onClick={() => switchTab(key)}
-                        className={`px-3 py-2 rounded-lg border-2 text-sm transition-colors ${activeTab === key
-                          ? 'bg-[#8B7355] text-white border-[#8B7355]'
-                          : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:bg-[#F5F5DC]'
+                        className={`px-3 py-2 rounded-lg border text-sm transition-colors ${activeTab === key
+                          ? 'bg-primary-green text-black border-primary-green'
+                          : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
                           }`}
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
@@ -1130,7 +1130,7 @@ const ProductsManagement: React.FC = () => {
                           setEditingProduct(null);
                         }}
                         disabled={isLoading}
-                        className="flex-1 bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white px-4 py-3 rounded-lg hover:from-[#6B5644] hover:to-[#8B6644] transition-colors flex items-center justify-center space-x-reverse space-x-2 disabled:opacity-50 shadow-md"
+                        className="flex-1 bg-green-500 text-white px-4 py-3 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-reverse space-x-2 disabled:opacity-50 shadow-sm"
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
                         <Plus size={20} />
@@ -1174,9 +1174,9 @@ const ProductsManagement: React.FC = () => {
 
                   {/* Product Form */}
                   {(showAddProduct || showEditProduct) && (
-                    <div className="mb-6 lg:mb-8 p-4 lg:p-6 bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC] rounded-lg border-2 border-[#E5DCC5]">
+                    <div className="mb-6 lg:mb-8 p-4 lg:p-6 bg-gray-50 rounded-lg border border-gray-200">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        <h3 className="text-lg font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                           {showAddProduct ? 'إضافة منتج جديد' : 'تعديل المنتج'}
                         </h3>
                         <button
@@ -1186,7 +1186,7 @@ const ProductsManagement: React.FC = () => {
                             setEditingProduct(null);
                             resetProductForm();
                           }}
-                          className="p-2 text-[#8B7355] hover:bg-[#E5DCC5] rounded-lg"
+                          className="p-2 text-gray-500 hover:bg-gray-200 rounded-lg"
                         >
                           <X size={20} />
                         </button>
@@ -1406,14 +1406,14 @@ const ProductsManagement: React.FC = () => {
 
                         {/* Description */}
                         <div>
-                          <label className="block text-sm font-medium text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                          <label className="block text-sm font-medium text-black mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                             الوصف
                           </label>
                           <textarea
                             value={newProduct.description}
                             onChange={e => setNewProduct(prev => ({ ...prev, description: e.target.value }))}
                             rows={3}
-                            className="w-full px-3 py-3 border-2 border-[#E5DCC5] rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] text-right text-[#8B7355]"
+                            className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-right text-black"
                             style={{ fontFamily: 'Tajawal, sans-serif' }}
                             dir="rtl"
                           />
@@ -1421,12 +1421,12 @@ const ProductsManagement: React.FC = () => {
 
                         {/* Images */}
                         <div>
-                          <label className="block text-sm font-medium text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                          <label className="block text-sm font-medium text-black mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                             صور المنتج
                           </label>
                           <div className="space-y-3">
                             {newProduct.images.map((image, index) => (
-                              <div key={index} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 bg-white rounded-lg border-2 border-[#E5DCC5]">
+                              <div key={index} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 bg-white rounded-lg border border-gray-200">
                                 <input
                                   type="file"
                                   accept="image/*"
@@ -1436,7 +1436,7 @@ const ProductsManagement: React.FC = () => {
                                 />
                                 <label
                                   htmlFor={`image-upload-${index}`}
-                                  className="bg-[#F5F5DC] hover:bg-[#E5DCC5] px-4 py-2 rounded-lg cursor-pointer flex items-center space-x-reverse space-x-2 transition-colors text-[#8B7355]"
+                                  className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg cursor-pointer flex items-center space-x-reverse space-x-2 transition-colors text-black"
                                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                                 >
                                   <Upload size={16} />
@@ -1466,7 +1466,7 @@ const ProductsManagement: React.FC = () => {
                             <button
                               type="button"
                               onClick={addImageField}
-                              className="text-[#8B7355] hover:text-[#D4AF37] text-sm font-medium"
+                              className="text-green-600 hover:text-green-700 text-sm font-medium"
                               style={{ fontFamily: 'Tajawal, sans-serif' }}
                             >
                               + إضافة صورة أخرى
@@ -1563,7 +1563,7 @@ const ProductsManagement: React.FC = () => {
                               setEditingProduct(null);
                               resetProductForm();
                             }}
-                            className="px-6 py-2 border-2 border-[#E5DCC5] rounded-lg text-[#8B7355] hover:bg-[#F5F5DC] transition-colors"
+                            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                             style={{ fontFamily: 'Tajawal, sans-serif' }}
                           >
                             إلغاء
@@ -1573,7 +1573,7 @@ const ProductsManagement: React.FC = () => {
                             type="button"
                             onClick={showAddProduct ? handleAddProduct : handleUpdateProduct}
                             disabled={isLoading || (newProduct.code && checkProductCodeExists(newProduct.code, editingProduct?.id))}
-                            className="px-6 py-2 bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white rounded-lg hover:from-[#6B5644] hover:to-[#8B6644] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                            className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
                             style={{ fontFamily: 'Tajawal, sans-serif' }}
                           >
                             {isLoading ? 'جار المعالجة...' : showAddProduct ? 'إضافة المنتج' : 'تحديث المنتج'}
@@ -1586,18 +1586,18 @@ const ProductsManagement: React.FC = () => {
                   {/* Products List */}
                   {isLoading && products.length === 0 ? (
                     <div className="text-center py-12">
-                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B7355] mx-auto"></div>
-                      <p className="mt-4 text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-400 mx-auto"></div>
+                      <p className="mt-4 text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                         جار تحميل المنتجات...
                       </p>
                     </div>
                   ) : products.length === 0 ? (
                     <div className="text-center py-12">
-                      <Package size={48} className="mx-auto text-[#C4A57B] mb-4" />
-                      <h3 className="text-xl font-semibold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      <Package size={48} className="mx-auto text-gray-300 mb-4" />
+                      <h3 className="text-xl font-semibold text-gray-400 mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                         لا توجد منتجات
                       </h3>
-                      <p className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      <p className="text-gray-400" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                         لا يوجد منتجات في هذا التبويب
                       </p>
                     </div>
@@ -1607,7 +1607,7 @@ const ProductsManagement: React.FC = () => {
                         {products.map(product => (
                           <div
                             key={product.id}
-                            className="bg-white border-2 border-[#E5DCC5] rounded-lg p-4 hover:shadow-md transition-shadow"
+                            className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                           >
                             <div className="flex flex-col sm:flex-row gap-4">
                               {/* Product Image */}
@@ -1619,8 +1619,8 @@ const ProductsManagement: React.FC = () => {
                                     className="w-full h-full object-cover rounded-lg"
                                   />
                                 ) : (
-                                  <div className="w-full h-full bg-[#F5F5DC] rounded-lg flex items-center justify-center">
-                                    <Package size={32} className="text-[#C4A57B]" />
+                                  <div className="w-full h-full bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <Package size={32} className="text-gray-400" />
                                   </div>
                                 )}
                               </div>
@@ -1629,15 +1629,15 @@ const ProductsManagement: React.FC = () => {
                               <div className="flex-1">
                                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
                                   <div>
-                                    <h3 className="font-semibold text-lg text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                    <h3 className="font-semibold text-lg text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                       {product.name}
                                     </h3>
-                                    <p className="text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                    <p className="text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                       الكود: {product.code}
                                     </p>
 
                                     {!!product.category && (
-                                      <p className="text-xs text-[#8B7355]/70 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                      <p className="text-xs text-gray-400 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                         التصنيف: {getCategoryLabel(product.category)}
                                       </p>
                                     )}
@@ -1697,24 +1697,24 @@ const ProductsManagement: React.FC = () => {
 
                                 <div className="flex flex-wrap items-center gap-3 text-sm">
                                   <div className="flex items-center gap-1">
-                                    <span className="font-semibold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                    <span className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                       {product.price} ج.م
                                     </span>
                                     {product.originalPrice && product.originalPrice > product.price && (
-                                      <span className="line-through text-[#8B7355]/50" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                      <span className="line-through text-gray-400" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                         {product.originalPrice} ج.م
                                       </span>
                                     )}
                                   </div>
 
                                   {product.rating !== undefined && product.rating > 0 && (
-                                    <span className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                    <span className="text-yellow-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                       ⭐ {product.rating.toFixed(1)}
                                     </span>
                                   )}
 
                                   {product.salesCount !== undefined && (
-                                    <span className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                    <span className="text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                       📦 {product.salesCount} مبيعات
                                     </span>
                                   )}
@@ -1722,7 +1722,7 @@ const ProductsManagement: React.FC = () => {
 
                                 {product.description && (
                                   <p
-                                    className="text-sm text-[#8B7355]/70 mt-2 line-clamp-2"
+                                    className="text-sm text-gray-600 mt-2 line-clamp-2"
                                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                                   >
                                     {product.description}
@@ -1763,7 +1763,7 @@ const ProductsManagement: React.FC = () => {
                           <button
                             onClick={handlePrevPage}
                             disabled={currentPage === 1 || isLoading}
-                            className="flex items-center px-3 py-2 bg-white border-2 border-[#E5DCC5] rounded-lg hover:bg-[#F5F5DC] disabled:bg-[#FAF9F6] disabled:text-[#8B7355]/40 disabled:cursor-not-allowed transition-colors text-[#8B7355]"
+                            className="flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:bg-gray-50 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors text-gray-700"
                             style={{ fontFamily: 'Tajawal, sans-serif' }}
                           >
                             <ChevronRight size={20} />
@@ -1775,7 +1775,7 @@ const ProductsManagement: React.FC = () => {
                               page === '...' ? (
                                 <span
                                   key={index}
-                                  className="px-3 py-2 text-[#8B7355]/50"
+                                  className="px-3 py-2 text-gray-400"
                                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                                 >
                                   ...
@@ -1786,8 +1786,8 @@ const ProductsManagement: React.FC = () => {
                                   onClick={() => handlePageChange(page as number)}
                                   disabled={isLoading}
                                   className={`px-3 py-2 rounded-lg transition-colors ${currentPage === page
-                                    ? 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white shadow-md'
-                                    : 'bg-white border-2 border-[#E5DCC5] hover:bg-[#F5F5DC] text-[#8B7355]'
+                                    ? 'bg-primary-green text-black shadow-md'
+                                    : 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
                                     } ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}
                                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                                 >
@@ -1800,7 +1800,7 @@ const ProductsManagement: React.FC = () => {
                           <button
                             onClick={handleNextPage}
                             disabled={currentPage === totalPages || isLoading}
-                            className="flex items-center px-3 py-2 bg-white border-2 border-[#E5DCC5] rounded-lg hover:bg-[#F5F5DC] disabled:bg-[#FAF9F6] disabled:text-[#8B7355]/40 disabled:cursor-not-allowed transition-colors text-[#8B7355]"
+                            className="flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:bg-gray-50 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors text-gray-700"
                             style={{ fontFamily: 'Tajawal, sans-serif' }}
                           >
                             <span className="ml-1">التالي</span>

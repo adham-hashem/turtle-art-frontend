@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Check, 
-  Ship, 
-  Package, 
-  Eye, 
-  Search, 
-  Filter, 
-  AlertCircle, 
-  Trash2, 
-  User, 
+import {
+  Check,
+  Ship,
+  Package,
+  Eye,
+  Search,
+  Filter,
+  AlertCircle,
+  Trash2,
+  User,
   Phone,
   MapPin,
   ChevronDown,
@@ -169,7 +169,7 @@ const OrdersManagement: React.FC = () => {
       }
 
       const data: PaginatedOrdersResponse = JSON.parse(responseText);
-      
+
       const mappedOrders = data.items.map(order => ({
         ...order,
         status: mapStatus(order.status),
@@ -221,7 +221,7 @@ const OrdersManagement: React.FC = () => {
         status: mapStatus(orderDetails.status),
         paymentMethod: mapPaymentMethod(orderDetails.paymentMethod),
       };
-      
+
       setSelectedOrder(mappedOrderDetails);
       setShowOrderDetails(true);
     } catch (err) {
@@ -265,7 +265,7 @@ const OrdersManagement: React.FC = () => {
         status: mapStatus(order.status),
         paymentMethod: mapPaymentMethod(order.paymentMethod),
       }));
-      
+
       setCustomerOrders(mappedOrders);
       setShowCustomerOrders(true);
     } catch (err) {
@@ -425,12 +425,12 @@ const OrdersManagement: React.FC = () => {
   // Helper functions
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'underreview': return 'bg-amber-100 text-amber-800 border border-amber-200';
-      case 'confirmed': return 'bg-blue-100 text-blue-800 border border-blue-200';
-      case 'shipped': return 'bg-[#C4A57B]/20 text-[#8B7355] border border-[#C4A57B]';
-      case 'delivered': return 'bg-green-100 text-green-800 border border-green-200';
-      case 'cancelled': return 'bg-red-100 text-red-800 border border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border border-gray-200';
+      case 'underreview': return 'bg-amber-100 text-amber-800 border-amber-200';
+      case 'confirmed': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'shipped': return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'delivered': return 'bg-green-100 text-green-800 border-green-200';
+      case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -494,8 +494,8 @@ const OrdersManagement: React.FC = () => {
   if (loading && orders.length === 0) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B7355]"></div>
-        <span className="mr-3 text-[#8B7355] font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>جاري تحميل الطلبات...</span>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-400"></div>
+        <span className="mr-3 text-gray-500 font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>جاري تحميل الطلبات...</span>
       </div>
     );
   }
@@ -505,15 +505,15 @@ const OrdersManagement: React.FC = () => {
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-gradient-to-br from-[#F5F5DC] to-[#E5DCC5] p-3 rounded-xl border-2 border-[#E5DCC5]">
-            <ShoppingCart className="h-6 w-6 text-[#8B7355]" />
+          <div className="bg-gray-100 p-3 rounded-xl border border-gray-200">
+            <ShoppingCart className="h-6 w-6 text-black" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>إدارة الطلبات</h2>
-            <p className="text-sm text-[#C4A57B]" style={{ fontFamily: 'Tajawal, sans-serif' }}>إجمالي الطلبات: {totalItems}</p>
+            <h2 className="text-2xl font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>إدارة الطلبات</h2>
+            <p className="text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>إجمالي الطلبات: {totalItems}</p>
           </div>
         </div>
-        <Sparkles className="h-8 w-8 text-[#D4AF37] animate-pulse" />
+        <Sparkles className="h-8 w-8 text-yellow-500 animate-pulse" />
       </div>
 
       {/* Error Message */}
@@ -535,19 +535,19 @@ const OrdersManagement: React.FC = () => {
       {/* Mobile Search Bar */}
       <div className="block sm:hidden mb-4">
         <form onSubmit={handleSearch} className="relative">
-          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#C4A57B] h-4 w-4" />
+          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <input
             type="text"
             placeholder="البحث برقم الطلب"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pr-10 pl-3 py-3 border-2 border-[#E5DCC5] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] text-[#8B7355]"
+            className="w-full pr-10 pl-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-black"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
             dir="rtl"
           />
           <button
             type="submit"
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white px-3 py-1.5 rounded-lg text-sm font-semibold"
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-primary-green text-black px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-primary-green-dark transition-colors"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             بحث
@@ -569,16 +569,16 @@ const OrdersManagement: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className={`bg-gradient-to-br from-white to-[#FAF9F6] rounded-2xl shadow-xl border-2 border-[#E5DCC5] p-6 mb-6 ${showFilters ? 'block' : 'hidden sm:block'}`}>
+      <div className={`bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6 ${showFilters ? 'block' : 'hidden sm:block'}`}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="hidden sm:block relative">
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#C4A57B] h-4 w-4" />
+            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <input
               type="text"
               placeholder="البحث برقم الطلب"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pr-10 pl-3 py-3 border-2 border-[#E5DCC5] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] text-[#8B7355]"
+              className="w-full pr-10 pl-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-black"
               style={{ fontFamily: 'Tajawal, sans-serif' }}
               dir="rtl"
             />
@@ -587,7 +587,7 @@ const OrdersManagement: React.FC = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-3 border-2 border-[#E5DCC5] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] text-right font-medium text-[#8B7355]"
+            className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-right font-medium text-black"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
             dir="rtl"
           >
@@ -602,7 +602,7 @@ const OrdersManagement: React.FC = () => {
           <select
             value={paymentMethodFilter}
             onChange={(e) => setPaymentMethodFilter(e.target.value)}
-            className="px-4 py-3 border-2 border-[#E5DCC5] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] text-right font-medium text-[#8B7355]"
+            className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-right font-medium text-black"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
             dir="rtl"
           >
@@ -614,7 +614,7 @@ const OrdersManagement: React.FC = () => {
 
           <button
             onClick={() => fetchOrders(1)}
-            className="bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white px-6 py-3 rounded-xl hover:from-[#6B5644] hover:to-[#8B6644] transition-all flex items-center justify-center font-semibold shadow-md"
+            className="bg-primary-green text-black px-6 py-3 rounded-xl hover:bg-primary-green-dark transition-all flex items-center justify-center font-semibold shadow-md"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
             disabled={loading}
           >
@@ -626,13 +626,13 @@ const OrdersManagement: React.FC = () => {
 
       {/* Orders List */}
       {filteredOrders.length === 0 ? (
-        <div className="text-center py-16 bg-gradient-to-br from-white to-[#FAF9F6] rounded-2xl shadow-xl border-2 border-[#E5DCC5]">
+        <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-200">
           <div className="text-7xl mb-4">🛒</div>
-          <p className="text-xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>لا توجد طلبات</p>
-          <p className="text-[#8B7355]/70 mb-6" style={{ fontFamily: 'Tajawal, sans-serif' }}>لم يتم العثور على أي طلبات حالياً</p>
+          <p className="text-xl font-bold text-black mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>لا توجد طلبات</p>
+          <p className="text-gray-500 mb-6" style={{ fontFamily: 'Tajawal, sans-serif' }}>لم يتم العثور على أي طلبات حالياً</p>
           <button
             onClick={() => fetchOrders(currentPage)}
-            className="bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white px-6 py-3 rounded-xl hover:from-[#6B5644] hover:to-[#8B6644] transition-all flex items-center mx-auto font-semibold shadow-lg"
+            className="bg-primary-green text-black px-6 py-3 rounded-xl hover:bg-primary-green-dark transition-all flex items-center mx-auto font-semibold shadow-lg"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
             disabled={loading}
           >
@@ -643,36 +643,36 @@ const OrdersManagement: React.FC = () => {
       ) : (
         <>
           {/* Desktop Table View */}
-          <div className="hidden md:block bg-white rounded-2xl shadow-xl border-2 border-[#E5DCC5] overflow-hidden">
+          <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full">
-                <thead className="bg-gradient-to-r from-[#F5F5DC] to-[#E5DCC5]">
+                <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-4 text-right text-xs font-bold text-[#8B7355] uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>رقم الطلب</th>
-                    <th className="px-4 py-4 text-right text-xs font-bold text-[#8B7355] uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>العميل</th>
-                    <th className="px-4 py-4 text-right text-xs font-bold text-[#8B7355] uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>الإجمالي</th>
-                    <th className="px-4 py-4 text-right text-xs font-bold text-[#8B7355] uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>الحالة</th>
-                    <th className="px-4 py-4 text-right text-xs font-bold text-[#8B7355] uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>الدفع</th>
-                    <th className="px-4 py-4 text-right text-xs font-bold text-[#8B7355] uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>التاريخ</th>
-                    <th className="px-4 py-4 text-right text-xs font-bold text-[#8B7355] uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>الإجراءات</th>
+                    <th className="px-4 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>رقم الطلب</th>
+                    <th className="px-4 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>العميل</th>
+                    <th className="px-4 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>الإجمالي</th>
+                    <th className="px-4 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>الحالة</th>
+                    <th className="px-4 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>الدفع</th>
+                    <th className="px-4 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>التاريخ</th>
+                    <th className="px-4 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>الإجراءات</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y-2 divide-[#F5F5DC]">
+                <tbody className="bg-white divide-y divide-gray-100">
                   {filteredOrders.map((order) => {
                     const previous = getPreviousStatus(order.status);
                     return (
                       <React.Fragment key={order.id}>
-                        <tr className="hover:bg-[#FAF9F6] transition-colors">
+                        <tr className="hover:bg-gray-50 transition-colors">
                           <td className="px-4 py-4 whitespace-nowrap">
                             <div className="flex items-center gap-2">
-                              <ShoppingCart className="h-4 w-4 text-[#D4AF37]" />
-                              <span className="text-sm font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>#{order.orderNumber}</span>
+                              <ShoppingCart className="h-4 w-4 text-gray-400" />
+                              <span className="text-sm font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>#{order.orderNumber}</span>
                             </div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm">
                             <button
                               onClick={() => getCustomerOrders(order.customerId)}
-                              className="text-[#8B7355] hover:text-[#D4AF37] underline font-medium"
+                              className="text-gray-600 hover:text-green-600 underline font-medium"
                               style={{ fontFamily: 'Tajawal, sans-serif' }}
                             >
                               {order.customerId.substring(0, 8)}...
@@ -681,7 +681,7 @@ const OrdersManagement: React.FC = () => {
                           <td className="px-4 py-4 whitespace-nowrap">
                             <div className="flex items-center gap-1">
                               <DollarSign className="h-4 w-4 text-green-600" />
-                              <span className="text-sm font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.total.toFixed(2)} جنيه</span>
+                              <span className="text-sm font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.total.toFixed(2)} جنيه</span>
                             </div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -689,12 +689,12 @@ const OrdersManagement: React.FC = () => {
                               {getStatusText(order.status)}
                             </span>
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                             {getPaymentMethodText(order.paymentMethod)}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-1 text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                              <Calendar className="h-4 w-4 text-[#C4A57B]" />
+                            <div className="flex items-center gap-1 text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                              <Calendar className="h-4 w-4 text-gray-400" />
                               {formatDate(order.date)}
                             </div>
                           </td>
@@ -702,14 +702,14 @@ const OrdersManagement: React.FC = () => {
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => toggleRowExpansion(order.id)}
-                                className="text-[#8B7355] hover:text-[#D4AF37] p-2 hover:bg-[#FAF9F6] rounded-lg transition-all"
+                                className="text-gray-500 hover:text-green-600 p-2 hover:bg-gray-100 rounded-lg transition-all"
                                 title={expandedRows.has(order.id) ? 'إخفاء التفاصيل' : 'عرض التفاصيل'}
                               >
                                 {expandedRows.has(order.id) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                               </button>
                               <button
                                 onClick={() => getOrderDetails(order.id)}
-                                className="text-[#8B7355] hover:text-[#D4AF37] p-2 hover:bg-[#FAF9F6] rounded-lg transition-all"
+                                className="text-gray-500 hover:text-green-600 p-2 hover:bg-gray-100 rounded-lg transition-all"
                                 title="عرض التفاصيل الكاملة"
                                 disabled={loading}
                               >
@@ -730,7 +730,7 @@ const OrdersManagement: React.FC = () => {
                               {order.status.toLowerCase() === 'confirmed' && (
                                 <button
                                   onClick={() => updateOrderStatus(order.id, 'Shipped')}
-                                  className="bg-[#8B7355] text-white px-3 py-1.5 rounded-lg text-xs hover:bg-[#6B5644] transition-all flex items-center font-semibold shadow-sm"
+                                  className="bg-primary-green text-black px-3 py-1.5 rounded-lg text-xs hover:bg-primary-green-dark transition-all flex items-center font-semibold shadow-sm"
                                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                                   title="تم الشحن"
                                   disabled={loading}
@@ -776,32 +776,32 @@ const OrdersManagement: React.FC = () => {
                         </tr>
                         {expandedRows.has(order.id) && (
                           <tr>
-                            <td colSpan={7} className="px-4 py-4 bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC]">
+                            <td colSpan={7} className="px-4 py-4 bg-gray-50">
                               <div className="space-y-4">
                                 {/* Customer Info */}
                                 {(order.fullName || order.phoneNumber || order.address) && (
-                                  <div className="bg-white rounded-xl p-4 border-2 border-[#E5DCC5]">
-                                    <h4 className="text-sm font-bold text-[#8B7355] mb-3 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                  <div className="bg-white rounded-xl p-4 border border-gray-200">
+                                    <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                       <User className="h-4 w-4" />
                                       معلومات العميل
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                                       {order.fullName && (
                                         <div className="flex items-center gap-2">
-                                          <User className="h-4 w-4 text-[#C4A57B]" />
-                                          <span className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.fullName}</span>
+                                          <User className="h-4 w-4 text-gray-400" />
+                                          <span className="text-gray-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.fullName}</span>
                                         </div>
                                       )}
                                       {order.phoneNumber && (
                                         <div className="flex items-center gap-2">
-                                          <Phone className="h-4 w-4 text-[#C4A57B]" />
-                                          <span className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.phoneNumber}</span>
+                                          <Phone className="h-4 w-4 text-gray-400" />
+                                          <span className="text-gray-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.phoneNumber}</span>
                                         </div>
                                       )}
                                       {order.address && (
                                         <div className="flex items-center gap-2 md:col-span-2">
-                                          <MapPin className="h-4 w-4 text-[#C4A57B]" />
-                                          <span className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.address}, {order.governorate}</span>
+                                          <MapPin className="h-4 w-4 text-gray-400" />
+                                          <span className="text-gray-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.address}, {order.governorate}</span>
                                         </div>
                                       )}
                                     </div>
@@ -810,7 +810,7 @@ const OrdersManagement: React.FC = () => {
 
                                 {/* Discount Code */}
                                 {order.discountCodeUsed && (
-                                  <div className="bg-green-50 rounded-xl p-3 border-2 border-green-200">
+                                  <div className="bg-green-50 rounded-xl p-3 border border-green-200">
                                     <div className="flex items-center gap-2">
                                       <Tag className="h-4 w-4 text-green-600" />
                                       <span className="text-sm font-bold text-green-700" style={{ fontFamily: 'Tajawal, sans-serif' }}>كود الخصم: {order.discountCodeUsed}</span>
@@ -819,8 +819,8 @@ const OrdersManagement: React.FC = () => {
                                 )}
 
                                 {/* Order Items */}
-                                <div className="bg-white rounded-xl p-4 border-2 border-[#E5DCC5]">
-                                  <h4 className="text-sm font-bold text-[#8B7355] mb-3 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                <div className="bg-white rounded-xl p-4 border border-gray-200">
+                                  <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                     <Package className="h-4 w-4" />
                                     عناصر الطلب ({order.items.length})
                                   </h4>
@@ -828,14 +828,14 @@ const OrdersManagement: React.FC = () => {
                                     {order.items.map((item, index) => (
                                       <div
                                         key={index}
-                                        className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-[#FAF9F6] rounded-lg border border-[#E5DCC5]"
+                                        className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 rounded-lg border border-gray-200"
                                       >
                                         <div className="flex-1">
                                           <div className="flex items-center gap-2 mb-2">
-                                            <Package className="h-4 w-4 text-[#D4AF37]" />
-                                            <p className="font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>{item.productName}</p>
+                                            <Package className="h-4 w-4 text-gray-400" />
+                                            <p className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{item.productName}</p>
                                           </div>
-                                          <div className="text-sm text-[#8B7355]/70 grid grid-cols-2 gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                          <div className="text-sm text-gray-500 grid grid-cols-2 gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                             <p><span className="font-semibold">كود:</span> {item.productCode}</p>
                                             <p><span className="font-semibold">الكمية:</span> {item.quantity}</p>
                                             {item.size && <p><span className="font-semibold">المقاس:</span> {item.size}</p>}
@@ -843,7 +843,7 @@ const OrdersManagement: React.FC = () => {
                                           </div>
                                         </div>
                                         <div className="mt-3 sm:mt-0 sm:mr-4">
-                                          <p className="font-bold text-[#8B7355] text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                          <p className="font-bold text-black text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                             {item.priceAtPurchase.toFixed(2)} جنيه
                                           </p>
                                         </div>
@@ -864,18 +864,18 @@ const OrdersManagement: React.FC = () => {
           </div>
 
           {/* Mobile Card View - due to length limit, I'll continue this in the response after showing the pattern */}
-                    {/* Mobile Card View */}
+          {/* Mobile Card View */}
           <div className="block md:hidden space-y-4">
             {filteredOrders.map((order) => {
               const previous = getPreviousStatus(order.status);
               return (
-                <div key={order.id} className="bg-white rounded-2xl shadow-lg border-2 border-[#E5DCC5] p-4 transition-all duration-200 hover:shadow-xl">
+                <div key={order.id} className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 transition-all duration-200 hover:shadow-md">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center gap-2">
-                      <ShoppingCart className="h-5 w-5 text-[#D4AF37]" />
+                      <ShoppingCart className="h-5 w-5 text-gray-400" />
                       <div>
-                        <p className="font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>#{order.orderNumber}</p>
-                        <p className="text-xs text-[#8B7355]/70 flex items-center gap-1 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        <p className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>#{order.orderNumber}</p>
+                        <p className="text-xs text-gray-500 flex items-center gap-1 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                           <Calendar className="h-3 w-3" />
                           {formatDate(order.date)}
                         </p>
@@ -886,49 +886,49 @@ const OrdersManagement: React.FC = () => {
                     </span>
                   </div>
 
-                  <div className="space-y-2 mb-4 border-t-2 border-[#F5F5DC] pt-3">
+                  <div className="space-y-2 mb-4 border-t border-gray-100 pt-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>العميل:</span>
+                      <span className="text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>العميل:</span>
                       <button
                         onClick={() => getCustomerOrders(order.customerId)}
-                        className="text-sm text-[#8B7355] hover:text-[#D4AF37] underline font-medium"
+                        className="text-sm text-gray-600 hover:text-green-600 underline font-medium"
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
                         {order.customerId.substring(0, 8)}...
                       </button>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>المبلغ:</span>
+                      <span className="text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>المبلغ:</span>
                       <div className="flex items-center gap-1">
                         <DollarSign className="h-4 w-4 text-green-600" />
-                        <span className="text-sm font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.total.toFixed(2)} جنيه</span>
+                        <span className="text-sm font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.total.toFixed(2)} جنيه</span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>طريقة الدفع:</span>
-                      <span className="text-sm text-[#8B7355] font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>{getPaymentMethodText(order.paymentMethod)}</span>
+                      <span className="text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>طريقة الدفع:</span>
+                      <span className="text-sm text-black font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>{getPaymentMethodText(order.paymentMethod)}</span>
                     </div>
                   </div>
 
                   {expandedRows.has(order.id) && (
-                    <div className="border-t-2 border-[#F5F5DC] pt-3 mt-3 space-y-3">
+                    <div className="border-t border-gray-100 pt-3 mt-3 space-y-3">
                       {/* Customer Info */}
                       {order.fullName && (
                         <div className="flex items-center gap-2 text-sm">
-                          <User className="h-4 w-4 text-[#C4A57B]" />
-                          <span className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.fullName}</span>
+                          <User className="h-4 w-4 text-gray-400" />
+                          <span className="text-gray-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.fullName}</span>
                         </div>
                       )}
                       {order.phoneNumber && (
                         <div className="flex items-center gap-2 text-sm">
-                          <Phone className="h-4 w-4 text-[#C4A57B]" />
-                          <span className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.phoneNumber}</span>
+                          <Phone className="h-4 w-4 text-gray-400" />
+                          <span className="text-gray-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.phoneNumber}</span>
                         </div>
                       )}
                       {order.address && (
                         <div className="flex items-center gap-2 text-sm">
-                          <MapPin className="h-4 w-4 text-[#C4A57B]" />
-                          <span className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.address}, {order.governorate}</span>
+                          <MapPin className="h-4 w-4 text-gray-400" />
+                          <span className="text-gray-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.address}, {order.governorate}</span>
                         </div>
                       )}
 
@@ -943,20 +943,20 @@ const OrdersManagement: React.FC = () => {
                       )}
 
                       {/* Order Items */}
-                      <div className="bg-[#FAF9F6] rounded-lg p-3 border border-[#E5DCC5]">
-                        <h5 className="text-xs font-bold text-[#8B7355] mb-2 flex items-center gap-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                        <h5 className="text-xs font-bold text-black mb-2 flex items-center gap-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                           <Package className="h-3 w-3" />
                           عناصر الطلب ({order.items.length})
                         </h5>
                         <div className="space-y-2">
                           {order.items.map((item, index) => (
-                            <div key={index} className="bg-white rounded-lg p-2 border border-[#E5DCC5]">
-                              <p className="text-xs font-bold text-[#8B7355] mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>{item.productName}</p>
-                              <div className="text-xs text-[#8B7355]/70 space-y-0.5" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                            <div key={index} className="bg-white rounded-lg p-2 border border-gray-200">
+                              <p className="text-xs font-bold text-black mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>{item.productName}</p>
+                              <div className="text-xs text-gray-500 space-y-0.5" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                 <p>كود: {item.productCode} | الكمية: {item.quantity}</p>
                                 {item.size && <p>المقاس: {item.size}</p>}
                                 {item.color && <p>اللون: {item.color}</p>}
-                                <p className="font-bold text-[#8B7355] mt-1">{item.priceAtPurchase.toFixed(2)} جنيه</p>
+                                <p className="font-bold text-black mt-1">{item.priceAtPurchase.toFixed(2)} جنيه</p>
                               </div>
                             </div>
                           ))}
@@ -966,10 +966,10 @@ const OrdersManagement: React.FC = () => {
                   )}
 
                   {/* Action Buttons */}
-                  <div className="flex flex-wrap gap-2 mt-4 border-t-2 border-[#F5F5DC] pt-3">
+                  <div className="flex flex-wrap gap-2 mt-4 border-t border-gray-100 pt-3">
                     <button
                       onClick={() => toggleRowExpansion(order.id)}
-                      className="flex-1 text-[#8B7355] bg-[#F5F5DC] px-3 py-2 rounded-lg text-xs hover:bg-[#E5DCC5] transition-all flex items-center justify-center font-semibold border border-[#E5DCC5]"
+                      className="flex-1 text-gray-700 bg-gray-100 px-3 py-2 rounded-lg text-xs hover:bg-gray-200 transition-all flex items-center justify-center font-semibold border border-gray-200"
                       style={{ fontFamily: 'Tajawal, sans-serif' }}
                     >
                       {expandedRows.has(order.id) ? <ChevronUp className="h-3 w-3 mr-1" /> : <ChevronDown className="h-3 w-3 mr-1" />}
@@ -977,7 +977,7 @@ const OrdersManagement: React.FC = () => {
                     </button>
                     <button
                       onClick={() => getOrderDetails(order.id)}
-                      className="flex-1 text-[#8B7355] bg-[#F5F5DC] px-3 py-2 rounded-lg text-xs hover:bg-[#E5DCC5] transition-all flex items-center justify-center font-semibold border border-[#E5DCC5]"
+                      className="flex-1 text-gray-700 bg-gray-100 px-3 py-2 rounded-lg text-xs hover:bg-gray-200 transition-all flex items-center justify-center font-semibold border border-gray-200"
                       style={{ fontFamily: 'Tajawal, sans-serif' }}
                       disabled={loading}
                     >
@@ -998,7 +998,7 @@ const OrdersManagement: React.FC = () => {
                     {order.status.toLowerCase() === 'confirmed' && (
                       <button
                         onClick={() => updateOrderStatus(order.id, 'Shipped')}
-                        className="flex-1 bg-[#8B7355] text-white px-3 py-2 rounded-lg text-xs hover:bg-[#6B5644] transition-all flex items-center justify-center font-semibold"
+                        className="flex-1 bg-primary-green text-black px-3 py-2 rounded-lg text-xs hover:bg-primary-green-dark transition-all flex items-center justify-center font-semibold"
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                         disabled={loading}
                       >
@@ -1048,20 +1048,20 @@ const OrdersManagement: React.FC = () => {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1 || loading}
-                className="px-5 py-3 bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white rounded-xl hover:from-[#6B5644] hover:to-[#8B6644] disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition-all shadow-md"
+                className="px-5 py-3 bg-primary-green text-black rounded-xl hover:bg-primary-green-dark disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition-all shadow-md"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 السابق
               </button>
-              <div className="bg-white px-6 py-3 rounded-xl border-2 border-[#E5DCC5] shadow-md">
-                <span className="text-[#8B7355] font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <div className="bg-white px-6 py-3 rounded-xl border border-gray-200 shadow-md">
+                <span className="text-black font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   {currentPage} / {totalPages}
                 </span>
               </div>
               <button
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages || loading}
-                className="px-5 py-3 bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white rounded-xl hover:from-[#6B5644] hover:to-[#8B6644] disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition-all shadow-md"
+                className="px-5 py-3 bg-primary-green text-black rounded-xl hover:bg-primary-green-dark disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition-all shadow-md"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 التالي
@@ -1074,9 +1074,9 @@ const OrdersManagement: React.FC = () => {
       {/* Order Details Modal */}
       {showOrderDetails && selectedOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border-2 border-[#E5DCC5]">
-            <div className="sticky top-0 bg-gradient-to-r from-[#F5F5DC] to-[#E5DCC5] p-6 border-b-2 border-[#E5DCC5] flex justify-between items-center">
-              <h3 className="text-2xl font-bold text-[#8B7355] flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200">
+            <div className="sticky top-0 bg-gray-50 p-6 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-2xl font-bold text-black flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 <ShoppingCart className="h-6 w-6" />
                 تفاصيل الطلب #{selectedOrder.orderNumber}
               </h3>
@@ -1090,58 +1090,58 @@ const OrdersManagement: React.FC = () => {
 
             <div className="p-6 space-y-6">
               {/* Order Status */}
-              <div className="bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC] rounded-xl p-4 border-2 border-[#E5DCC5]">
+              <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
                 <div className="flex flex-wrap justify-between items-center gap-4">
                   <div>
-                    <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>حالة الطلب</p>
+                    <p className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>حالة الطلب</p>
                     <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold ${getStatusColor(selectedOrder.status)}`} style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       {getStatusText(selectedOrder.status)}
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>تاريخ الطلب</p>
-                    <div className="flex items-center gap-2 text-[#8B7355]">
-                      <Calendar className="h-4 w-4 text-[#D4AF37]" />
+                    <p className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>تاريخ الطلب</p>
+                    <div className="flex items-center gap-2 text-black">
+                      <Calendar className="h-4 w-4 text-gray-400" />
                       <span className="font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>{formatDate(selectedOrder.date)}</span>
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>إجمالي المبلغ</p>
+                    <p className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>إجمالي المبلغ</p>
                     <div className="flex items-center gap-1">
                       <DollarSign className="h-5 w-5 text-green-600" />
-                      <span className="text-xl font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.total.toFixed(2)} جنيه</span>
+                      <span className="text-xl font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.total.toFixed(2)} جنيه</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Customer Information */}
-              <div className="bg-white rounded-xl p-4 border-2 border-[#E5DCC5]">
-                <h4 className="text-lg font-bold text-[#8B7355] mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <div className="bg-white rounded-xl p-4 border border-gray-200">
+                <h4 className="text-lg font-bold text-black mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   <User className="h-5 w-5" />
                   معلومات العميل
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 p-3 bg-[#FAF9F6] rounded-lg">
-                    <User className="h-5 w-5 text-[#D4AF37]" />
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <User className="h-5 w-5 text-gray-400" />
                     <div>
-                      <p className="text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>الاسم الكامل</p>
-                      <p className="font-semibold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.fullName || 'غير متوفر'}</p>
+                      <p className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>الاسم الكامل</p>
+                      <p className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.fullName || 'غير متوفر'}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 bg-[#FAF9F6] rounded-lg">
-                    <Phone className="h-5 w-5 text-[#D4AF37]" />
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Phone className="h-5 w-5 text-gray-400" />
                     <div>
-                      <p className="text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>رقم الهاتف</p>
-                      <p className="font-semibold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.phoneNumber || 'غير متوفر'}</p>
+                      <p className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>رقم الهاتف</p>
+                      <p className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.phoneNumber || 'غير متوفر'}</p>
                     </div>
                   </div>
                   {selectedOrder.address && (
-                    <div className="flex items-start gap-3 p-3 bg-[#FAF9F6] rounded-lg md:col-span-2">
-                      <MapPin className="h-5 w-5 text-[#D4AF37] mt-0.5" />
+                    <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg md:col-span-2">
+                      <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
                       <div>
-                        <p className="text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>العنوان</p>
-                        <p className="font-semibold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.address}, {selectedOrder.governorate}</p>
+                        <p className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>العنوان</p>
+                        <p className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.address}, {selectedOrder.governorate}</p>
                       </div>
                     </div>
                   )}
@@ -1149,20 +1149,20 @@ const OrdersManagement: React.FC = () => {
               </div>
 
               {/* Payment Information */}
-              <div className="bg-white rounded-xl p-4 border-2 border-[#E5DCC5]">
-                <h4 className="text-lg font-bold text-[#8B7355] mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <div className="bg-white rounded-xl p-4 border border-gray-200">
+                <h4 className="text-lg font-bold text-black mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   <DollarSign className="h-5 w-5" />
                   معلومات الدفع
                 </h4>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-3 bg-[#FAF9F6] rounded-lg">
-                    <span className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>طريقة الدفع</span>
-                    <span className="font-semibold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>{getPaymentMethodText(selectedOrder.paymentMethod)}</span>
+                  <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span className="text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>طريقة الدفع</span>
+                    <span className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{getPaymentMethodText(selectedOrder.paymentMethod)}</span>
                   </div>
                   {selectedOrder.paymentTransactionId && (
-                    <div className="flex justify-between items-center p-3 bg-[#FAF9F6] rounded-lg">
-                      <span className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>معرف المعاملة</span>
-                      <span className="font-mono text-sm text-[#8B7355]">{selectedOrder.paymentTransactionId}</span>
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <span className="text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>معرف المعاملة</span>
+                      <span className="font-mono text-sm text-black">{selectedOrder.paymentTransactionId}</span>
                     </div>
                   )}
                   {selectedOrder.discountCodeUsed && (
@@ -1175,20 +1175,20 @@ const OrdersManagement: React.FC = () => {
               </div>
 
               {/* Order Items */}
-              <div className="bg-white rounded-xl p-4 border-2 border-[#E5DCC5]">
-                <h4 className="text-lg font-bold text-[#8B7355] mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <div className="bg-white rounded-xl p-4 border border-gray-200">
+                <h4 className="text-lg font-bold text-black mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   <Package className="h-5 w-5" />
                   عناصر الطلب ({selectedOrder.items.length})
                 </h4>
                 <div className="space-y-3">
                   {selectedOrder.items.map((item, index) => (
-                    <div key={index} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC] rounded-xl border-2 border-[#E5DCC5]">
+                    <div key={index} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 rounded-xl border border-gray-200">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <Package className="h-4 w-4 text-[#D4AF37]" />
-                          <p className="font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>{item.productName}</p>
+                          <Package className="h-4 w-4 text-gray-400" />
+                          <p className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{item.productName}</p>
                         </div>
-                        <div className="grid grid-cols-2 gap-2 text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        <div className="grid grid-cols-2 gap-2 text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                           <p><span className="font-semibold">كود المنتج:</span> {item.productCode}</p>
                           <p><span className="font-semibold">الكمية:</span> {item.quantity}</p>
                           {item.size && <p><span className="font-semibold">المقاس:</span> {item.size}</p>}
@@ -1196,10 +1196,10 @@ const OrdersManagement: React.FC = () => {
                         </div>
                       </div>
                       <div className="mt-3 sm:mt-0 sm:mr-4">
-                        <p className="font-bold text-[#8B7355] text-xl" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        <p className="font-bold text-black text-xl" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                           {item.priceAtPurchase.toFixed(2)} جنيه
                         </p>
-                        <p className="text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        <p className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                           الإجمالي: {(item.priceAtPurchase * item.quantity).toFixed(2)} جنيه
                         </p>
                       </div>
@@ -1210,10 +1210,10 @@ const OrdersManagement: React.FC = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="sticky bottom-0 bg-gradient-to-r from-[#F5F5DC] to-[#E5DCC5] p-6 border-t-2 border-[#E5DCC5]">
+            <div className="sticky bottom-0 bg-gray-50 p-6 border-t border-gray-200">
               <button
                 onClick={() => setShowOrderDetails(false)}
-                className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white py-3 px-6 rounded-xl hover:from-[#6B5644] hover:to-[#8B6644] transition-all font-semibold shadow-lg"
+                className="w-full bg-primary-green text-black py-3 px-6 rounded-xl hover:bg-primary-green-dark transition-all font-semibold shadow-lg"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 إغلاق
@@ -1226,9 +1226,9 @@ const OrdersManagement: React.FC = () => {
       {/* Customer Orders Modal */}
       {showCustomerOrders && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto border-2 border-[#E5DCC5]">
-            <div className="sticky top-0 bg-gradient-to-r from-[#F5F5DC] to-[#E5DCC5] p-6 border-b-2 border-[#E5DCC5] flex justify-between items-center">
-              <h3 className="text-2xl font-bold text-[#8B7355] flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto border border-gray-200">
+            <div className="sticky top-0 bg-gray-50 p-6 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-2xl font-bold text-black flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 <User className="h-6 w-6" />
                 طلبات العميل ({customerOrders.length})
               </h3>
@@ -1244,18 +1244,18 @@ const OrdersManagement: React.FC = () => {
               {customerOrders.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="text-6xl mb-4">📦</div>
-                  <p className="text-xl font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>لا توجد طلبات لهذا العميل</p>
+                  <p className="text-xl font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>لا توجد طلبات لهذا العميل</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {customerOrders.map((order) => (
-                    <div key={order.id} className="bg-gradient-to-br from-white to-[#FAF9F6] rounded-xl p-4 border-2 border-[#E5DCC5] hover:shadow-lg transition-all">
+                    <div key={order.id} className="bg-white rounded-xl p-4 border border-gray-200 hover:shadow-lg transition-all">
                       <div className="flex flex-wrap justify-between items-center gap-4">
                         <div className="flex items-center gap-3">
-                          <ShoppingCart className="h-5 w-5 text-[#D4AF37]" />
+                          <ShoppingCart className="h-5 w-5 text-gray-400" />
                           <div>
-                            <p className="font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>#{order.orderNumber}</p>
-                            <p className="text-xs text-[#8B7355]/70 flex items-center gap-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                            <p className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>#{order.orderNumber}</p>
+                            <p className="text-xs text-gray-500 flex items-center gap-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                               <Calendar className="h-3 w-3" />
                               {formatDate(order.date)}
                             </p>
@@ -1267,7 +1267,7 @@ const OrdersManagement: React.FC = () => {
                           </span>
                           <div className="flex items-center gap-1">
                             <DollarSign className="h-4 w-4 text-green-600" />
-                            <span className="font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.total.toFixed(2)} جنيه</span>
+                            <span className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.total.toFixed(2)} جنيه</span>
                           </div>
                         </div>
                         <button
@@ -1276,7 +1276,7 @@ const OrdersManagement: React.FC = () => {
                             setShowCustomerOrders(false);
                             setShowOrderDetails(true);
                           }}
-                          className="text-[#8B7355] hover:text-[#D4AF37] p-2 hover:bg-[#FAF9F6] rounded-lg transition-all"
+                          className="text-gray-500 hover:text-green-600 p-2 hover:bg-gray-100 rounded-lg transition-all"
                         >
                           <Eye className="h-5 w-5" />
                         </button>
@@ -1287,10 +1287,10 @@ const OrdersManagement: React.FC = () => {
               )}
             </div>
 
-            <div className="sticky bottom-0 bg-gradient-to-r from-[#F5F5DC] to-[#E5DCC5] p-6 border-t-2 border-[#E5DCC5]">
+            <div className="sticky bottom-0 bg-gray-50 p-6 border-t border-gray-200">
               <button
                 onClick={() => setShowCustomerOrders(false)}
-                className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white py-3 px-6 rounded-xl hover:from-[#6B5644] hover:to-[#8B6644] transition-all font-semibold shadow-lg"
+                className="w-full bg-primary-green text-black py-3 px-6 rounded-xl hover:bg-primary-green-dark transition-all font-semibold shadow-lg"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 إغلاق

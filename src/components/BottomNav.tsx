@@ -32,14 +32,14 @@ export function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
                 className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300 relative ${isActive
-                    ? 'text-black font-bold transform scale-110'
-                    : 'text-black hover:text-gray-600 hover:bg-gray-100'
+                  ? 'text-primary-green font-bold transform scale-110'
+                  : 'text-black hover:text-primary-green hover:bg-primary-green/10'
                   }`}
               >
                 <div className="relative">
                   <Icon className={`w-6 h-6 ${isActive ? 'animate-pulse' : ''}`} strokeWidth={isActive ? 2.5 : 2} />
                   {item.id === 'cart' && itemCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-black text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    <span className="absolute -top-2 -right-2 bg-primary-green text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                       {itemCount}
                     </span>
                   )}
@@ -51,7 +51,7 @@ export function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
                   {item.label}
                 </span>
                 {isActive && (
-                  <div className="absolute -bottom-2 w-1 h-1 bg-black rounded-full" />
+                  <div className="absolute -bottom-2 w-1 h-1 bg-primary-green rounded-full" />
                 )}
               </button>
             );

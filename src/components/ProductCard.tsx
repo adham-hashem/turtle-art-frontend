@@ -148,7 +148,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               e.stopPropagation();
               onViewProduct(product);
             }}
-            className="bg-white text-black px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-2xl hover:bg-gray-100 hover:scale-110 transition-all"
+            className="bg-primary-green text-black px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-2xl hover:bg-primary-green-dark hover:scale-110 transition-all"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             <Eye size={18} />

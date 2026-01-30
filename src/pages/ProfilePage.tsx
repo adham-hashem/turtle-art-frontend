@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { 
-  Loader, 
-  User, 
-  Mail, 
-  MapPin, 
-  Phone, 
-  Home, 
-  CheckCircle, 
+import {
+  Loader,
+  User,
+  Mail,
+  MapPin,
+  Phone,
+  Home,
+  CheckCircle,
   XCircle,
   Shield,
   Sparkles
@@ -133,7 +133,7 @@ const ProfilePage = () => {
 
       const data = await response.json();
       setSuccess(data.message || 'تم تحديث الملف الشخصي بنجاح');
-      
+
       updateUserProfile({
         name: profile.FullName,
         address: profile.Address,
@@ -157,50 +157,50 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center px-4 pt-20" dir="rtl">
+      <div className="min-h-screen bg-white flex items-center justify-center px-4 pt-20" dir="rtl">
         <div className="text-center py-12">
           <div className="relative inline-block mb-6">
-            <div className="absolute inset-0 bg-[#C4A57B] rounded-full blur-xl opacity-30 animate-pulse"></div>
-            <div className="relative bg-gradient-to-r from-[#8B7355] to-[#A67C52] rounded-full p-4">
-              <User className="h-12 w-12 text-white animate-bounce" />
+            <div className="absolute inset-0 bg-gray-200 rounded-full blur-xl opacity-30 animate-pulse"></div>
+            <div className="relative bg-gray-100 rounded-full p-4">
+              <User className="h-12 w-12 text-black animate-bounce" />
             </div>
           </div>
-          <p className="text-[#8B7355] font-bold text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>جاري تحميل البيانات...</p>
-          <p className="text-[#8B7355]/70 text-sm mt-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>انتظر لحظة 👤</p>
+          <p className="text-black font-bold text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>جاري تحميل البيانات...</p>
+          <p className="text-gray-500 text-sm mt-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>انتظر لحظة 👤</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] py-6 sm:py-12 md:py-16 pt-24 px-3 sm:px-4" dir="rtl">
+    <div className="min-h-screen bg-white py-6 sm:py-12 md:py-16 pt-24 px-3 sm:px-4" dir="rtl">
       <div className="container mx-auto max-w-4xl">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8 md:mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-[#F5F5DC] to-[#E5DCC5] rounded-full mb-4 border-2 border-[#E5DCC5]">
-            <User className="w-8 h-8 sm:w-10 sm:h-10 text-[#8B7355]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 rounded-full mb-4 border-2 border-gray-100">
+            <User className="w-8 h-8 sm:w-10 sm:h-10 text-black" />
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#8B7355] mb-2 flex items-center justify-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-            <Sparkles className="w-6 h-6 sm:w-7 sm:h-7 text-[#D4AF37]" />
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black mb-2 flex items-center justify-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <Sparkles className="w-6 h-6 sm:w-7 sm:h-7 text-black" />
             <span>الملف الشخصي</span>
           </h1>
-          <p className="text-sm sm:text-base text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+          <p className="text-sm sm:text-base text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
             إدارة معلوماتك الشخصية
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-5 sm:p-6 md:p-8 lg:p-12 border-2 border-[#E5DCC5]">
+        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-5 sm:p-6 md:p-8 lg:p-12 border border-gray-200">
           {/* Error Message */}
           {error && (
-            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 rounded-xl sm:rounded-2xl border-2 border-red-200 animate-fade-in">
+            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 rounded-xl sm:rounded-2xl border border-red-200 animate-fade-in">
               <p className="text-red-600 text-center font-medium text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>{error}</p>
             </div>
           )}
 
           {/* Success Message */}
           {success && (
-            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 rounded-xl sm:rounded-2xl border-2 border-green-200 animate-fade-in">
+            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 rounded-xl sm:rounded-2xl border border-green-200 animate-fade-in">
               <p className="text-green-600 text-center font-medium text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>{success}</p>
             </div>
           )}
@@ -209,9 +209,9 @@ const ProfilePage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
               {/* Full Name */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base flex items-center justify-end gap-2" htmlFor="FullName" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-black font-bold mb-2 text-sm sm:text-base flex items-center justify-end gap-2" htmlFor="FullName" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   <span>الاسم الكامل</span>
-                  <User className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
+                  <User className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
                 </label>
                 <input
                   id="FullName"
@@ -219,7 +219,7 @@ const ProfilePage = () => {
                   name="FullName"
                   value={profile.FullName}
                   onChange={handleInputChange}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-[#FAF9F6] text-right border-2 border-[#E5DCC5] focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all text-sm sm:text-base text-[#8B7355]"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-gray-50 text-right border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all text-sm sm:text-base text-black"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                   placeholder="أدخل الاسم الكامل"
                   disabled={submitting}
@@ -229,15 +229,15 @@ const ProfilePage = () => {
 
               {/* Email (Read-only) */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base flex items-center justify-end gap-2" htmlFor="Email" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-black font-bold mb-2 text-sm sm:text-base flex items-center justify-end gap-2" htmlFor="Email" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   <span>البريد الإلكتروني</span>
-                  <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
+                  <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
                 </label>
                 <input
                   id="Email"
                   type="email"
                   value={profile.Email}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-gray-100 text-right border-2 border-gray-200 text-gray-500 cursor-not-allowed text-sm sm:text-base"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-gray-100 text-right border border-gray-200 text-gray-500 cursor-not-allowed text-sm sm:text-base"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                   disabled
                   readOnly
@@ -246,9 +246,9 @@ const ProfilePage = () => {
 
               {/* Address */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base flex items-center justify-end gap-2" htmlFor="Address" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-black font-bold mb-2 text-sm sm:text-base flex items-center justify-end gap-2" htmlFor="Address" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   <span>العنوان</span>
-                  <Home className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
+                  <Home className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
                 </label>
                 <input
                   id="Address"
@@ -256,7 +256,7 @@ const ProfilePage = () => {
                   name="Address"
                   value={profile.Address}
                   onChange={handleInputChange}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-[#FAF9F6] text-right border-2 border-[#E5DCC5] focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all text-sm sm:text-base text-[#8B7355]"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-gray-50 text-right border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all text-sm sm:text-base text-black"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                   placeholder="أدخل العنوان"
                   disabled={submitting}
@@ -265,9 +265,9 @@ const ProfilePage = () => {
 
               {/* Governorate */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base flex items-center justify-end gap-2" htmlFor="Governorate" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-black font-bold mb-2 text-sm sm:text-base flex items-center justify-end gap-2" htmlFor="Governorate" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   <span>المحافظة</span>
-                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
                 </label>
                 <input
                   id="Governorate"
@@ -275,7 +275,7 @@ const ProfilePage = () => {
                   name="Governorate"
                   value={profile.Governorate}
                   onChange={handleInputChange}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-[#FAF9F6] text-right border-2 border-[#E5DCC5] focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all text-sm sm:text-base text-[#8B7355]"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-gray-50 text-right border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all text-sm sm:text-base text-black"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                   placeholder="أدخل المحافظة"
                   disabled={submitting}
@@ -284,9 +284,9 @@ const ProfilePage = () => {
 
               {/* Phone Number */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base flex items-center justify-end gap-2" htmlFor="PhoneNumber" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-black font-bold mb-2 text-sm sm:text-base flex items-center justify-end gap-2" htmlFor="PhoneNumber" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   <span>رقم الهاتف</span>
-                  <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
+                  <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
                 </label>
                 <input
                   id="PhoneNumber"
@@ -294,7 +294,7 @@ const ProfilePage = () => {
                   name="PhoneNumber"
                   value={profile.PhoneNumber}
                   onChange={handleInputChange}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-[#FAF9F6] text-right border-2 border-[#E5DCC5] focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all text-sm sm:text-base text-[#8B7355]"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-gray-50 text-right border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all text-sm sm:text-base text-black"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                   placeholder="01xxxxxxxxx"
                   disabled={submitting}
@@ -303,7 +303,7 @@ const ProfilePage = () => {
 
               {/* Email Verification Status */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-black font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   حالة التحقق من البريد
                 </label>
                 <div className="text-right">
@@ -323,7 +323,7 @@ const ProfilePage = () => {
 
               {/* Profile Completion Status */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-black font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   حالة الملف الشخصي
                 </label>
                 <div className="text-right">
@@ -344,15 +344,15 @@ const ProfilePage = () => {
               {/* Roles */}
               {profile.Roles.length > 0 && (
                 <div className="md:col-span-2">
-                  <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base flex items-center justify-end gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <label className="block text-right text-black font-bold mb-2 text-sm sm:text-base flex items-center justify-end gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     <span>الأدوار</span>
-                    <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
+                    <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
                   </label>
                   <div className="flex flex-wrap gap-2 justify-end">
                     {profile.Roles.map((role, index) => (
                       <span
                         key={index}
-                        className="bg-gradient-to-r from-[#F5F5DC] to-[#E5DCC5] text-[#8B7355] px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold border-2 border-[#E5DCC5]"
+                        className="bg-gray-100 text-black px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold border border-gray-300"
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
                         {role}
@@ -367,7 +367,7 @@ const ProfilePage = () => {
             <div className="pt-4 sm:pt-6">
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white px-6 sm:px-10 py-3 sm:py-3.5 md:py-4 rounded-xl sm:rounded-2xl hover:from-[#6B5644] hover:to-[#8B6644] transition-all font-bold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base md:text-lg flex items-center justify-center gap-2"
+                className="w-full bg-green-500 text-white px-6 sm:px-10 py-3 sm:py-3.5 md:py-4 rounded-xl sm:rounded-2xl hover:bg-green-600 transition-all font-bold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base md:text-lg flex items-center justify-center gap-2"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
                 disabled={submitting}
               >
@@ -388,7 +388,7 @@ const ProfilePage = () => {
 
           {/* Help Text */}
           <div className="mt-4 sm:mt-6 text-center">
-            <p className="text-xs sm:text-sm text-[#8B7355]/50" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-xs sm:text-sm text-gray-400" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               🔒 بياناتك آمنة ومحمية
             </p>
           </div>

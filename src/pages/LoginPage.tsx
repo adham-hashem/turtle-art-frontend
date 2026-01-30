@@ -153,7 +153,7 @@ const LoginPage: React.FC = () => {
         {/* Main Card */}
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
           {/* Header */}
-          <div className="relative bg-black p-8 text-center">
+          <div className="relative bg-primary-green p-8 text-center">
             {/* Animated Stars */}
             <div className="absolute top-3 right-6 animate-pulse">
               <Sparkles className="h-5 w-5 text-white" />

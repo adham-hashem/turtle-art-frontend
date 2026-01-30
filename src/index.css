@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  /* Primary green button */
+  .btn-primary {
+    @apply bg-primary-green text-black font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary-green-dark hover:scale-105 active:scale-95;
+  }
+  
+  /* Secondary button with green border */
+  .btn-secondary {
+    @apply bg-white text-black font-bold px-4 py-2 rounded-lg border-2 border-primary-green transition-all duration-300 hover:bg-primary-green hover:scale-105 active:scale-95;
+  }
+  
+  /* Disabled button */
+  .btn-disabled {
+    @apply bg-secondary-gray text-gray-400 font-bold px-4 py-2 rounded-lg cursor-not-allowed;
+  }
+}

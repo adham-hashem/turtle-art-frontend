@@ -1078,7 +1078,7 @@ const CheckoutPage: React.FC = () => {
                   state.cart.length === 0 ||
                   !selectedGovernorate
                   ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                  : 'bg-green-500 hover:bg-green-600 text-white'
+                  : 'bg-primary-green hover:bg-primary-green-dark text-black'
                   }`}
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >

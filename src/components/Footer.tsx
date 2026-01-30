@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
             href="https://www.instagram.com/turtle.aart"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-3 bg-black text-white rounded-full hover:scale-110 transition-transform shadow-lg hover:shadow-xl"
+            className="p-3 bg-primary-green text-black rounded-full hover:scale-110 hover:bg-primary-green-dark transition-all shadow-lg hover:shadow-xl"
             aria-label="Instagram"
           >
             <Instagram className="h-5 w-5" />
@@ -50,7 +50,7 @@ const Footer: React.FC = () => {
             href="https://www.facebook.com/Turtle.aart"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-3 bg-black text-white rounded-full hover:scale-110 transition-transform shadow-lg hover:shadow-xl"
+            className="p-3 bg-primary-green text-black rounded-full hover:scale-110 hover:bg-primary-green-dark transition-all shadow-lg hover:shadow-xl"
             aria-label="Facebook"
           >
             <Facebook className="h-5 w-5" />
@@ -60,7 +60,7 @@ const Footer: React.FC = () => {
             href="https://www.tiktok.com/@turtle_aart"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-3 bg-black text-white rounded-full hover:scale-110 transition-transform shadow-lg hover:shadow-xl"
+            className="p-3 bg-primary-green text-black rounded-full hover:scale-110 hover:bg-primary-green-dark transition-all shadow-lg hover:shadow-xl"
             aria-label="TikTok"
           >
             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -70,7 +70,7 @@ const Footer: React.FC = () => {
 
           <button
             onClick={() => openWhatsApp('201000070653')}
-            className="p-3 bg-green-500 text-white rounded-full hover:scale-110 transition-transform shadow-lg hover:shadow-xl"
+            className="p-3 bg-primary-green text-black rounded-full hover:scale-110 hover:bg-primary-green-dark transition-all shadow-lg hover:shadow-xl"
             aria-label="WhatsApp Turtle Art"
           >
             <MessageCircle className="h-5 w-5" />
@@ -117,7 +117,7 @@ const Footer: React.FC = () => {
             <div className="flex justify-center items-center gap-3">
               <button
                 onClick={() => openWhatsApp('201013989517')}
-                className="p-2 bg-green-500 text-white rounded-full hover:scale-110 transition-transform shadow-md hover:shadow-lg"
+                className="p-2 bg-primary-green text-black rounded-full hover:scale-110 hover:bg-primary-green-dark transition-all shadow-md hover:shadow-lg"
                 aria-label="WhatsApp +201013989517"
                 title="+201013989517"
               >
@@ -126,7 +126,7 @@ const Footer: React.FC = () => {
 
               <button
                 onClick={() => openWhatsApp('201027548602')}
-                className="p-2 bg-green-500 text-white rounded-full hover:scale-110 transition-transform shadow-md hover:shadow-lg"
+                className="p-2 bg-primary-green text-black rounded-full hover:scale-110 hover:bg-primary-green-dark transition-all shadow-md hover:shadow-lg"
                 aria-label="WhatsApp +201027548602"
                 title="+201027548602"
               >

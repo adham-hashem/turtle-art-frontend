@@ -133,7 +133,7 @@ const Header: React.FC = () => {
             {/* Menu Button - Always Visible */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-full hover:bg-[#F5F5DC]/30 transition-all"
+              className="p-2 rounded-full hover:bg-primary-green/20 transition-all"
               aria-label="القائمة"
             >
               {isMenuOpen ? (
@@ -181,7 +181,7 @@ const Header: React.FC = () => {
                   />
                   <button
                     onClick={handleSearch}
-                    className="text-black hover:text-gray-600 transition-colors"
+                    className="text-primary-green hover:text-primary-green-dark transition-colors"
                     disabled={isLoading}
                     aria-label="بحث"
                   >
@@ -274,12 +274,12 @@ const Header: React.FC = () => {
               {/* Cart Button */}
               <button
                 onClick={() => navigate('/cart')}
-                className="relative p-2 rounded-full hover:bg-[#F5F5DC]/30 transition-all"
+                className="relative p-2 rounded-full hover:bg-primary-green/20 transition-all"
                 aria-label="السلة"
               >
                 <ShoppingBag className="h-6 w-6 text-black" />
                 {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-black text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                  <span className="absolute -top-1 -right-1 bg-primary-green text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
                     {itemCount}
                   </span>
                 )}
@@ -323,7 +323,7 @@ const Header: React.FC = () => {
                     setSearchResult(null);
                     setSearchCode('');
                   }}
-                  className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors whitespace-nowrap"
+                  className="bg-primary-green text-black px-4 py-2 rounded-lg hover:bg-primary-green-dark transition-colors whitespace-nowrap"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
                   عرض المنتج
@@ -382,7 +382,7 @@ const Header: React.FC = () => {
                   />
                   <button
                     onClick={handleSearch}
-                    className="text-black hover:text-gray-600"
+                    className="text-primary-green hover:text-primary-green-dark"
                     disabled={isLoading}
                     aria-label="بحث"
                   >
@@ -401,8 +401,8 @@ const Header: React.FC = () => {
                       setIsMenuOpen(false);
                     }}
                     className={`w-full text-right px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-between group ${currentPage === `/${item.page === 'home' ? '' : item.page}`
-                        ? 'bg-gray-100 text-black font-bold'
-                        : 'text-black hover:bg-gray-100'
+                      ? 'bg-primary-green/20 text-black font-bold'
+                      : 'text-black hover:bg-primary-green/10'
                       }`}
                   >
                     <span className="text-lg font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>

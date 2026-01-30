@@ -111,22 +111,22 @@ const ProductPage: React.FC = () => {
   const getAuthToken = () =>
     localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
 
-// const resolveUrl = (path?: string) => {
-//   if (!path) return '';
-//   const cleanPath = path.trim(); // 1. Trim whitespace
-  
-//   // 2. Check for standard absolute URLs
-//   if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) return cleanPath;
-  
-//   // 3. Handle accidental leading slash on absolute URLs
-//   if (cleanPath.startsWith('/http://') || cleanPath.startsWith('/https://')) return cleanPath.substring(1);
-  
-//   if (cleanPath.startsWith('data:image')) return cleanPath;
-  
-//   // 4. Handle relative paths
-//   if (cleanPath.startsWith('/')) return `${apiUrl}${cleanPath}`;
-//   return `${apiUrl}/${cleanPath}`;
-// };
+  // const resolveUrl = (path?: string) => {
+  //   if (!path) return '';
+  //   const cleanPath = path.trim(); // 1. Trim whitespace
+
+  //   // 2. Check for standard absolute URLs
+  //   if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) return cleanPath;
+
+  //   // 3. Handle accidental leading slash on absolute URLs
+  //   if (cleanPath.startsWith('/http://') || cleanPath.startsWith('/https://')) return cleanPath.substring(1);
+
+  //   if (cleanPath.startsWith('data:image')) return cleanPath;
+
+  //   // 4. Handle relative paths
+  //   if (cleanPath.startsWith('/')) return `${apiUrl}${cleanPath}`;
+  //   return `${apiUrl}/${cleanPath}`;
+  // };
   const resolveUrl = (path?: string) => {
     if (!path) return '';
     if (path.startsWith('http://') || path.startsWith('https://')) return path;
@@ -387,20 +387,20 @@ const ProductPage: React.FC = () => {
   if (loading) {
     return (
       <div
-        className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center px-4 pt-20"
+        className="min-h-screen bg-white flex items-center justify-center px-4 pt-20"
         dir="rtl"
       >
         <div className="text-center py-12">
           <div className="relative inline-block mb-6">
-            <div className="absolute inset-0 bg-[#C4A57B] rounded-full blur-xl opacity-30 animate-pulse"></div>
-            <div className="relative bg-gradient-to-r from-[#8B7355] to-[#A67C52] rounded-full p-4">
-              <ShoppingBag className="h-12 w-12 text-white animate-bounce" />
+            <div className="absolute inset-0 bg-gray-200 rounded-full blur-xl opacity-30 animate-pulse"></div>
+            <div className="relative bg-gray-100 rounded-full p-4">
+              <ShoppingBag className="h-12 w-12 text-black animate-bounce" />
             </div>
           </div>
-          <p className="text-[#8B7355] font-bold text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+          <p className="text-black font-bold text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
             جاري تحميل المنتج...
           </p>
-          <p className="text-[#8B7355]/70 text-sm mt-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+          <p className="text-gray-500 text-sm mt-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
             انتظر لحظة 👜
           </p>
         </div>
@@ -411,24 +411,25 @@ const ProductPage: React.FC = () => {
   // ---------- Error / Restricted / Not found ----------
   if (error || !product || productRestricted) {
     return (
+
       <div
-        className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center px-4 py-8 pt-24"
+        className="min-h-screen bg-white flex items-center justify-center px-4 py-8 pt-24"
         dir="rtl"
       >
-        <div className="bg-white/90 backdrop-blur-sm p-6 sm:p-8 rounded-2xl sm:rounded-3xl shadow-2xl text-center w-full max-w-md border-2 border-[#E5DCC5]">
+        <div className="bg-white p-6 sm:p-8 rounded-2xl sm:rounded-3xl shadow-xl text-center w-full max-w-md border border-gray-200">
           <div className="mb-6">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-red-50 rounded-full">
               <AlertTriangle className="text-red-500" size={40} />
             </div>
           </div>
           <h2
-            className="text-xl sm:text-2xl font-bold text-[#8B7355] mb-3"
+            className="text-xl sm:text-2xl font-bold text-black mb-3"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             {error ? 'حدث خطأ' : 'عذراً!'}
           </h2>
           <p
-            className="text-[#8B7355]/70 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base"
+            className="text-gray-500 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             {error || productRestricted || 'المنتج غير موجود.'}
@@ -437,7 +438,7 @@ const ProductPage: React.FC = () => {
           <div className="space-y-3">
             <Link
               to="/"
-              className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl hover:from-[#6B5644] hover:to-[#8B6644] font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all text-sm sm:text-base"
+              className="w-full bg-primary-green text-black px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl hover:bg-primary-green-dark font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all text-sm sm:text-base"
               style={{ fontFamily: 'Tajawal, sans-serif' }}
             >
               <ShoppingBag size={20} />
@@ -453,7 +454,7 @@ const ProductPage: React.FC = () => {
                   navigate('/');
                 }
               }}
-              className="w-full bg-[#F5F5DC] text-[#8B7355] px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl hover:bg-[#E5DCC5] font-medium transition-all text-sm sm:text-base"
+              className="w-full bg-gray-100 text-black px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl hover:bg-gray-200 font-medium transition-all text-sm sm:text-base"
               style={{ fontFamily: 'Tajawal, sans-serif' }}
             >
               العودة للخلف
@@ -462,19 +463,20 @@ const ProductPage: React.FC = () => {
         </div>
       </div>
     );
+
   }
 
   // ---------- Main ----------
   const currentImage = safeImages[currentImageIndex]?.imagePath || '';
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC]" dir="rtl">
+    <div className="min-h-screen bg-white" dir="rtl">
       <div className="pt-24 pb-12 px-3 sm:px-4 lg:px-8 max-w-7xl mx-auto">
         {/* Back button + Share */}
         <div className="mb-4 sm:mb-6 lg:mb-8 flex items-center justify-between">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center text-[#8B7355] hover:text-[#D4AF37] font-medium py-2 transition-colors text-sm sm:text-base"
+            className="flex items-center text-black hover:text-gray-600 font-medium py-2 transition-colors text-sm sm:text-base"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             <ArrowRight size={18} className="sm:hidden ml-2" />
@@ -486,7 +488,7 @@ const ProductPage: React.FC = () => {
             onClick={handleShare}
             className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl transition-all font-medium shadow-md text-sm sm:text-base ${copied
               ? 'bg-green-500 text-white shadow-green-300'
-              : 'bg-white text-[#8B7355] border-2 border-[#E5DCC5] hover:border-[#D4AF37] hover:text-[#D4AF37] hover:shadow-lg'
+              : 'bg-white text-black border border-gray-200 hover:border-black hover:shadow-lg'
               }`}
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
@@ -520,12 +522,12 @@ const ProductPage: React.FC = () => {
           </div>
         )}
 
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border-2 border-[#E5DCC5]">
+        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden border border-gray-100">
           <div className="lg:grid lg:grid-cols-2 lg:gap-0">
             {/* Images */}
             <div className="w-full lg:order-1">
               <div
-                className="relative w-full overflow-hidden bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC] aspect-square"
+                className="relative w-full overflow-hidden bg-white aspect-square"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -537,10 +539,10 @@ const ProductPage: React.FC = () => {
                     className="w-full h-full object-contain select-none"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-full h-full flex items-center justify-center bg-gray-50">
                     <div className="text-center">
-                      <ShoppingBag className="h-14 w-14 text-[#C4A57B] mx-auto mb-2" />
-                      <p className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      <ShoppingBag className="h-14 w-14 text-gray-300 mx-auto mb-2" />
+                      <p className="text-gray-400" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                         لا توجد صور لهذا المنتج
                       </p>
                     </div>
@@ -564,7 +566,7 @@ const ProductPage: React.FC = () => {
                       onClick={() =>
                         setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : safeImages.length - 1))
                       }
-                      className="hidden lg:flex absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 text-[#8B7355] p-3 rounded-full hover:bg-white hover:shadow-xl transition-all shadow-lg"
+                      className="hidden lg:flex absolute left-4 top-1/2 -translate-y-1/2 bg-white text-black p-3 rounded-full hover:bg-gray-100 hover:shadow-xl transition-all shadow-lg border border-gray-100"
                     >
                       <ChevronLeft size={24} />
                     </button>
@@ -573,7 +575,7 @@ const ProductPage: React.FC = () => {
                       onClick={() =>
                         setCurrentImageIndex((prev) => (prev < safeImages.length - 1 ? prev + 1 : 0))
                       }
-                      className="hidden lg:flex absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 text-[#8B7355] p-3 rounded-full hover:bg-white hover:shadow-xl transition-all shadow-lg"
+                      className="hidden lg:flex absolute right-4 top-1/2 -translate-y-1/2 bg-white text-black p-3 rounded-full hover:bg-gray-100 hover:shadow-xl transition-all shadow-lg border border-gray-100"
                     >
                       <ChevronRight size={24} />
                     </button>
@@ -582,12 +584,12 @@ const ProductPage: React.FC = () => {
 
                 {/* Dots */}
                 {safeImages.length > 1 && (
-                  <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 bg-white/80 backdrop-blur-sm rounded-full py-1.5 sm:py-2 px-3 sm:px-4 shadow-lg">
+                  <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-sm rounded-full py-1.5 sm:py-2 px-3 sm:px-4 shadow-lg border border-gray-100">
                     {safeImages.map((_, i) => (
                       <button
                         key={i}
                         onClick={() => setCurrentImageIndex(i)}
-                        className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all ${currentImageIndex === i ? 'bg-[#8B7355] scale-125' : 'bg-gray-300 hover:bg-[#C4A57B]'
+                        className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all ${currentImageIndex === i ? 'bg-primary-green scale-125' : 'bg-gray-300 hover:bg-gray-400'
                           }`}
                       />
                     ))}
@@ -597,15 +599,15 @@ const ProductPage: React.FC = () => {
 
               {/* Thumbnails */}
               {safeImages.length > 1 && (
-                <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 bg-[#FAF9F6]">
+                <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 bg-gray-50 border-t border-gray-100">
                   <div className="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-1">
                     {safeImages.map((image, i) => (
                       <button
                         key={image.id || i}
                         onClick={() => setCurrentImageIndex(i)}
-                        className={`h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 flex-shrink-0 rounded-lg sm:rounded-xl overflow-hidden border-3 transition-all shadow-md hover:shadow-xl ${currentImageIndex === i
-                          ? 'border-[#D4AF37] shadow-[#D4AF37]/30 scale-105'
-                          : 'border-white hover:border-[#C4A57B]'
+                        className={`h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 flex-shrink-0 rounded-lg sm:rounded-xl overflow-hidden border-2 transition-all shadow-sm hover:shadow-md ${currentImageIndex === i
+                          ? 'border-primary-green shadow-lg scale-105'
+                          : 'border-white hover:border-gray-300'
                           }`}
                       >
                         <img src={image.imagePath} alt={`thumb-${i}`} className="w-full h-full object-cover" />
@@ -621,14 +623,14 @@ const ProductPage: React.FC = () => {
               {/* Title */}
               <div>
                 <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                  <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-[#D4AF37]" />
-                  <span className="text-[#D4AF37] font-medium text-xs sm:text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
+                  <span className="text-black font-medium text-xs sm:text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     من Turtle Art
                   </span>
                 </div>
 
                 <h1
-                  className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-[#8B7355] leading-tight mb-3 sm:mb-4"
+                  className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-black leading-tight mb-3 sm:mb-4"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
                   {product.name}
@@ -636,7 +638,7 @@ const ProductPage: React.FC = () => {
 
                 {product.description && (
                   <p
-                    className="text-[#8B7355]/70 text-sm sm:text-base lg:text-lg leading-relaxed"
+                    className="text-gray-600 text-sm sm:text-base lg:text-lg leading-relaxed"
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                   >
                     {product.description}
@@ -647,7 +649,7 @@ const ProductPage: React.FC = () => {
               {/* Code */}
               <div className="flex flex-wrap gap-2 sm:gap-3">
                 <span
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#E5DCC5] text-[#8B7355] text-xs sm:text-sm rounded-full font-medium"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-100 text-black text-xs sm:text-sm rounded-full font-medium"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
                   كود: {product.code}
@@ -655,12 +657,12 @@ const ProductPage: React.FC = () => {
               </div>
 
               {/* Price */}
-              <div className="bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC] rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2 border-[#E5DCC5]">
+              <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-gray-200 shadow-sm">
                 <div className="flex items-baseline gap-2 sm:gap-3 flex-wrap">
-                  <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#D4AF37]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     {Number(totalPrice || 0).toFixed(2)}
                   </span>
-                  <span className="text-lg sm:text-xl text-[#8B7355] font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <span className="text-lg sm:text-xl text-gray-700 font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     جنيه
                   </span>
 
@@ -673,11 +675,11 @@ const ProductPage: React.FC = () => {
 
                 {/* Show breakdown if extensions selected */}
                 {selectedExtensions.length > 0 && (
-                  <div className="mt-2 pt-2 border-t border-[#E5DCC5]">
-                    <p className="text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <div className="mt-2 pt-2 border-t border-gray-100">
+                    <p className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       سعر المنتج: {Number(product.price || 0).toFixed(2)} جنيه
                     </p>
-                    <p className="text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <p className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       الإضافات: +{Number(extensionsTotal).toFixed(2)} جنيه
                     </p>
                   </div>
@@ -686,8 +688,8 @@ const ProductPage: React.FC = () => {
 
               {/* Size selector */}
               {hasSizes && (
-                <div className="bg-[#FAF9F6] rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2 border-[#E5DCC5]">
-                  <h3 className="font-bold text-[#8B7355] text-base sm:text-lg mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <div className="bg-gray-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-gray-200">
+                  <h3 className="font-bold text-black text-base sm:text-lg mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     المقاس
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -698,8 +700,8 @@ const ProductPage: React.FC = () => {
                         onClick={() => setSelectedSize(s)}
                         disabled={isPurchaseDisabled}
                         className={`px-4 py-2 rounded-xl border-2 text-sm font-bold transition-all ${selectedSize === s
-                          ? 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white border-transparent shadow-md'
-                          : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:border-[#D4AF37]'
+                          ? 'bg-primary-green text-black border-transparent shadow-md'
+                          : 'bg-white text-black border-gray-200 hover:border-primary-green'
                           } disabled:opacity-50 disabled:cursor-not-allowed`}
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
@@ -712,8 +714,8 @@ const ProductPage: React.FC = () => {
 
               {/* Color selector */}
               {hasColors && (
-                <div className="bg-[#FAF9F6] rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2 border-[#E5DCC5]">
-                  <h3 className="font-bold text-[#8B7355] text-base sm:text-lg mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <div className="bg-gray-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-gray-200">
+                  <h3 className="font-bold text-black text-base sm:text-lg mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     اللون
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -724,8 +726,8 @@ const ProductPage: React.FC = () => {
                         onClick={() => setSelectedColor(c)}
                         disabled={isPurchaseDisabled}
                         className={`px-4 py-2 rounded-xl border-2 text-sm font-bold transition-all ${selectedColor === c
-                          ? 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white border-transparent shadow-md'
-                          : 'bg-white text-[#8B7355] border-[#E5DCC5] hover:border-[#D4AF37]'
+                          ? 'bg-primary-green text-black border-transparent shadow-md'
+                          : 'bg-white text-black border-gray-200 hover:border-primary-green'
                           } disabled:opacity-50 disabled:cursor-not-allowed`}
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
@@ -738,12 +740,12 @@ const ProductPage: React.FC = () => {
 
               {/* Extensions selector */}
               {hasExtensions && (
-                <div className="bg-[#FAF9F6] rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2 border-[#E5DCC5]">
+                <div className="bg-gray-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-gray-200">
                   <div className="flex items-center gap-2 mb-3">
-                    <h3 className="font-bold text-[#8B7355] text-base sm:text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <h3 className="font-bold text-black text-base sm:text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       الإضافات المتاحة
                     </h3>
-                    <span className="text-xs text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-1 rounded-full" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <span className="text-xs text-black bg-gray-200 px-2 py-1 rounded-full" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       اختياري
                     </span>
                   </div>
@@ -754,8 +756,8 @@ const ProductPage: React.FC = () => {
                         <label
                           key={ext.id}
                           className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-all ${isSelected
-                            ? 'bg-gradient-to-r from-[#8B7355]/10 to-[#A67C52]/10 border-[#D4AF37]'
-                            : 'bg-white border-[#E5DCC5] hover:border-[#C4A57B]'
+                            ? 'bg-white border-black'
+                            : 'bg-white border-gray-200 hover:border-gray-400'
                             } ${isPurchaseDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                           <div className="flex items-center gap-3 flex-1">
@@ -771,15 +773,15 @@ const ProductPage: React.FC = () => {
                                 }
                               }}
                               disabled={isPurchaseDisabled}
-                              className="w-5 h-5 rounded border-2 border-[#8B7355] text-[#8B7355] focus:ring-2 focus:ring-[#D4AF37]"
+                              className="w-5 h-5 rounded border-2 border-gray-400 text-black focus:ring-2 focus:ring-black"
                             />
                             <div className="flex-1">
-                              <p className="text-sm font-medium text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                              <p className="text-sm font-medium text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                 {ext.name}
                               </p>
                             </div>
                           </div>
-                          <span className="text-sm font-bold text-[#D4AF37]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                          <span className="text-sm font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                             +{ext.additionalPrice.toFixed(2)} جنيه
                           </span>
                         </label>
@@ -791,26 +793,26 @@ const ProductPage: React.FC = () => {
 
 
               {/* Quantity */}
-              <div className="flex justify-between items-center bg-[#FAF9F6] rounded-xl sm:rounded-2xl p-3 sm:p-4 border-2 border-[#E5DCC5]">
-                <h3 className="font-bold text-[#8B7355] text-base sm:text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <div className="flex justify-between items-center bg-gray-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-gray-200">
+                <h3 className="font-bold text-black text-base sm:text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   الكمية
                 </h3>
                 <div className="flex items-center gap-3 sm:gap-4">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     disabled={isPurchaseDisabled}
-                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl font-bold text-lg sm:text-xl text-[#8B7355] shadow-md hover:shadow-lg hover:border-[#D4AF37] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white border border-gray-300 rounded-lg sm:rounded-xl font-bold text-lg sm:text-xl text-black shadow-sm hover:shadow-md hover:border-black transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                   >
                     -
                   </button>
-                  <span className="text-xl sm:text-2xl font-black text-[#8B7355] min-w-[2rem] text-center" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <span className="text-xl sm:text-2xl font-black text-black min-w-[2rem] text-center" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     {quantity}
                   </span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
                     disabled={isPurchaseDisabled}
-                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl font-bold text-lg sm:text-xl text-[#8B7355] shadow-md hover:shadow-lg hover:border-[#D4AF37] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white border border-gray-300 rounded-lg sm:rounded-xl font-bold text-lg sm:text-xl text-black shadow-sm hover:shadow-md hover:border-black transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                   >
                     +
@@ -823,8 +825,8 @@ const ProductPage: React.FC = () => {
                 onClick={handleAddToCart}
                 disabled={isPurchaseDisabled}
                 className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg shadow-xl transition-all flex items-center justify-center gap-2 sm:gap-3 ${addedToCart
-                  ? 'bg-green-500 text-white hover:bg-green-600'
-                  : 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white hover:from-[#6B5644] hover:to-[#8B6644] hover:shadow-2xl hover:scale-[1.02]'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-green-500 text-white hover:bg-green-600 hover:shadow-2xl hover:scale-[1.02]'
                   } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100`}
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
@@ -866,22 +868,22 @@ const ProductPage: React.FC = () => {
               </div>
 
               {/* Features */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-3 sm:pt-4 border-t-2 border-[#E5DCC5]">
-                <div className="text-center p-2 sm:p-3 bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC] rounded-lg sm:rounded-xl border border-[#E5DCC5]">
-                  <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 text-[#8B7355] mx-auto mb-1" />
-                  <p className="text-[10px] sm:text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-100">
+                <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-200">
+                  <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 text-black mx-auto mb-1" />
+                  <p className="text-[10px] sm:text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     جودة عالية
                   </p>
                 </div>
-                <div className="text-center p-2 sm:p-3 bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC] rounded-lg sm:rounded-xl border border-[#E5DCC5]">
-                  <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-[#D4AF37] mx-auto mb-1 fill-current" />
-                  <p className="text-[10px] sm:text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-200">
+                  <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-black mx-auto mb-1 fill-current" />
+                  <p className="text-[10px] sm:text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     صنع بحب
                   </p>
                 </div>
-                <div className="text-center p-2 sm:p-3 bg-gradient-to-br from-[#FAF9F6] to-[#F5F5DC] rounded-lg sm:rounded-xl border border-[#E5DCC5]">
-                  <Star className="h-5 w-5 sm:h-6 sm:w-6 text-[#C4A57B] mx-auto mb-1 fill-current" />
-                  <p className="text-[10px] sm:text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-200">
+                  <Star className="h-5 w-5 sm:h-6 sm:w-6 text-black mx-auto mb-1 fill-current" />
+                  <p className="text-[10px] sm:text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     تصميم مميز
                   </p>
                 </div>
@@ -899,7 +901,7 @@ const ProductPage: React.FC = () => {
 
         {/* WhatsApp */}
         <div className="mt-6 sm:mt-8 text-center">
-          <p className="text-[#8B7355]/70 mb-3 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+          <p className="text-gray-500 mb-3 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
             هل لديك سؤال عن هذا المنتج؟
           </p>
           <a

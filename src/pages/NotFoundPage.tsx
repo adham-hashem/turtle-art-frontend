@@ -4,35 +4,35 @@ import { Home, ArrowRight, Sparkles, Heart, ShoppingBag, Search, MessageCircle }
 
 const NotFoundPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center py-6 sm:py-8 px-3 sm:px-4 pt-20 relative overflow-hidden" dir="rtl">
+    <div className="min-h-screen bg-white flex items-center justify-center py-6 sm:py-8 px-3 sm:px-4 pt-20 relative overflow-hidden" dir="rtl">
       {/* Background Decorations - Hidden on small mobile */}
-      <div className="hidden sm:block absolute top-10 left-10 text-[#E5DCC5] animate-bounce">
+      <div className="hidden sm:block absolute top-10 left-10 text-gray-200 animate-bounce">
         <ShoppingBag className="h-8 w-8 sm:h-12 sm:w-12" />
       </div>
-      <div className="hidden sm:block absolute top-20 right-16 text-[#D4AF37] animate-pulse">
+      <div className="hidden sm:block absolute top-20 right-16 text-gray-300 animate-pulse">
         <Sparkles className="h-6 w-6 sm:h-10 sm:w-10" />
       </div>
-      <div className="hidden md:block absolute bottom-20 left-16 text-[#C4A57B] animate-pulse">
+      <div className="hidden md:block absolute bottom-20 left-16 text-gray-200 animate-pulse">
         <Heart className="h-6 w-6 sm:h-8 sm:w-8 fill-current" />
       </div>
-      <div className="hidden md:block absolute bottom-32 right-10 text-[#E5DCC5] animate-bounce">
+      <div className="hidden md:block absolute bottom-32 right-10 text-gray-300 animate-bounce">
         <ShoppingBag className="h-8 w-8 sm:h-10 sm:w-10" />
       </div>
-      <div className="hidden lg:block absolute top-1/2 left-5 text-[#F5F5DC] opacity-50">
+      <div className="hidden lg:block absolute top-1/2 left-5 text-gray-100 opacity-50">
         <ShoppingBag className="h-12 w-12 sm:h-16 sm:w-16" />
       </div>
-      <div className="hidden lg:block absolute top-1/3 right-5 text-[#E5DCC5] opacity-50">
+      <div className="hidden lg:block absolute top-1/3 right-5 text-gray-100 opacity-50">
         <Heart className="h-8 w-8 sm:h-12 sm:w-12 fill-current" />
       </div>
 
       <div className="container mx-auto relative z-10 max-w-2xl">
         <div className="text-center">
           {/* Main Card */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-6 md:p-8 border-2 border-[#E5DCC5]">
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-5 sm:p-6 md:p-8 border border-gray-200">
             {/* Logo */}
             <div className="mb-4 sm:mb-6">
               <div className="relative inline-block">
-                <div className="absolute -inset-2 bg-[#C4A57B] rounded-full blur-lg opacity-30 animate-pulse"></div>
+                <div className="absolute -inset-2 bg-gray-100 rounded-full blur-lg opacity-30 animate-pulse"></div>
                 <img
                   src="/turtle_art_logo.jpeg"
                   alt="Turtle Art"
@@ -43,7 +43,7 @@ const NotFoundPage: React.FC = () => {
 
             {/* 404 Illustration */}
             <div className="relative mb-4 sm:mb-6">
-              <div className="text-6xl sm:text-7xl md:text-8xl font-black text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <div className="text-6xl sm:text-7xl md:text-8xl font-black text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 404
               </div>
               <div className="absolute -top-1 sm:-top-2 right-1/4 animate-bounce">
@@ -56,16 +56,16 @@ const NotFoundPage: React.FC = () => {
 
             {/* Sad Icon */}
             <div className="mb-4 sm:mb-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-[#F5F5DC] to-[#E5DCC5] rounded-full">
+              <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full">
                 <span className="text-4xl sm:text-5xl">😢</span>
               </div>
             </div>
 
-            <h2 className="text-xl sm:text-2xl font-bold text-[#8B7355] mb-2 sm:mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <h2 className="text-xl sm:text-2xl font-bold text-black mb-2 sm:mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               أوبس! الصفحة غير موجودة
             </h2>
 
-            <p className="text-sm sm:text-base text-[#8B7355]/70 mb-6 sm:mb-8 leading-relaxed px-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8 leading-relaxed px-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               يبدو أن هذه الصفحة اختفت مثل حقيبة أحلامك! 👜
               <br />
               لا تقلق، يمكنك العودة واستكشاف مجموعتنا الرائعة.
@@ -75,16 +75,17 @@ const NotFoundPage: React.FC = () => {
             <div className="space-y-2 sm:space-y-3">
               <Link
                 to="/"
-                className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl hover:from-[#6B5644] hover:to-[#8B6644] transition-all shadow-lg hover:shadow-xl font-bold flex items-center justify-center gap-2 text-sm sm:text-base"
+                className="w-full bg-primary-green text-black py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl hover:bg-primary-green-dark transition-all shadow-lg hover:shadow-xl font-bold flex items-center justify-center gap-2 text-sm sm:text-base"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
-                <Home size={18} className="sm:w-5 sm:h-5" />
-                <span>العودة للرئيسية</span>
+                <ShoppingBag size={18} className="sm:hidden" />
+                <ShoppingBag size={20} className="hidden sm:block" />
+                العودة للرئيسية
               </Link>
 
               <Link
                 to="/products"
-                className="w-full bg-[#D4AF37] text-white py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl hover:bg-[#C49F27] transition-all shadow-lg hover:shadow-xl font-bold flex items-center justify-center gap-2 text-sm sm:text-base"
+                className="w-full bg-green-500 text-white py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl hover:bg-green-600 transition-all shadow-lg hover:shadow-xl font-bold flex items-center justify-center gap-2 text-sm sm:text-base"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 <ShoppingBag size={18} className="sm:w-5 sm:h-5" />
@@ -93,7 +94,7 @@ const NotFoundPage: React.FC = () => {
 
               <button
                 onClick={() => window.history.back()}
-                className="w-full bg-[#F5F5DC] text-[#8B7355] py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl sm:rounded-2xl hover:bg-[#E5DCC5] transition-all font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
+                className="w-full bg-gray-100 text-black py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl sm:rounded-2xl hover:bg-gray-200 transition-all font-semibold flex items-center justify-center gap-2 text-sm sm:text-base"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 <ArrowRight size={18} className="sm:w-5 sm:h-5" />
@@ -103,41 +104,41 @@ const NotFoundPage: React.FC = () => {
           </div>
 
           {/* Help Section */}
-          <div className="mt-4 sm:mt-6 md:mt-8 bg-white border-2 border-[#E5DCC5] rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 shadow-lg">
+          <div className="mt-4 sm:mt-6 md:mt-8 bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 shadow-sm">
             <div className="flex items-center justify-center gap-2 mb-2 sm:mb-3">
-              <Search className="h-4 w-4 sm:h-5 sm:w-5 text-[#D4AF37]" />
-              <h3 className="font-bold text-[#8B7355] text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <Search className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+              <h3 className="font-bold text-black text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 هل تبحث عن شيء معين؟
               </h3>
             </div>
-            <p className="text-[#8B7355]/70 text-xs sm:text-sm mb-3 sm:mb-4" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-gray-500 text-xs sm:text-sm mb-3 sm:mb-4" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               يمكنك تصفح أقسام الموقع أو التواصل معنا مباشرة
             </p>
             <div className="flex flex-wrap justify-center gap-2">
               <Link
                 to="/"
-                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#F5F5DC] text-[#8B7355] rounded-full text-xs sm:text-sm font-semibold hover:bg-[#E5DCC5] transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white text-black border border-gray-200 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-colors"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 الرئيسية
               </Link>
               <Link
                 to="/products"
-                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#E5DCC5] text-[#8B7355] rounded-full text-xs sm:text-sm font-semibold hover:bg-[#D4AF37] hover:text-white transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white text-black border border-gray-200 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-colors"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 المنتجات
               </Link>
               <Link
                 to="/cart"
-                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#C4A57B]/20 text-[#8B7355] rounded-full text-xs sm:text-sm font-semibold hover:bg-[#C4A57B]/40 transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white text-black border border-gray-200 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-colors"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 السلة
               </Link>
               <Link
                 to="/my-orders"
-                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-amber-100 text-amber-700 rounded-full text-xs sm:text-sm font-semibold hover:bg-amber-200 transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white text-black border border-gray-200 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-colors"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 طلباتي
@@ -161,7 +162,7 @@ const NotFoundPage: React.FC = () => {
 
           {/* Fun Message */}
           <div className="mt-6 sm:mt-8">
-            <p className="text-[#8B7355]/40 text-xs sm:text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-gray-400 text-xs sm:text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               لا تحزن! كل المشاكل تُحل بحقيبة جديدة 👜✨
             </p>
           </div>
