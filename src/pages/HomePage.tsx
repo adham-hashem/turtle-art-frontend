@@ -200,18 +200,18 @@ const HomePage: React.FC = () => {
           <div className="absolute inset-0 bg-[#8B7355]/10 mix-blend-multiply" />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <img
+            {/* <img
               src="/turtle_art_logo.jpeg"
               alt="Turtle Art Logo"
               className="w-20 h-20 rounded-full object-cover shadow-2xl mb-3 animate-pulse border-4 border-white/80"
-            />
+            /> */}
 
-            <button
+            {/* <button
               onClick={() => navigate('/custom-designs')}
               className="px-6 py-2 bg-white/90 backdrop-blur-sm rounded-full text-[#8B7355] font-bold hover:bg-[#D4AF37] hover:text-white transition-all duration-300 shadow-lg transform hover:scale-105"
             >
               <span style={{ fontFamily: 'Tajawal, sans-serif' }}>اطلب تصميمك الآن 👜✨</span>
-            </button>
+            </button> */}
           </div>
         </div>
 
