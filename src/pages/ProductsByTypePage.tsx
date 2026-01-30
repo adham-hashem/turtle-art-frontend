@@ -261,7 +261,7 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
         <button
           onClick={() => pageNumber > 1 && fetchProducts(pageNumber - 1)}
           disabled={pageNumber === 1 || loading}
-          className="flex items-center px-3 py-2 bg-white/90 border-2 border-[#E5DCC5] rounded-xl hover:border-[#D4AF37] hover:shadow-lg disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-all"
+          className="flex items-center px-3 py-2 bg-white border-2 border-gray-200 rounded-xl hover:shadow-lg disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-all"
           style={{ fontFamily: 'Tajawal, sans-serif' }}
         >
           <ChevronRight size={20} />
@@ -272,16 +272,15 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
           {pageNumbers.map((p, idx) => (
             <React.Fragment key={idx}>
               {p === '...' ? (
-                <span className="px-3 py-2 text-[#8B7355]/60">...</span>
+                <span className="px-3 py-2 text-gray-400">...</span>
               ) : (
                 <button
                   onClick={() => fetchProducts(p as number)}
                   disabled={loading}
-                  className={`px-3 py-2 rounded-xl transition-all border-2 ${
-                    pageNumber === p
-                      ? 'bg-[#D4AF37] text-white border-[#D4AF37] shadow-lg'
-                      : 'bg-white/90 text-[#8B7355] border-[#E5DCC5] hover:border-[#D4AF37] hover:shadow-md'
-                  } ${loading ? 'cursor-not-allowed opacity-50' : ''}`}
+                  className={`px-3 py-2 rounded-xl transition-all border-2 ${pageNumber === p
+                      ? 'bg-black text-white border-black shadow-lg'
+                      : 'bg-white text-black border-gray-200 hover:shadow-md'
+                    } ${loading ? 'cursor-not-allowed opacity-50' : ''}`}
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
                   {p}
@@ -294,7 +293,7 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
         <button
           onClick={() => pageNumber < totalPages && fetchProducts(pageNumber + 1)}
           disabled={pageNumber === totalPages || loading}
-          className="flex items-center px-3 py-2 bg-white/90 border-2 border-[#E5DCC5] rounded-xl hover:border-[#D4AF37] hover:shadow-lg disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-all"
+          className="flex items-center px-3 py-2 bg-white border-2 border-gray-200 rounded-xl hover:shadow-lg disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-all"
           style={{ fontFamily: 'Tajawal, sans-serif' }}
         >
           <span className="ml-1">التالي</span>
@@ -329,14 +328,14 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] pt-20 pb-20"
+      className="min-h-screen bg-white pt-20 pb-20"
       dir="rtl"
     >
       <div className="max-w-7xl mx-auto px-4">
         {/* Back */}
         <Link
           to={config.backButtonUrl || '/'}
-          className="flex items-center space-x-reverse space-x-2 text-[#8B7355] hover:text-[#D4AF37] mb-6 transition-colors font-medium"
+          className="flex items-center space-x-reverse space-x-2 text-black hover:text-gray-600 mb-6 transition-colors font-medium"
           style={{ fontFamily: 'Tajawal, sans-serif' }}
         >
           <ArrowRight size={20} />
@@ -345,18 +344,18 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-white/90 backdrop-blur-sm rounded-full shadow-xl border-2 border-[#E5DCC5] mb-4">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-xl border-2 border-gray-200 mb-4">
             <span className="text-3xl">👜</span>
           </div>
 
           <h1
-            className="text-3xl font-bold text-[#8B7355] mb-2"
+            className="text-3xl font-bold text-black mb-2"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             {config.titleAr}
           </h1>
           <p
-            className="text-[#8B7355]/70 max-w-2xl mx-auto"
+            className="text-black max-w-2xl mx-auto"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             {config.subtitleAr}
@@ -366,8 +365,8 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
         {/* Content */}
         {loading && products.length === 0 ? (
           <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#D4AF37] mb-4"></div>
-            <p className="text-xl text-[#8B7355] font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-black mb-4"></div>
+            <p className="text-xl text-black font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               جار التحميل...
             </p>
           </div>
@@ -377,12 +376,12 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
             <p className="text-2xl text-red-600 font-bold mb-4" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               {error}
             </p>
-            <p className="text-[#8B7355]/70 mb-8 text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-black mb-8 text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               حدث خطأ أثناء جلب المنتجات. يرجى معاودة المحاولة.
             </p>
             <button
               onClick={() => fetchProducts(pageNumber)}
-              className="px-6 py-2 bg-white/90 backdrop-blur-sm rounded-full text-[#8B7355] font-bold hover:bg-[#D4AF37] hover:text-white transition-all duration-300 shadow-lg transform hover:scale-105"
+              className="px-6 py-2 bg-white rounded-full text-black font-bold hover:bg-gray-200 transition-all duration-300 shadow-lg transform hover:scale-105"
               style={{ fontFamily: 'Tajawal, sans-serif' }}
             >
               إعادة المحاولة
@@ -391,10 +390,10 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
         ) : products.length === 0 ? (
           <div className="text-center py-20">
             <div className="text-7xl mb-6">📦</div>
-            <p className="text-2xl text-[#8B7355] font-bold mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-2xl text-black font-bold mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               لا توجد منتجات للعرض حالياً
             </p>
-            <p className="text-[#8B7355]/70 text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-black text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               نحن نعمل على إضافة منتجات جديدة قريباً!
             </p>
           </div>
@@ -404,7 +403,7 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
               {products.map((p) => (
                 <div
                   key={p.id}
-                  className="bg-white rounded-2xl hover:shadow-xl transition-all duration-300 border border-[#E5DCC5] hover:border-[#D4AF37] overflow-hidden"
+                  className="bg-white rounded-2xl hover:shadow-xl transition-all duration-300 overflow-hidden"
                 >
                   <ProductCard product={p} onViewProduct={handleViewProduct} onAddToCart={handleAddToCart} />
                 </div>

@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-gradient-to-b from-[#FAF9F6] to-white mt-16 py-12 pb-24 border-t-2 border-[#E5DCC5]">
+    <footer className="bg-white mt-16 py-12 pb-24 border-t-2 border-gray-200">
       <div className="container mx-auto px-4">
         {/* Logo and Brand */}
         <div className="flex flex-col items-center gap-6 mb-10">
@@ -21,14 +21,14 @@ const Footer: React.FC = () => {
             <img
               src="/turtle_art_logo.jpeg"
               alt="Turtle Art"
-              className="h-16 w-16 rounded-full object-cover shadow-lg border-4 border-[#E5DCC5]"
+              className="h-16 w-16 rounded-full object-cover shadow-lg border-4 border-gray-200"
             />
             <div className="text-center">
-              <h3 className="text-xl font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <h3 className="text-xl font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 Turtle Art
               </h3>
-              <p className="text-sm text-[#D4AF37] font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-               ✨🐢Dream Bag ? Found it!
+              <p className="text-sm text-black font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                ✨🐢Dream Bag ? Found it!
               </p>
             </div>
           </div>
@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
             href="https://www.instagram.com/turtle.aart"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-3 bg-gradient-to-br from-[#8B7355] to-[#A67C52] text-white rounded-full hover:scale-110 transition-transform shadow-lg hover:shadow-xl"
+            className="p-3 bg-black text-white rounded-full hover:scale-110 transition-transform shadow-lg hover:shadow-xl"
             aria-label="Instagram"
           >
             <Instagram className="h-5 w-5" />
@@ -50,7 +50,7 @@ const Footer: React.FC = () => {
             href="https://www.facebook.com/Turtle.aart"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-3 bg-[#D4AF37] text-white rounded-full hover:scale-110 transition-transform shadow-lg hover:shadow-xl"
+            className="p-3 bg-black text-white rounded-full hover:scale-110 transition-transform shadow-lg hover:shadow-xl"
             aria-label="Facebook"
           >
             <Facebook className="h-5 w-5" />
@@ -60,7 +60,7 @@ const Footer: React.FC = () => {
             href="https://www.tiktok.com/@turtle_aart"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-3 bg-[#8B7355] text-white rounded-full hover:scale-110 transition-transform shadow-lg hover:shadow-xl"
+            className="p-3 bg-black text-white rounded-full hover:scale-110 transition-transform shadow-lg hover:shadow-xl"
             aria-label="TikTok"
           >
             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -81,25 +81,25 @@ const Footer: React.FC = () => {
         <div className="flex flex-wrap justify-center gap-4 mb-8">
           <a
             href="/"
-            className="text-sm text-[#8B7355] hover:text-[#D4AF37] font-medium transition-colors"
+            className="text-sm text-black hover:text-gray-600 font-medium transition-colors"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             الرئيسية
           </a>
-          <span className="text-[#E5DCC5]">•</span>
+          <span className="text-gray-300">•</span>
 
           <a
             href="/cart"
-            className="text-sm text-[#8B7355] hover:text-[#D4AF37] font-medium transition-colors"
+            className="text-sm text-black hover:text-gray-600 font-medium transition-colors"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             السلة
           </a>
-          <span className="text-[#E5DCC5]">•</span>
+          <span className="text-gray-300">•</span>
 
           <a
             href="/my-orders"
-            className="text-sm text-[#8B7355] hover:text-[#D4AF37] font-medium transition-colors"
+            className="text-sm text-black hover:text-gray-600 font-medium transition-colors"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             طلباتي
@@ -107,9 +107,9 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Copyright */}
-        <div className="border-t-2 border-[#E5DCC5] pt-6">
+        <div className="border-t-2 border-gray-200 pt-6">
           <div className="text-center space-y-3">
-            <p className="text-[#8B7355]/70 text-sm font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-gray-600 text-sm font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               Contact the developers
             </p>
 
@@ -134,7 +134,7 @@ const Footer: React.FC = () => {
               </button>
             </div>
 
-            <p className="text-[#8B7355]/50 text-xs" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-gray-400 text-xs" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               © {currentYear} Turtle Art. جميع الحقوق محفوظة 🐢
             </p>
           </div>

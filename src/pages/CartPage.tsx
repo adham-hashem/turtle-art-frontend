@@ -522,7 +522,7 @@ const CartPage: React.FC = () => {
               {/* Checkout Button */}
               <button
                 onClick={() => navigate('/checkout')}
-                className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white py-3 sm:py-3.5 rounded-xl sm:rounded-2xl hover:from-[#6B5644] hover:to-[#8B6644] font-bold text-base sm:text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-green-500 hover:bg-green-600 text-white py-3 sm:py-3.5 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
                 disabled={isClearingCart}
               >

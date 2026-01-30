@@ -100,18 +100,18 @@ export default function AllProductsPage() {
   }, [pageNumber]);
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6]">
+    <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-6">
           <h1
-            className="text-3xl font-extrabold text-[#8B7355]"
+            className="text-3xl font-extrabold text-black"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             {title}
           </h1>
           <p
-            className="text-[#8B7355]/80 mt-1"
+            className="text-black mt-1"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             إجمالي المنتجات: {totalItems}
@@ -123,14 +123,14 @@ export default function AllProductsPage() {
           <button
             disabled={!canPrev || loading}
             onClick={() => setPageNumber((p) => Math.max(1, p - 1))}
-            className="px-4 py-2 rounded-xl border-2 border-[#E5DCC5] bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#D4AF37] transition"
+            className="px-4 py-2 rounded-xl bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md transition text-black"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             السابق
           </button>
 
           <div
-            className="text-[#8B7355] font-bold"
+            className="text-black font-bold"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             صفحة {pageNumber} / {totalPages}
@@ -139,7 +139,7 @@ export default function AllProductsPage() {
           <button
             disabled={!canNext || loading}
             onClick={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
-            className="px-4 py-2 rounded-xl border-2 border-[#E5DCC5] bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#D4AF37] transition"
+            className="px-4 py-2 rounded-xl bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md transition text-black"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             التالي
@@ -149,7 +149,7 @@ export default function AllProductsPage() {
         {/* States */}
         {loading && (
           <div
-            className="text-center py-10 text-[#8B7355]"
+            className="text-center py-10 text-black"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             جاري تحميل المنتجات...
@@ -178,7 +178,7 @@ export default function AllProductsPage() {
 
         {!loading && !error && items.length === 0 && (
           <div
-            className="text-center py-10 text-[#8B7355]"
+            className="text-center py-10 text-black"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             لا توجد منتجات حالياً.
@@ -193,9 +193,9 @@ export default function AllProductsPage() {
               return (
                 <div
                   key={p.id}
-                  className="bg-white/90 backdrop-blur-sm border-2 border-[#E5DCC5] rounded-2xl shadow-lg overflow-hidden hover:border-[#D4AF37] transition"
+                  className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition"
                 >
-                  <div className="aspect-[4/3] bg-[#FAF9F6] overflow-hidden">
+                  <div className="aspect-[4/3] bg-white overflow-hidden">
                     {img ? (
                       <img
                         src={img}
@@ -204,7 +204,7 @@ export default function AllProductsPage() {
                         loading="lazy"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[#8B7355]/60">
+                      <div className="w-full h-full flex items-center justify-center text-black/60">
                         No Image
                       </div>
                     )}
@@ -212,7 +212,7 @@ export default function AllProductsPage() {
 
                   <div className="p-4">
                     <h3
-                      className="font-extrabold text-[#8B7355] line-clamp-1"
+                      className="font-extrabold text-black line-clamp-1"
                       style={{ fontFamily: 'Tajawal, sans-serif' }}
                       title={p.name}
                     >
@@ -221,7 +221,7 @@ export default function AllProductsPage() {
 
                     {p.description && (
                       <p
-                        className="text-sm text-[#8B7355]/75 mt-1 line-clamp-2"
+                        className="text-sm text-black mt-1 line-clamp-2"
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                         title={p.description}
                       >
@@ -231,7 +231,7 @@ export default function AllProductsPage() {
 
                     <div className="mt-3 flex items-center justify-between gap-2">
                       <div
-                        className="font-extrabold text-[#D4AF37]"
+                        className="font-extrabold text-black"
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
                         {p.price} ج
@@ -240,7 +240,7 @@ export default function AllProductsPage() {
                       {/* Optional: if you have product details route */}
                       <Link
                         to={`/product/${p.id}`}
-                        className="text-sm font-bold text-[#8B7355] hover:text-[#D4AF37] transition"
+                        className="text-sm font-bold text-black hover:text-gray-600 transition"
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                       >
                         التفاصيل

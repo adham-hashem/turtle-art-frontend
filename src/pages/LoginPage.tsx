@@ -118,24 +118,24 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FAF9F6] via-[#F5F5DC] to-[#E5DCC5] flex items-center justify-center p-4 pt-24 pb-8 relative overflow-hidden">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4 pt-24 pb-8 relative overflow-hidden">
       {/* Background Decorations */}
-      <div className="absolute top-10 left-10 text-[#C4A57B] animate-bounce">
+      <div className="absolute top-10 left-10 text-gray-300 animate-bounce">
         <ShoppingBag className="h-16 w-16" />
       </div>
-      <div className="absolute top-20 right-20 text-[#D4AF37] animate-pulse">
+      <div className="absolute top-20 right-20 text-gray-400 animate-pulse">
         <Sparkles className="h-12 w-12" />
       </div>
-      <div className="absolute bottom-20 left-20 text-[#B4956B] animate-pulse">
+      <div className="absolute bottom-20 left-20 text-gray-300 animate-pulse">
         <Heart className="h-10 w-10 fill-current" />
       </div>
-      <div className="absolute bottom-32 right-16 text-[#C4A57B] animate-bounce delay-100">
+      <div className="absolute bottom-32 right-16 text-gray-300 animate-bounce delay-100">
         <Star className="h-8 w-8 fill-current" />
       </div>
-      <div className="absolute top-1/2 left-5 text-[#E5DCC5]">
+      <div className="absolute top-1/2 left-5 text-gray-100">
         <ShoppingBag className="h-20 w-20 opacity-50" />
       </div>
-      <div className="absolute top-1/3 right-5 text-[#F5F5DC]">
+      <div className="absolute top-1/3 right-5 text-gray-100">
         <Heart className="h-14 w-14 fill-current opacity-50" />
       </div>
 
@@ -143,7 +143,7 @@ const LoginPage: React.FC = () => {
         {/* Back Button */}
         <Link
           to="/"
-          className="inline-flex items-center space-x-reverse space-x-2 text-[#8B7355] hover:text-[#D4AF37] mb-6 transition-colors group"
+          className="inline-flex items-center space-x-reverse space-x-2 text-black hover:text-gray-600 mb-6 transition-colors group"
           style={{ fontFamily: 'Tajawal, sans-serif' }}
         >
           <ArrowRight size={20} className="group-hover:-translate-x-1 transition-transform" />
@@ -151,18 +151,18 @@ const LoginPage: React.FC = () => {
         </Link>
 
         {/* Main Card */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-[#E5DCC5]">
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
           {/* Header */}
-          <div className="relative bg-gradient-to-r from-[#8B7355] via-[#A67C52] to-[#C4A57B] p-8 text-center">
+          <div className="relative bg-black p-8 text-center">
             {/* Animated Stars */}
             <div className="absolute top-3 right-6 animate-pulse">
-              <Sparkles className="h-5 w-5 text-[#F5F5DC]" />
+              <Sparkles className="h-5 w-5 text-white" />
             </div>
             <div className="absolute top-6 left-8 animate-pulse delay-75">
-              <Star className="h-4 w-4 text-[#E5DCC5] fill-current" />
+              <Star className="h-4 w-4 text-white fill-current" />
             </div>
             <div className="absolute bottom-4 right-10 animate-pulse delay-150">
-              <Heart className="h-4 w-4 text-[#FAF9F6] fill-current" />
+              <Heart className="h-4 w-4 text-white fill-current" />
             </div>
 
             {/* Logo */}
@@ -191,13 +191,13 @@ const LoginPage: React.FC = () => {
             {/* Welcome Message */}
             <div className="text-center mb-6">
               <div className="inline-flex items-center justify-center gap-2 mb-3">
-                <Sparkles className="h-5 w-5 text-[#D4AF37]" />
-                <h2 className="text-2xl font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <Sparkles className="h-5 w-5 text-black" />
+                <h2 className="text-2xl font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   أهلاً بك!
                 </h2>
-                <Sparkles className="h-5 w-5 text-[#D4AF37]" />
+                <Sparkles className="h-5 w-5 text-black" />
               </div>
-              <p className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <p className="text-gray-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 سجل دخولك واستمتع بأجمل الحقائب المصممة بعناية
               </p>
             </div>
@@ -215,16 +215,16 @@ const LoginPage: React.FC = () => {
             {isLoggingIn ? (
               <div className="flex flex-col items-center space-y-4 py-8">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#C4A57B] to-[#D4AF37] rounded-full blur-xl opacity-50 animate-pulse"></div>
-                  <div className="relative bg-gradient-to-r from-[#8B7355] to-[#A67C52] rounded-full p-4">
+                  <div className="absolute inset-0 bg-black rounded-full blur-xl opacity-20 animate-pulse"></div>
+                  <div className="relative bg-black rounded-full p-4">
                     <ShoppingBag className="h-10 w-10 text-white animate-bounce" />
                   </div>
                 </div>
                 <div className="text-center">
-                  <p className="text-[#8B7355] font-bold text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <p className="text-black font-bold text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     جاري تسجيل الدخول...
                   </p>
-                  <p className="text-[#8B7355]/70 text-sm mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <p className="text-gray-600 text-sm mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     نجهز لك أجمل التصاميم 👜
                   </p>
                 </div>
@@ -249,11 +249,11 @@ const LoginPage: React.FC = () => {
                 </div>
 
                 {/* Terms */}
-                <div className="text-center text-[#8B7355]/50 text-xs" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <div className="text-center text-gray-400 text-xs" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   <p>
                     بتسجيل الدخول، أنت توافق على{' '}
-                    <span className="text-[#D4AF37] hover:underline cursor-pointer">سياسة الخصوصية</span> و{' '}
-                    <span className="text-[#D4AF37] hover:underline cursor-pointer">شروط الاستخدام</span>
+                    <span className="text-black hover:underline cursor-pointer">سياسة الخصوصية</span> و{' '}
+                    <span className="text-black hover:underline cursor-pointer">شروط الاستخدام</span>
                   </p>
                 </div>
               </div>
@@ -261,19 +261,19 @@ const LoginPage: React.FC = () => {
           </div>
 
           {/* Bottom Banner */}
-          <div className="bg-gradient-to-r from-[#FAF9F6] via-[#F5F5DC] to-[#E5DCC5] p-4">
+          <div className="bg-gray-50 p-4">
             <div className="flex items-center justify-center gap-6 text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-              <div className="flex items-center gap-1 text-[#8B7355]">
+              <div className="flex items-center gap-1 text-black">
                 <ShoppingBag className="h-4 w-4" />
                 <span>حقائب مميزة</span>
               </div>
-              <div className="w-1 h-1 rounded-full bg-[#C4A57B]"></div>
-              <div className="flex items-center gap-1 text-[#A67C52]">
+              <div className="w-1 h-1 rounded-full bg-gray-300"></div>
+              <div className="flex items-center gap-1 text-black">
                 <Heart className="h-4 w-4 fill-current" />
                 <span>صنع بحب</span>
               </div>
-              <div className="w-1 h-1 rounded-full bg-[#C4A57B]"></div>
-              <div className="flex items-center gap-1 text-[#D4AF37]">
+              <div className="w-1 h-1 rounded-full bg-gray-300"></div>
+              <div className="flex items-center gap-1 text-black">
                 <Star className="h-4 w-4 fill-current" />
                 <span>جودة عالية</span>
               </div>
@@ -283,27 +283,27 @@ const LoginPage: React.FC = () => {
 
         {/* Features Cards */}
         <div className="mt-8 grid grid-cols-3 gap-3">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg text-center hover:shadow-xl transition-shadow hover:-translate-y-1 duration-300 border border-[#E5DCC5]">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-[#F5F5DC] to-[#E5DCC5] rounded-full mb-2">
+          <div className="bg-white rounded-2xl p-4 shadow-lg text-center hover:shadow-xl transition-shadow hover:-translate-y-1 duration-300 border border-gray-200">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-2">
               <span className="text-2xl">👜</span>
             </div>
-            <p className="text-xs text-[#8B7355] font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-xs text-black font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               تصاميم فريدة
             </p>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg text-center hover:shadow-xl transition-shadow hover:-translate-y-1 duration-300 border border-[#E5DCC5]">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-[#F5F5DC] to-[#E5DCC5] rounded-full mb-2">
+          <div className="bg-white rounded-2xl p-4 shadow-lg text-center hover:shadow-xl transition-shadow hover:-translate-y-1 duration-300 border border-gray-200">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-2">
               <span className="text-2xl">🚚</span>
             </div>
-            <p className="text-xs text-[#8B7355] font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-xs text-black font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               توصيل سريع
             </p>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg text-center hover:shadow-xl transition-shadow hover:-translate-y-1 duration-300 border border-[#E5DCC5]">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-[#F5F5DC] to-[#E5DCC5] rounded-full mb-2">
+          <div className="bg-white rounded-2xl p-4 shadow-lg text-center hover:shadow-xl transition-shadow hover:-translate-y-1 duration-300 border border-gray-200">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-2">
               <span className="text-2xl">⭐</span>
             </div>
-            <p className="text-xs text-[#8B7355] font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-xs text-black font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               أعلى تقييم
             </p>
           </div>

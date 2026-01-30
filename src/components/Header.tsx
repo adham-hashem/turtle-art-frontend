@@ -137,9 +137,9 @@ const Header: React.FC = () => {
               aria-label="القائمة"
             >
               {isMenuOpen ? (
-                <X className="h-6 w-6 text-[#8B7355]" />
+                <X className="h-6 w-6 text-black" />
               ) : (
-                <MenuIcon className="h-6 w-6 text-[#8B7355]" />
+                <MenuIcon className="h-6 w-6 text-black" />
               )}
             </button>
 
@@ -154,11 +154,11 @@ const Header: React.FC = () => {
                 className="h-12 w-12 rounded-full object-cover shadow-md"
               />
               <div className="hidden sm:block">
-                <h1 className="text-lg font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <h1 className="text-lg font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   Turtle Art
                 </h1>
-                <p className="text-xs text-[#D4AF37]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                  
+                <p className="text-xs text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+
                 </p>
               </div>
             </Link>
@@ -167,21 +167,21 @@ const Header: React.FC = () => {
             <div className="flex items-center gap-3">
               {/* Search - Desktop */}
               <div className="hidden md:flex items-center">
-                <div className="flex items-center space-x-reverse space-x-2 bg-[#F5F5DC]/50 rounded-lg px-4 py-2 border border-[#E5DCC5]">
+                <div className="flex items-center space-x-reverse space-x-2 bg-gray-100 rounded-lg px-4 py-2 border border-gray-200">
                   <input
                     type="text"
                     placeholder="ابحث بكود المنتج..."
                     value={searchCode}
                     onChange={(e) => setSearchCode(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                    className="bg-transparent outline-none text-right w-40 text-[#8B7355] placeholder:text-[#8B7355]/50"
+                    className="bg-transparent outline-none text-right w-40 text-black placeholder:text-gray-400"
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                     dir="rtl"
                     disabled={isLoading}
                   />
                   <button
                     onClick={handleSearch}
-                    className="text-[#8B7355] hover:text-[#D4AF37] transition-colors"
+                    className="text-black hover:text-gray-600 transition-colors"
                     disabled={isLoading}
                     aria-label="بحث"
                   >
@@ -196,7 +196,7 @@ const Header: React.FC = () => {
                   <div className="relative" ref={dropdownRef}>
                     <button
                       onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                      className="flex items-center space-x-reverse space-x-2 text-[#8B7355] hover:text-[#D4AF37] transition-colors p-2 rounded-lg hover:bg-[#F5F5DC]/30"
+                      className="flex items-center space-x-reverse space-x-2 text-black hover:text-gray-600 transition-colors p-2 rounded-lg hover:bg-gray-100"
                     >
                       <UserCircle size={24} />
                       <span className="text-sm font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
@@ -205,12 +205,12 @@ const Header: React.FC = () => {
                     </button>
 
                     {isProfileDropdownOpen && (
-                      <div className="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-[#E5DCC5] py-2 z-50">
-                        <div className="px-4 py-3 border-b border-[#E5DCC5]">
-                          <p className="text-sm font-semibold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      <div className="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                        <div className="px-4 py-3 border-b border-gray-200">
+                          <p className="text-sm font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                             {user?.name}
                           </p>
-                          <p className="text-xs text-[#8B7355]/70 truncate" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                          <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                             {user?.email}
                           </p>
                         </div>
@@ -218,7 +218,7 @@ const Header: React.FC = () => {
                         <Link
                           to="/profile"
                           onClick={() => setIsProfileDropdownOpen(false)}
-                          className="flex items-center space-x-reverse space-x-3 px-4 py-3 text-[#8B7355] hover:bg-[#F5F5DC]/50 transition-colors"
+                          className="flex items-center space-x-reverse space-x-3 px-4 py-3 text-black hover:bg-gray-100 transition-colors"
                           style={{ fontFamily: 'Tajawal, sans-serif' }}
                         >
                           <Settings size={18} />
@@ -228,7 +228,7 @@ const Header: React.FC = () => {
                         <Link
                           to="/my-orders"
                           onClick={() => setIsProfileDropdownOpen(false)}
-                          className="flex items-center space-x-reverse space-x-3 px-4 py-3 text-[#8B7355] hover:bg-[#F5F5DC]/50 transition-colors"
+                          className="flex items-center space-x-reverse space-x-3 px-4 py-3 text-black hover:bg-gray-100 transition-colors"
                           style={{ fontFamily: 'Tajawal, sans-serif' }}
                         >
                           <ShoppingBag size={18} />
@@ -239,7 +239,7 @@ const Header: React.FC = () => {
                           <Link
                             to="/admin"
                             onClick={() => setIsProfileDropdownOpen(false)}
-                            className="flex items-center space-x-reverse space-x-3 px-4 py-3 text-[#D4AF37] hover:bg-[#F5F5DC]/50 transition-colors"
+                            className="flex items-center space-x-reverse space-x-3 px-4 py-3 text-black hover:bg-gray-100 transition-colors"
                             style={{ fontFamily: 'Tajawal, sans-serif' }}
                           >
                             <Settings size={18} />
@@ -247,7 +247,7 @@ const Header: React.FC = () => {
                           </Link>
                         )}
 
-                        <div className="border-t border-[#E5DCC5] mt-2">
+                        <div className="border-t border-gray-200 mt-2">
                           <button
                             onClick={handleLogout}
                             className="flex items-center space-x-reverse space-x-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors w-full"
@@ -263,7 +263,7 @@ const Header: React.FC = () => {
                 ) : (
                   <Link
                     to="/login"
-                    className="text-[#8B7355] hover:text-[#D4AF37] font-medium transition-colors px-4 py-2 rounded-lg hover:bg-[#F5F5DC]/30"
+                    className="text-black hover:text-gray-600 font-medium transition-colors px-4 py-2 rounded-lg hover:bg-gray-100"
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                   >
                     تسجيل دخول
@@ -277,9 +277,9 @@ const Header: React.FC = () => {
                 className="relative p-2 rounded-full hover:bg-[#F5F5DC]/30 transition-all"
                 aria-label="السلة"
               >
-                <ShoppingBag className="h-6 w-6 text-[#8B7355]" />
+                <ShoppingBag className="h-6 w-6 text-black" />
                 {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#D4AF37] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                  <span className="absolute -top-1 -right-1 bg-black text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
                     {itemCount}
                   </span>
                 )}
@@ -289,15 +289,15 @@ const Header: React.FC = () => {
 
           {/* Search Results */}
           {isLoading && (
-            <div className="mt-3 p-4 bg-[#F5F5DC]/50 rounded-lg border border-[#E5DCC5]">
-              <p className="text-[#8B7355] text-center" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <div className="mt-3 p-4 bg-gray-100 rounded-lg border border-gray-200">
+              <p className="text-black text-center" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 جارٍ البحث...
               </p>
             </div>
           )}
 
           {searchResult && !isLoading && (
-            <div className="mt-3 p-4 bg-[#F5F5DC]/50 rounded-lg border border-[#D4AF37]">
+            <div className="mt-3 p-4 bg-gray-100 rounded-lg border border-gray-300">
               <div className="flex items-center space-x-reverse space-x-4">
                 <img
                   src={`${apiUrl}${searchResult.images[0].imagePath}`}
@@ -305,13 +305,13 @@ const Header: React.FC = () => {
                   className="w-16 h-16 object-cover rounded-lg"
                 />
                 <div className="flex-1">
-                  <h3 className="font-semibold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <h3 className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     {searchResult.name}
                   </h3>
-                  <p className="text-sm text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <p className="text-sm text-gray-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     كود المنتج: {searchResult.code}
                   </p>
-                  <p className="text-[#D4AF37] font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <p className="text-black font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     {searchResult.price} جنيه
                   </p>
                 </div>
@@ -323,7 +323,7 @@ const Header: React.FC = () => {
                     setSearchResult(null);
                     setSearchCode('');
                   }}
-                  className="bg-[#D4AF37] text-white px-4 py-2 rounded-lg hover:bg-[#C49F27] transition-colors whitespace-nowrap"
+                  className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors whitespace-nowrap"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
                   عرض المنتج
@@ -349,40 +349,40 @@ const Header: React.FC = () => {
           onClick={() => setIsMenuOpen(false)}
         >
           <div
-            className="fixed top-0 right-0 w-72 h-full bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] shadow-2xl transform transition-transform duration-300 ease-out overflow-y-auto"
+            className="fixed top-0 right-0 w-72 h-full bg-white shadow-2xl transform transition-transform duration-300 ease-out overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
             style={{ paddingBottom: '120px' }}
           >
             <div className="p-6">
               <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <h2 className="text-2xl font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   Turtle Art 🐢
                 </h2>
                 <button
                   onClick={() => setIsMenuOpen(false)}
                   className="p-2 rounded-full hover:bg-white/50 transition-all"
                 >
-                  <X className="w-6 h-6 text-[#8B7355]" />
+                  <X className="w-6 h-6 text-black" />
                 </button>
               </div>
 
               {/* Search in Sidebar */}
               <div className="mb-6 md:hidden">
-                <div className="flex items-center space-x-reverse space-x-2 bg-white/60 rounded-lg px-3 py-2 border border-[#E5DCC5]">
+                <div className="flex items-center space-x-reverse space-x-2 bg-gray-100 rounded-lg px-3 py-2 border border-gray-200">
                   <input
                     type="text"
                     placeholder="ابحث بكود المنتج..."
                     value={searchCode}
                     onChange={(e) => setSearchCode(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                    className="bg-transparent outline-none text-right flex-1 text-[#8B7355]"
+                    className="bg-transparent outline-none text-right flex-1 text-black"
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                     dir="rtl"
                     disabled={isLoading}
                   />
                   <button
                     onClick={handleSearch}
-                    className="text-[#8B7355] hover:text-[#D4AF37]"
+                    className="text-black hover:text-gray-600"
                     disabled={isLoading}
                     aria-label="بحث"
                   >
@@ -400,11 +400,10 @@ const Header: React.FC = () => {
                       navigate(`/${item.page === 'home' ? '' : item.page}`);
                       setIsMenuOpen(false);
                     }}
-                    className={`w-full text-right px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-between group ${
-                      currentPage === `/${item.page === 'home' ? '' : item.page}`
-                        ? 'bg-white/60 text-[#D4AF37]'
-                        : 'text-[#8B7355] hover:bg-white/60'
-                    }`}
+                    className={`w-full text-right px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-between group ${currentPage === `/${item.page === 'home' ? '' : item.page}`
+                        ? 'bg-gray-100 text-black font-bold'
+                        : 'text-black hover:bg-gray-100'
+                      }`}
                   >
                     <span className="text-lg font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       {item.label}
@@ -418,12 +417,12 @@ const Header: React.FC = () => {
 
               {/* User Account in Sidebar */}
               {isAuthenticated ? (
-                <div className="border-t border-[#E5DCC5] pt-4 space-y-3">
-                  <div className="px-4 py-2 bg-white/60 rounded-lg">
-                    <p className="text-sm font-semibold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <div className="border-t border-gray-200 pt-4 space-y-3">
+                  <div className="px-4 py-2 bg-gray-100 rounded-lg">
+                    <p className="text-sm font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       {user?.name}
                     </p>
-                    <p className="text-xs text-[#8B7355]/70 truncate" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       {user?.email}
                     </p>
                   </div>
@@ -431,7 +430,7 @@ const Header: React.FC = () => {
                   <Link
                     to="/profile"
                     onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center space-x-reverse space-x-3 py-3 px-4 text-[#8B7355] hover:text-[#D4AF37] font-medium transition-colors rounded-lg hover:bg-white/60"
+                    className="flex items-center space-x-reverse space-x-3 py-3 px-4 text-black hover:text-gray-600 font-medium transition-colors rounded-lg hover:bg-gray-100"
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                   >
                     <Settings size={18} />
@@ -442,7 +441,7 @@ const Header: React.FC = () => {
                     <Link
                       to="/admin"
                       onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center space-x-reverse space-x-3 py-3 px-4 text-[#D4AF37] hover:text-[#C49F27] font-medium transition-colors rounded-lg hover:bg-white/60"
+                      className="flex items-center space-x-reverse space-x-3 py-3 px-4 text-black hover:text-gray-600 font-medium transition-colors rounded-lg hover:bg-gray-100"
                       style={{ fontFamily: 'Tajawal, sans-serif' }}
                     >
                       <Settings size={18} />
@@ -463,11 +462,11 @@ const Header: React.FC = () => {
                   </button>
                 </div>
               ) : (
-                <div className="border-t border-[#E5DCC5] pt-4">
+                <div className="border-t border-gray-200 pt-4">
                   <Link
                     to="/login"
                     onClick={() => setIsMenuOpen(false)}
-                    className="block text-right py-3 px-4 text-[#8B7355] hover:text-[#D4AF37] font-medium transition-colors rounded-lg hover:bg-white/60"
+                    className="block text-right py-3 px-4 text-black hover:text-gray-600 font-medium transition-colors rounded-lg hover:bg-gray-100"
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                   >
                     تسجيل دخول

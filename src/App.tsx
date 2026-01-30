@@ -123,7 +123,7 @@ function PublicLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col" dir="rtl">
+    <div className="min-h-screen bg-white flex flex-col" dir="rtl">
       <Header />
 
       {/* ✅ pb-24 so pages never get covered by BottomNav */}
@@ -141,7 +141,7 @@ function PublicLayout() {
 // ✅ Admin Layout: no Header/Footer/BottomNav
 function AdminLayout() {
   return (
-    <div className="min-h-screen" dir="rtl">
+    <div className="min-h-screen bg-white" dir="rtl">
       <Outlet />
     </div>
   );

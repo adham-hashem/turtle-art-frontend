@@ -182,7 +182,7 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] pt-20 pb-20" dir="rtl">
+    <div className="min-h-screen bg-white pt-20 pb-20" dir="rtl">
       <main>
         {/* Hero Section (like your example) */}
         <div className="relative w-full h-48 overflow-hidden">
@@ -194,10 +194,10 @@ const HomePage: React.FC = () => {
           />
 
           {/* ✅ overlay gradient for readability (same palette) */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-[#FAF9F6]/65" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-white/65" />
 
           {/* ✅ a very light warm tint to match theme */}
-          <div className="absolute inset-0 bg-[#8B7355]/10 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-black/5 mix-blend-multiply" />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {/* <img
@@ -218,10 +218,10 @@ const HomePage: React.FC = () => {
         {/* Products Section */}
         <div className="max-w-7xl mx-auto px-4 pb-8">
           <div className="text-center mb-8 mt-6">
-            <h1 className="text-3xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <h1 className="text-3xl font-bold text-black mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               🤍Turtle Art
             </h1>
-            <p className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               Special bag Just for you✨
             </p>
           </div>
@@ -229,7 +229,7 @@ const HomePage: React.FC = () => {
           {loading && products.length === 0 ? (
             <div className="text-center py-20">
               <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#D4AF37] mb-4"></div>
-              <p className="text-xl text-[#8B7355] font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <p className="text-xl text-black font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 جار التحميل...
               </p>
             </div>
@@ -239,12 +239,12 @@ const HomePage: React.FC = () => {
               <p className="text-2xl text-red-600 font-bold mb-4" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 {error}
               </p>
-              <p className="text-[#8B7355]/70 mb-8 text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <p className="text-black mb-8 text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 حدث خطأ أثناء جلب المنتجات. يرجى التأكد من اتصالك أو معاودة المحاولة.
               </p>
               <button
                 onClick={() => window.location.reload()}
-                className="px-6 py-2 bg-white/90 backdrop-blur-sm rounded-full text-[#8B7355] font-bold hover:bg-[#D4AF37] hover:text-white transition-all duration-300 shadow-lg transform hover:scale-105"
+                className="px-6 py-2 bg-white/90 backdrop-blur-sm rounded-full text-black font-bold hover:bg-gray-200 transition-all duration-300 shadow-lg transform hover:scale-105"
               >
                 <span style={{ fontFamily: 'Tajawal, sans-serif' }}>إعادة المحاولة</span>
               </button>
@@ -257,7 +257,7 @@ const HomePage: React.FC = () => {
                     {products.map((product) => (
                       <div
                         key={product.id}
-                        className="bg-white rounded-2xl hover:shadow-xl transition-all duration-300 border border-[#E5DCC5] hover:border-[#D4AF37] overflow-hidden"
+                        className="bg-white rounded-2xl hover:shadow-xl transition-all duration-300 overflow-hidden"
                       >
                         <ProductCard product={product} onViewProduct={handleViewProduct} onAddToCart={handleAddToCart} />
                       </div>
@@ -267,7 +267,7 @@ const HomePage: React.FC = () => {
                   <div className="text-center">
                     <button
                       onClick={() => navigate('/products')}
-                      className="px-6 py-2 bg-white/90 backdrop-blur-sm rounded-full text-[#8B7355] font-bold hover:bg-[#D4AF37] hover:text-white transition-all duration-300 shadow-lg transform hover:scale-105"
+                      className="px-6 py-2 bg-white/90 backdrop-blur-sm rounded-full text-black font-bold hover:bg-gray-200 transition-all duration-300 shadow-lg transform hover:scale-105"
                     >
                       <span style={{ fontFamily: 'Tajawal, sans-serif' }}>عرض كل المنتجات</span>
                     </button>
@@ -278,10 +278,10 @@ const HomePage: React.FC = () => {
               {products.length === 0 && !loading && !error && (
                 <div className="text-center py-20">
                   <div className="text-7xl mb-6">📦</div>
-                  <p className="text-2xl text-[#8B7355] font-bold mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <p className="text-2xl text-black font-bold mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     لا توجد منتجات للعرض حالياً
                   </p>
-                  <p className="text-[#8B7355]/70 text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <p className="text-black text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     نحن نعمل على إضافة مجموعة جديدة ومميزة من الحقائب قريباً!
                   </p>
                 </div>
