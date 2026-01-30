@@ -438,7 +438,7 @@ const ProductPage: React.FC = () => {
           <div className="space-y-3">
             <Link
               to="/"
-              className="w-full bg-primary-green text-black px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl hover:bg-primary-green-dark font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all text-sm sm:text-base"
+              className="w-full btn-primary px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl flex items-center justify-center gap-2 text-sm sm:text-base"
               style={{ fontFamily: 'Tajawal, sans-serif' }}
             >
               <ShoppingBag size={20} />
@@ -487,7 +487,7 @@ const ProductPage: React.FC = () => {
           <button
             onClick={handleShare}
             className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl transition-all font-medium shadow-md text-sm sm:text-base ${copied
-              ? 'bg-green-500 text-white shadow-green-300'
+              ? 'bg-success-green text-white shadow-green-300'
               : 'bg-white text-black border border-gray-200 hover:border-black hover:shadow-lg'
               }`}
             style={{ fontFamily: 'Tajawal, sans-serif' }}
@@ -512,7 +512,7 @@ const ProductPage: React.FC = () => {
         {addedToCart && (
           <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 animate-bounce">
             <div
-              className="bg-green-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl shadow-2xl flex items-center gap-2 sm:gap-3 text-sm sm:text-base"
+              className="bg-success-green text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl shadow-2xl flex items-center gap-2 sm:gap-3 text-sm sm:text-base"
               style={{ fontFamily: 'Tajawal, sans-serif' }}
             >
               <Check size={20} className="sm:hidden" />
@@ -824,9 +824,9 @@ const ProductPage: React.FC = () => {
               <button
                 onClick={handleAddToCart}
                 disabled={isPurchaseDisabled}
-                className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg shadow-xl transition-all flex items-center justify-center gap-2 sm:gap-3 ${addedToCart
-                  ? 'bg-green-600 text-white'
-                  : 'bg-green-500 text-white hover:bg-green-600 hover:shadow-2xl hover:scale-[1.02]'
+                className={`w-full btn-success py-3 sm:py-4 rounded-xl sm:rounded-2xl text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 ${addedToCart
+                  ? 'opacity-90'
+                  : 'hover:shadow-2xl hover:scale-[1.02]'
                   } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100`}
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >

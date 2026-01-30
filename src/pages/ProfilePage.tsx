@@ -367,7 +367,7 @@ const ProfilePage = () => {
             <div className="pt-4 sm:pt-6">
               <button
                 type="submit"
-                className="w-full bg-green-500 text-white px-6 sm:px-10 py-3 sm:py-3.5 md:py-4 rounded-xl sm:rounded-2xl hover:bg-green-600 transition-all font-bold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base md:text-lg flex items-center justify-center gap-2"
+                className="w-full btn-success px-6 sm:px-10 py-3 sm:py-3.5 md:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base md:text-lg flex items-center justify-center gap-2"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
                 disabled={submitting}
               >

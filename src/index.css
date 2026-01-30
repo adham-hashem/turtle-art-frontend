@@ -3,18 +3,48 @@
 @tailwind utilities;
 
 @layer components {
-  /* Primary green button */
+
+  /* Primary green button - vibrant with white text */
   .btn-primary {
-    @apply bg-primary-green text-black font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary-green-dark hover:scale-105 active:scale-95;
+    @apply bg-primary-green text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary-green-dark hover:scale-105 active:scale-95 shadow-md hover:shadow-lg;
   }
-  
-  /* Secondary button with green border */
+
+  /* Secondary button with green border and green text */
   .btn-secondary {
-    @apply bg-white text-black font-bold px-4 py-2 rounded-lg border-2 border-primary-green transition-all duration-300 hover:bg-primary-green hover:scale-105 active:scale-95;
+    @apply bg-white text-primary-green font-bold px-4 py-2 rounded-lg border-2 border-primary-green transition-all duration-300 hover:bg-primary-green hover:text-white hover:scale-105 active:scale-95;
   }
-  
+
+  /* Accent button - teal for special actions */
+  .btn-accent {
+    @apply bg-accent-teal text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-accent-teal/90 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg;
+  }
+
+  /* Success button - green confirmation */
+  .btn-success {
+    @apply bg-success-green text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-success-green/90 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg;
+  }
+
+  /* Danger button - red for delete/remove */
+  .btn-danger {
+    @apply bg-error-red text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-error-red/90 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg;
+  }
+
+  /* Warning button - amber for caution */
+  .btn-warning {
+    @apply bg-warning-amber text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-warning-amber/90 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg;
+  }
+
+  /* Outline button variants */
+  .btn-outline-primary {
+    @apply bg-transparent text-primary-green font-bold px-4 py-2 rounded-lg border-2 border-primary-green transition-all duration-300 hover:bg-primary-green hover:text-white hover:scale-105 active:scale-95;
+  }
+
+  .btn-outline-danger {
+    @apply bg-transparent text-error-red font-bold px-4 py-2 rounded-lg border-2 border-error-red transition-all duration-300 hover:bg-error-red hover:text-white hover:scale-105 active:scale-95;
+  }
+
   /* Disabled button */
   .btn-disabled {
-    @apply bg-secondary-gray text-gray-400 font-bold px-4 py-2 rounded-lg cursor-not-allowed;
+    @apply bg-neutral-200 text-neutral-700 font-bold px-4 py-2 rounded-lg cursor-not-allowed opacity-60;
   }
 }

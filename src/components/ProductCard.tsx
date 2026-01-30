@@ -128,9 +128,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Stock Status Badge */}
         <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
-          <div className="bg-primary-green text-black px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl shadow-xl border-2 border-white">
-            <ShoppingBag size={14} className="sm:hidden text-black" />
-            <ShoppingBag size={16} className="hidden sm:block text-black" />
+          <div className="bg-primary-green text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl shadow-xl border-2 border-white">
+            <ShoppingBag size={14} className="sm:hidden text-white" />
+            <ShoppingBag size={16} className="hidden sm:block text-white" />
           </div>
         </div>
 
@@ -152,7 +152,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               e.stopPropagation();
               onViewProduct(product);
             }}
-            className="bg-white text-primary-green border-2 border-primary-green px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-2xl hover:bg-primary-green hover:text-black hover:scale-110 transition-all"
+            className="bg-white text-primary-green border-2 border-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-2xl hover:bg-primary-green-dark hover:text-white hover:border-primary-green-dark hover:scale-110 transition-all"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             <Eye size={18} />

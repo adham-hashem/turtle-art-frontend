@@ -228,7 +228,7 @@ const HomePage: React.FC = () => {
 
           {loading && products.length === 0 ? (
             <div className="text-center py-20">
-              <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#D4AF37] mb-4"></div>
+              <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary-green mb-4"></div>
               <p className="text-xl text-black font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 جار التحميل...
               </p>
@@ -244,7 +244,7 @@ const HomePage: React.FC = () => {
               </p>
               <button
                 onClick={() => window.location.reload()}
-                className="px-6 py-2 bg-white/90 backdrop-blur-sm rounded-full text-black font-bold hover:bg-gray-200 transition-all duration-300 shadow-lg transform hover:scale-105"
+                className="btn-secondary px-6 py-3 rounded-full"
               >
                 <span style={{ fontFamily: 'Tajawal, sans-serif' }}>إعادة المحاولة</span>
               </button>
@@ -267,7 +267,7 @@ const HomePage: React.FC = () => {
                   <div className="text-center">
                     <button
                       onClick={() => navigate('/products')}
-                      className="px-6 py-2 bg-white/90 backdrop-blur-sm rounded-full text-black font-bold hover:bg-gray-200 transition-all duration-300 shadow-lg transform hover:scale-105"
+                      className="btn-primary px-8 py-3 rounded-full text-base"
                     >
                       <span style={{ fontFamily: 'Tajawal, sans-serif' }}>عرض كل المنتجات</span>
                     </button>
