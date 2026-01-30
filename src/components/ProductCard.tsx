@@ -97,11 +97,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div
-      className="bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden transition-all duration-300 group hover:shadow-2xl cursor-pointer transform hover:scale-[1.02] active:scale-[0.98]"
+      className="bg-white rounded-2xl sm:rounded-3xl shadow-lg border-2 border-gray-200 hover:border-primary-green overflow-hidden transition-all duration-300 group hover:shadow-2xl cursor-pointer transform hover:scale-[1.02] active:scale-[0.98]"
       onClick={handleCardClick}
     >
       {/* Image Section */}
-      <div className="relative overflow-hidden bg-white">
+      <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-white">
         <img
           src={resolvedImageSrc}
           alt={product.name}
@@ -118,16 +118,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="absolute top-2 sm:top-3 right-2 sm:right-3 flex flex-col gap-1.5 sm:gap-2">
           {/* Discount Badge */}
           {discountPercentage > 0 && (
-            <div className="bg-red-500 text-white px-2.5 sm:px-4 py-1 sm:py-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-sm font-bold shadow-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-              خصم {discountPercentage}%
+            <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl shadow-xl border-2 border-white">
+              <span className="text-xs sm:text-sm font-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                {discountPercentage}% خصم
+              </span>
             </div>
           )}
         </div>
 
         {/* Stock Status Badge */}
-        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-white p-1.5 sm:p-2 rounded-lg sm:rounded-xl shadow-md">
-          <ShoppingBag size={16} className="sm:hidden text-black" />
-          <ShoppingBag size={20} className="hidden sm:block text-black" />
+        <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
+          <div className="bg-primary-green text-black px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl shadow-xl border-2 border-white">
+            <ShoppingBag size={14} className="sm:hidden text-black" />
+            <ShoppingBag size={16} className="hidden sm:block text-black" />
+          </div>
         </div>
 
         {/* Out of Stock Overlay */}
@@ -142,13 +146,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Hover Actions - Desktop Only */}
-        <div className="hidden md:flex absolute inset-0 bg-gradient-to-b from-black/90 to-black/90 opacity-0 group-hover:opacity-100 transition-all duration-300 items-end justify-center pb-6 gap-3">
+        <div className="hidden md:flex absolute inset-0 bg-gradient-to-b from-primary-green/80 to-primary-green-dark/90 opacity-0 group-hover:opacity-100 transition-all duration-300 items-end justify-center pb-6 gap-3">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onViewProduct(product);
             }}
-            className="bg-primary-green text-black px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-2xl hover:bg-primary-green-dark hover:scale-110 transition-all"
+            className="bg-white text-primary-green border-2 border-primary-green px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-2xl hover:bg-primary-green hover:text-black hover:scale-110 transition-all"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             <Eye size={18} />
@@ -164,7 +168,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <h3 className="font-bold text-base sm:text-lg md:text-xl text-black flex-1 text-right leading-tight line-clamp-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
             {product.name}
           </h3>
-          <span className="text-[10px] sm:text-xs text-black bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl font-bold whitespace-nowrap" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+          <span className="text-[10px] sm:text-xs text-black bg-gray-100 border border-gray-300 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl font-bold whitespace-nowrap" style={{ fontFamily: 'Tajawal, sans-serif' }}>
             {product.code}
           </span>
         </div>
@@ -175,13 +179,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </p>
 
         {/* Price Section */}
-        <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4">
+        <div className="bg-gradient-to-br from-primary-green/10 to-primary-green-light/10 border-2 border-primary-green/30 rounded-xl sm:rounded-2xl p-3 sm:p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <span className="text-2xl sm:text-3xl font-black text-primary-green-dark" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 {product.price}
               </span>
-              <span className="text-xs sm:text-sm text-black font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>جنيه</span>
+              <span className="text-xs sm:text-sm text-primary-green-dark font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>جنيه</span>
               {product.originalPrice && (
                 <span className="text-xs sm:text-sm text-gray-400 line-through font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   {product.originalPrice}
@@ -193,18 +197,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Colors */}
         {product.colors.length > 0 && (
-          <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3">
+          <div className="bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-2.5 sm:p-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs sm:text-sm font-bold text-black flex items-center gap-1 sm:gap-1.5" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                <Sparkles size={12} className="sm:hidden text-black" />
-                <Sparkles size={14} className="hidden sm:block text-black" />
+              <span className="text-xs sm:text-sm font-bold text-primary-green-dark flex items-center gap-1 sm:gap-1.5" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <Sparkles size={12} className="sm:hidden text-primary-green" />
+                <Sparkles size={14} className="hidden sm:block text-primary-green" />
                 الألوان:
               </span>
               <div className="flex items-center gap-1 sm:gap-1.5">
                 {product.colors.slice(0, 4).map((color, index) => (
                   <div
                     key={index}
-                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 rounded-lg sm:rounded-xl shadow-md transition-all hover:scale-125 hover:rotate-12 cursor-pointer"
+                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 rounded-lg sm:rounded-xl shadow-md border-2 border-white hover:border-primary-green transition-all hover:scale-125 hover:rotate-12 cursor-pointer"
                     style={{
                       backgroundColor: getColorHex(color)
                     }}
@@ -212,7 +216,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   />
                 ))}
                 {product.colors.length > 4 && (
-                  <span className="text-[10px] sm:text-xs text-black bg-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg sm:rounded-xl font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <span className="text-[10px] sm:text-xs text-primary-green-dark bg-white border border-primary-green/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg sm:rounded-xl font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     +{product.colors.length - 4}
                   </span>
                 )}
@@ -225,22 +229,22 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {product.sizes.length > 0 && (
           <div>
             <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
-              <ShoppingBag size={12} className="sm:hidden text-black" />
-              <ShoppingBag size={14} className="hidden sm:block text-black" />
-              <span className="text-xs sm:text-sm font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>المقاسات:</span>
+              <ShoppingBag size={12} className="sm:hidden text-primary-green" />
+              <ShoppingBag size={14} className="hidden sm:block text-primary-green" />
+              <span className="text-xs sm:text-sm font-bold text-primary-green-dark" style={{ fontFamily: 'Tajawal, sans-serif' }}>المقاسات:</span>
             </div>
             <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-end">
               {product.sizes.slice(0, 3).map((size, index) => (
                 <span
                   key={index}
-                  className="text-xs sm:text-sm font-bold bg-white text-black px-2.5 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded-lg sm:rounded-xl hover:scale-105 transition-transform"
+                  className="text-xs sm:text-sm font-bold bg-white text-primary-green-dark border border-primary-green/30 px-2.5 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded-lg sm:rounded-xl hover:bg-primary-green/10 hover:scale-105 transition-all"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
                   {size}
                 </span>
               ))}
               {product.sizes.length > 3 && (
-                <span className="text-xs sm:text-sm text-black bg-white px-2 sm:px-3 py-1 sm:py-1.5 md:py-2 rounded-lg sm:rounded-xl font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <span className="text-xs sm:text-sm text-primary-green-dark bg-white border border-primary-green/30 px-2 sm:px-3 py-1 sm:py-1.5 md:py-2 rounded-lg sm:rounded-xl font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   +{product.sizes.length - 3}
                 </span>
               )}
