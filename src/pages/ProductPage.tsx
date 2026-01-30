@@ -111,6 +111,22 @@ const ProductPage: React.FC = () => {
   const getAuthToken = () =>
     localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
 
+// const resolveUrl = (path?: string) => {
+//   if (!path) return '';
+//   const cleanPath = path.trim(); // 1. Trim whitespace
+  
+//   // 2. Check for standard absolute URLs
+//   if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) return cleanPath;
+  
+//   // 3. Handle accidental leading slash on absolute URLs
+//   if (cleanPath.startsWith('/http://') || cleanPath.startsWith('/https://')) return cleanPath.substring(1);
+  
+//   if (cleanPath.startsWith('data:image')) return cleanPath;
+  
+//   // 4. Handle relative paths
+//   if (cleanPath.startsWith('/')) return `${apiUrl}${cleanPath}`;
+//   return `${apiUrl}/${cleanPath}`;
+// };
   const resolveUrl = (path?: string) => {
     if (!path) return '';
     if (path.startsWith('http://') || path.startsWith('https://')) return path;

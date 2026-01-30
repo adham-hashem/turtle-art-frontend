@@ -28,7 +28,7 @@ const Footer: React.FC = () => {
                 Turtle Art
               </h3>
               <p className="text-sm text-[#D4AF37] font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                حقائب بلمسة فنية 🐢
+               ✨🐢Dream Bag ? Found it!
               </p>
             </div>
           </div>

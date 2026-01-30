@@ -5,7 +5,7 @@ export default function RamadanSetPage() {
   return (
     <ProductsByTypePage
       config={{
-        titleAr: 'طقم رمضان',
+        titleAr: 'منتجات رمضان',
         subtitleAr: 'اختيارات رمضان — هدايا/أطقم مناسبة للجو الرمضاني.',
         theme: 'default',
         queryKey: 'category',

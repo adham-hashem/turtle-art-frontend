@@ -17,7 +17,7 @@ export default function GirlsBagsPage() {
               style={{ fontFamily: 'Tajawal, sans-serif' }}
             >
               <span className="text-xl mr-2">✨</span>
-              شنط سهرة
+               شنطة سواريه
             </button>
             
             <button
@@ -36,7 +36,6 @@ export default function GirlsBagsPage() {
       <ProductsByTypePage
         config={{
           titleAr: 'شنط بنات',
-          subtitleAr: 'شنط بنات أنيقة — اختاري المفضل لكِ.',
           theme: 'default',
           legacySegment: 'girls-bags',
           restoreStateKey: 'fromGirlsBagsPage',

@@ -6,7 +6,6 @@ export default function KidsBagsPage() {
     <ProductsByTypePage
       config={{
         titleAr: 'شنط أطفال',
-        subtitleAr: 'شنط أطفال مميزة — اختيارات لطيفة وعملية.',
         theme: 'default',
         // Preferred query is not available in your controller, so we rely on legacySegment endpoint:
         queryKey: 'category',

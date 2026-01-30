@@ -24,6 +24,39 @@ if ('serviceWorker' in navigator) {
       console.error('❌ Firebase Service Worker registration failed:', error);
     });
 }
+const style = document.createElement("style");
+style.innerHTML = `
+  /* FORCE PURE WHITE EVERYWHERE */
+  html,
+  body,
+  #root {
+    background-color: #ffffff !important;
+  }
+
+  /* REMOVE ALL HERO / BANNER / COLORED SECTIONS */
+  section,
+  [class*="hero"],
+  [class*="banner"],
+  [class*="Hero"],
+  [class*="Banner"] {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+  }
+
+  /* HIDE EMPTY / DECORATIVE HERO SECTIONS */
+  section:empty {
+    display: none !important;
+  }
+
+  /* TEXT COLOR */
+  * {
+    color: #5E8B6A !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+`;
+document.head.appendChild(style);
+
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

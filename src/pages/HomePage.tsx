@@ -219,10 +219,10 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 pb-8">
           <div className="text-center mb-8 mt-6">
             <h1 className="text-3xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-              منتجاتنا المميزة 🤍
+              🤍Turtle Art
             </h1>
             <p className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-              صُنع بحب وإتقان خصيصاً لكِ 👜✨
+              Special bag Just for you✨
             </p>
           </div>
 
