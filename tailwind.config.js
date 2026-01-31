@@ -4,37 +4,37 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary Green (Enhanced - more vibrant emerald)
-        'primary-green': '#10b981',
-        'primary-green-dark': '#059669',
-        'primary-green-light': '#34d399',
-        'primary-green-hover': '#0d9668',
+        // Primary Greens - using centralized colors
+        'primary-green': 'var(--color-primary-green)',
+        'primary-green-dark': 'var(--color-primary-green-dark)',
+        'primary-green-light': 'var(--color-primary-green-light)',
+        'primary-green-hover': 'var(--color-primary-green-hover)',
 
-        // Accent Colors
-        'accent-teal': '#14b8a6',
-        'accent-lime': '#84cc16',
+        // Soft Accent Colors
+        'accent-teal': 'var(--color-accent-teal)',
+        'accent-lime': 'var(--color-accent-lime)',
 
-        // Semantic Colors (Enhanced)
-        'success-green': '#10b981',
-        'success-green-light': '#d1fae5',
-        'error-red': '#ef4444',
-        'error-red-light': '#fee2e2',
-        'warning-amber': '#f59e0b',
-        'warning-amber-light': '#fef3c7',
-        'info-blue': '#3b82f6',
-        'info-blue-light': '#dbeafe',
+        // Semantic Colors
+        'success-green': 'var(--color-success)',
+        'error-red': 'var(--color-error)',
+        'warning-amber': 'var(--color-warning)',
+        'info-blue': 'var(--color-info)',
 
-        // Neutral Palette (Refined)
-        'neutral-50': '#fafafa',
-        'neutral-100': '#f5f5f5',
-        'neutral-200': '#e5e5e5',
-        'neutral-300': '#d4d4d4',
-        'neutral-700': '#404040',
-        'neutral-800': '#262626',
-        'neutral-900': '#171717',
+        // Warm Neutral Palette
+        'warm-gray-50': 'var(--color-warm-gray-50)',
+        'warm-gray-100': 'var(--color-warm-gray-100)',
+        'warm-gray-200': 'var(--color-warm-gray-200)',
+        'warm-gray-300': 'var(--color-warm-gray-300)',
+        'warm-gray-400': 'var(--color-warm-gray-400)',
+        'warm-gray-500': 'var(--color-warm-gray-500)',
+        'warm-gray-600': 'var(--color-warm-gray-600)',
+        'warm-gray-700': 'var(--color-warm-gray-700)',
+        'warm-gray-800': 'var(--color-warm-gray-800)',
+        'warm-gray-900': 'var(--color-warm-gray-900)',
 
-        // Legacy support (keeping old names for backward compatibility)
-        'secondary-gray': '#e5e5e5',
+        // Comfort Colors
+        'soft-white': 'var(--color-soft-white)',
+        'soft-shadow': 'var(--color-soft-shadow)',
       },
     },
   },

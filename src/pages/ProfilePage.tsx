@@ -157,7 +157,7 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4 pt-20" dir="rtl">
+      <div className="min-h-screen bg-soft-white flex items-center justify-center px-4 pt-20" dir="rtl">
         <div className="text-center py-12">
           <div className="relative inline-block mb-6">
             <div className="absolute inset-0 bg-gray-200 rounded-full blur-xl opacity-30 animate-pulse"></div>

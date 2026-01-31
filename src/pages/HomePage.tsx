@@ -182,10 +182,10 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white pt-20 pb-20" dir="rtl">
+    <div className="min-h-screen bg-soft-white" dir="rtl">
       <main>
-        {/* Hero Section (like your example) */}
-        <div className="relative w-full h-48 overflow-hidden">
+        {/* Hero Section with Background - starts after header */}
+        <div className="relative w-full h-40 sm:h-48 md:h-56 overflow-hidden mt-20">
           <img
             src="/background2.jpeg"
             alt="Turtle Art"
@@ -193,36 +193,22 @@ const HomePage: React.FC = () => {
             loading="eager"
           />
 
-          {/* ✅ overlay gradient for readability (same palette) */}
+          {/* Overlay gradient for readability */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-white/65" />
 
-          {/* ✅ a very light warm tint to match theme */}
+          {/* Warm tint overlay */}
           <div className="absolute inset-0 bg-black/5 mix-blend-multiply" />
 
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            {/* <img
-              src="/turtle_art_logo.jpeg"
-              alt="Turtle Art Logo"
-              className="w-20 h-20 rounded-full object-cover shadow-2xl mb-3 animate-pulse border-4 border-white/80"
-            /> */}
-
-            {/* <button
-              onClick={() => navigate('/custom-designs')}
-              className="px-6 py-2 bg-white/90 backdrop-blur-sm rounded-full text-[#8B7355] font-bold hover:bg-[#D4AF37] hover:text-white transition-all duration-300 shadow-lg transform hover:scale-105"
-            >
-              <span style={{ fontFamily: 'Tajawal, sans-serif' }}>اطلب تصميمك الآن 👜✨</span>
-            </button> */}
-          </div>
         </div>
 
         {/* Products Section */}
-        <div className="max-w-7xl mx-auto px-4 pb-8">
-          <div className="text-center mb-8 mt-6">
+        <div className="pt-8 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="flex flex-col items-center justify-center mb-8 mt-6 w-full">
             <h1 className="text-3xl font-bold text-black mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               🤍Turtle Art
             </h1>
-            <p className="text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-              Special bag Just for you✨
+            <p className="text-black text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              ✨Special bag Just for you✨
             </p>
           </div>
 

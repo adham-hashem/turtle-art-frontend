@@ -470,8 +470,8 @@ const ProductPage: React.FC = () => {
   const currentImage = safeImages[currentImageIndex]?.imagePath || '';
 
   return (
-    <div className="min-h-screen bg-white" dir="rtl">
-      <div className="pt-24 pb-12 px-3 sm:px-4 lg:px-8 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-soft-white" dir="rtl">
+      <div className="pt-28 pb-16 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         {/* Back button + Share */}
         <div className="mb-4 sm:mb-6 lg:mb-8 flex items-center justify-between">
           <button

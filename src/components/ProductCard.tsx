@@ -97,7 +97,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div
-      className="bg-white rounded-2xl sm:rounded-3xl shadow-lg border-2 border-gray-200 hover:border-primary-green overflow-hidden transition-all duration-300 group hover:shadow-2xl cursor-pointer transform hover:scale-[1.02] active:scale-[0.98]"
+      className="bg-white rounded-2xl sm:rounded-3xl shadow-md border-2 border-warm-gray-200 hover:border-primary-green overflow-hidden transition-all duration-300 ease-in-out group hover:shadow-lg cursor-pointer transform hover:scale-[1.01] active:scale-[0.99] p-1"
       onClick={handleCardClick}
     >
       {/* Image Section */}
@@ -111,7 +111,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             target.src =
               'https://placehold.co/600x400/FAF9F6/8B7355?text=👜+Turtle+Art';
           }}
-          className="w-full h-48 sm:h-56 md:h-64 object-contain group-hover:scale-110 transition-transform duration-500"
+          className="w-full h-48 sm:h-56 md:h-64 object-contain group-hover:scale-105 transition-transform duration-500 ease-in-out"
         />
 
         {/* Badges */}
@@ -146,13 +146,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Hover Actions - Desktop Only */}
-        <div className="hidden md:flex absolute inset-0 bg-gradient-to-b from-primary-green/80 to-primary-green-dark/90 opacity-0 group-hover:opacity-100 transition-all duration-300 items-end justify-center pb-6 gap-3">
+        <div
+          className="hidden md:flex absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 items-end justify-center pb-6 gap-3"
+          style={{
+            background: 'linear-gradient(to bottom, rgba(22, 163, 74, 0.9), rgba(34, 197, 94, 0.95))'
+          }}
+        >
           <button
             onClick={(e) => {
               e.stopPropagation();
               onViewProduct(product);
             }}
-            className="bg-white text-primary-green border-2 border-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-2xl hover:bg-primary-green-dark hover:text-white hover:border-primary-green-dark hover:scale-110 transition-all"
+            className="bg-white text-primary-green-dark border-2 border-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-2xl hover:bg-primary-green-light hover:text-white hover:scale-110 transition-all"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             <Eye size={18} />
