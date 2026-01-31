@@ -295,66 +295,66 @@ export default function CustomOrders() {
   if (orderComplete) {
     return (
       <div
-        className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center p-4 pt-24"
+        className="min-h-screen bg-soft-white flex items-center justify-center p-4 pt-24"
         dir="rtl"
       >
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 max-w-md w-full text-center border-2 border-[#E5DCC5]">
+        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl p-8 max-w-md w-full text-center border border-warm-gray-200">
           <div className="relative mb-6">
-            <div className="absolute inset-0 bg-[#D4AF37] rounded-full blur-xl opacity-25 animate-pulse"></div>
-            <div className="relative inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full shadow-xl">
+            <div className="absolute inset-0 bg-primary-green rounded-full blur-xl opacity-25 animate-pulse"></div>
+            <div className="relative inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-primary-green to-primary-green-dark rounded-full shadow-md">
               <CheckCircle className="h-12 w-12 text-white" />
             </div>
           </div>
 
-          <h1 className="text-3xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+          <h1 className="text-3xl font-bold text-warm-gray-800 mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
             تم استلام طلبك!
           </h1>
-          <p className="text-[#8B7355]/70 mb-6" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+          <p className="text-warm-gray-500 mb-6" style={{ fontFamily: 'Tajawal, sans-serif' }}>
             سيتم التواصل معك قريباً لتأكيد التفاصيل
           </p>
 
-          <div className="bg-[#FAF9F6] rounded-2xl p-4 mb-6 border-2 border-[#E5DCC5]">
-            <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+          <div className="bg-soft-white rounded-2xl p-4 mb-6 border border-warm-gray-200">
+            <p className="text-sm text-warm-gray-500 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               رقم الطلب
             </p>
-            <p className="text-2xl font-black text-[#D4AF37]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-2xl font-black text-primary-green" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               {orderNumber || orderId}
             </p>
           </div>
 
-          <div className="bg-[#F5F5DC] rounded-2xl p-4 mb-6 text-right border-2 border-[#E5DCC5]">
-            <h3 className="font-bold text-[#8B7355] mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+          <div className="bg-gray-50 rounded-2xl p-4 mb-6 text-right border border-warm-gray-200">
+            <h3 className="font-bold text-warm-gray-800 mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               ملخص الطلب
             </h3>
             <div className="space-y-2 text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               <div className="flex justify-between">
-                <span className="text-[#8B7355]/80">{formData.customerName}</span>
-                <span className="font-medium text-[#8B7355]">الاسم</span>
+                <span className="text-warm-gray-600">{formData.customerName}</span>
+                <span className="font-medium text-warm-gray-800">الاسم</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#8B7355]/80">{formData.customerPhone}</span>
-                <span className="font-medium text-[#8B7355]">الهاتف</span>
+                <span className="text-warm-gray-600">{formData.customerPhone}</span>
+                <span className="font-medium text-warm-gray-800">الهاتف</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#8B7355]/80 line-clamp-2">{formData.requiredText}</span>
-                <span className="font-medium text-[#8B7355]">النص</span>
+                <span className="text-warm-gray-600 line-clamp-2">{formData.requiredText}</span>
+                <span className="font-medium text-warm-gray-800">النص</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#8B7355]/80 line-clamp-2">
+                <span className="text-warm-gray-600 line-clamp-2">
                   {sanitizeColorList(formData.preferredColors).join(', ')}
                 </span>
-                <span className="font-medium text-[#8B7355]">الألوان</span>
+                <span className="font-medium text-warm-gray-800">الألوان</span>
               </div>
               {formData.notes && (
                 <div className="flex justify-between">
-                  <span className="text-[#8B7355]/80 line-clamp-2">{formData.notes}</span>
-                  <span className="font-medium text-[#8B7355]">ملاحظات</span>
+                  <span className="text-warm-gray-600 line-clamp-2">{formData.notes}</span>
+                  <span className="font-medium text-warm-gray-800">ملاحظات</span>
                 </div>
               )}
               {formData.designImage && (
                 <div className="flex justify-between">
-                  <span className="text-[#8B7355]/80">تم رفع صورة</span>
-                  <span className="font-medium text-[#8B7355]">التصميم</span>
+                  <span className="text-warm-gray-600">تم رفع صورة</span>
+                  <span className="font-medium text-warm-gray-800">التصميم</span>
                 </div>
               )}
             </div>
@@ -362,7 +362,7 @@ export default function CustomOrders() {
 
           <Link
             to="/"
-            className="inline-flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white py-4 rounded-2xl font-bold hover:from-[#6B5644] hover:to-[#8B6644] transition-all shadow-lg hover:shadow-xl"
+            className="inline-flex items-center justify-center gap-2 w-full btn-primary text-white py-4 rounded-2xl font-bold transition-all shadow-lg hover:shadow-xl"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             <span>العودة للرئيسية</span>
@@ -380,17 +380,17 @@ export default function CustomOrders() {
         return (
           <div className="space-y-4">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <h2 className="text-2xl font-bold text-warm-gray-800 mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 تفاصيل التصميم
               </h2>
-              <p className="text-[#8B7355]/70 text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <p className="text-warm-gray-500 text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 ارفع صورة مرجعية + اكتب النص المطلوب + اختر الألوان المفضلة
               </p>
             </div>
 
             <div>
-              <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                <MessageSquareText className="inline h-5 w-5 ml-2" />
+              <label className="block text-right text-warm-gray-700 font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <MessageSquareText className="inline h-5 w-5 ml-2 text-primary-green" />
                 النص المطلوب *
               </label>
               <input
@@ -398,18 +398,18 @@ export default function CustomOrders() {
                 value={formData.requiredText}
                 onChange={(e) => setFormData((p) => ({ ...p, requiredText: e.target.value }))}
                 maxLength={200}
-                className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none resize-none bg-white"
+                className="w-full px-4 py-3 border border-warm-gray-300 rounded-2xl text-right focus:border-primary-green focus:outline-none focus:ring-1 focus:ring-primary-green resize-none bg-white transition-all"
                 placeholder="مثال: سارة محمد"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               />
-              <p className="text-xs text-[#8B7355]/60 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <p className="text-xs text-warm-gray-400 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 {formData.requiredText.length}/200
               </p>
             </div>
 
             <div>
-              <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                <Palette className="inline h-5 w-5 ml-2" />
+              <label className="block text-right text-warm-gray-700 font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <Palette className="inline h-5 w-5 ml-2 text-primary-green" />
                 الألوان المفضلة * (اكتب كل لون في خانة)
               </label>
               <div className="space-y-2">
@@ -419,7 +419,7 @@ export default function CustomOrders() {
                       type="text"
                       value={color}
                       onChange={(e) => updateColorField(index, e.target.value)}
-                      className="flex-1 px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none transition-colors bg-white"
+                      className="flex-1 px-4 py-3 border border-warm-gray-300 rounded-2xl text-right focus:border-primary-green focus:outline-none focus:ring-1 focus:ring-primary-green transition-colors bg-white"
                       placeholder={index === 0 ? 'مثال: ذهبي' : 'أدخل لون إضافي'}
                       maxLength={200}
                       style={{ fontFamily: 'Tajawal, sans-serif' }}
@@ -439,20 +439,20 @@ export default function CustomOrders() {
                 <button
                   type="button"
                   onClick={addColorField}
-                  className="text-[#8B7355] text-sm font-medium hover:text-[#D4AF37]"
+                  className="text-primary-green text-sm font-medium hover:text-primary-green-dark"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
                   + إضافة لون
                 </button>
-                <p className="text-xs text-[#8B7355]/60 text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <p className="text-xs text-warm-gray-400 text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   {sanitizeColorList(formData.preferredColors).join(', ').length}/200
                 </p>
               </div>
             </div>
 
             <div>
-              <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                <MessageSquareText className="inline h-5 w-5 ml-2" />
+              <label className="block text-right text-warm-gray-700 font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <MessageSquareText className="inline h-5 w-5 ml-2 text-primary-green" />
                 ملاحظات إضافية (اختياري)
               </label>
               <textarea
@@ -460,27 +460,26 @@ export default function CustomOrders() {
                 onChange={(e) => setFormData((p) => ({ ...p, notes: e.target.value }))}
                 rows={4}
                 maxLength={1000}
-                className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none resize-none bg-white"
+                className="w-full px-4 py-3 border border-warm-gray-300 rounded-2xl text-right focus:border-primary-green focus:outline-none focus:ring-1 focus:ring-primary-green resize-none bg-white transition-all"
                 placeholder="مثال: خط عربي، مكان الاسم على الغطاء، إضافة رمز صغير..."
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               />
-              <p className="text-xs text-[#8B7355]/60 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <p className="text-xs text-warm-gray-400 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 {formData.notes.length}/1000
               </p>
             </div>
 
             <div>
-              <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                <Upload className="inline h-5 w-5 ml-2" />
+              <label className="block text-right text-warm-gray-700 font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <Upload className="inline h-5 w-5 ml-2 text-primary-green" />
                 صورة التصميم / مرجع * (مطلوب)
               </label>
 
               <div
-                className={`relative border-2 border-dashed rounded-3xl p-6 text-center transition-all cursor-pointer ${
-                  formData.imagePreview
+                className={`relative border-2 border-dashed rounded-3xl p-6 text-center transition-all cursor-pointer ${formData.imagePreview
                     ? 'border-green-400 bg-green-50'
-                    : 'border-[#E5DCC5] hover:border-[#D4AF37] hover:bg-[#FAF9F6]'
-                }`}
+                    : 'border-warm-gray-300 hover:border-primary-green hover:bg-soft-white'
+                  }`}
               >
                 <input
                   type="file"
@@ -509,11 +508,11 @@ export default function CustomOrders() {
                   </div>
                 ) : (
                   <div>
-                    <ImageIcon className="h-10 w-10 text-[#C4A57B] mx-auto mb-2" />
-                    <p className="text-[#8B7355] font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <ImageIcon className="h-10 w-10 text-primary-green mx-auto mb-2" />
+                    <p className="text-warm-gray-600 font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       اضغط لاختيار صورة
                     </p>
-                    <p className="text-sm text-[#8B7355]/70 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <p className="text-sm text-warm-gray-400 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       PNG أو JPG - حتى 5MB
                     </p>
                   </div>
@@ -527,7 +526,7 @@ export default function CustomOrders() {
                 if (!validateStep1()) return;
                 setStep(2);
               }}
-              className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white py-4 rounded-2xl text-lg font-bold hover:from-[#6B5644] hover:to-[#8B6644] transition-all shadow-lg hover:shadow-xl"
+              className="w-full btn-primary text-white py-4 rounded-2xl text-lg font-bold shadow-lg hover:shadow-xl"
               style={{ fontFamily: 'Tajawal, sans-serif' }}
             >
               التالي ←
@@ -540,18 +539,18 @@ export default function CustomOrders() {
         return (
           <div className="space-y-4">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <h2 className="text-2xl font-bold text-warm-gray-800 mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 بيانات التواصل
               </h2>
-              <p className="text-[#8B7355]/70 text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <p className="text-warm-gray-500 text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 أدخل بياناتك للتواصل والتأكيد
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                  <User className="inline h-5 w-5 ml-2" />
+                <label className="block text-right text-warm-gray-700 font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <User className="inline h-5 w-5 ml-2 text-primary-green" />
                   الاسم بالكامل *
                 </label>
                 <input
@@ -559,15 +558,15 @@ export default function CustomOrders() {
                   required
                   value={formData.customerName}
                   onChange={(e) => setFormData((p) => ({ ...p, customerName: e.target.value }))}
-                  className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none bg-white"
+                  className="w-full px-4 py-3 border border-warm-gray-300 rounded-2xl text-right focus:border-primary-green focus:outline-none focus:ring-1 focus:ring-primary-green bg-white transition-all"
                   placeholder="أحمد محمد"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 />
               </div>
 
               <div>
-                <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                  <Phone className="inline h-5 w-5 ml-2" />
+                <label className="block text-right text-warm-gray-700 font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <Phone className="inline h-5 w-5 ml-2 text-primary-green" />
                   رقم الهاتف *
                 </label>
                 <input
@@ -580,18 +579,18 @@ export default function CustomOrders() {
                   title="رقم مصري 11 رقم يبدأ بـ 010 أو 011 أو 012 أو 015"
                   value={formData.customerPhone}
                   onChange={(e) => setFormData((p) => ({ ...p, customerPhone: normalizePhone(e.target.value) }))}
-                  className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none bg-white"
+                  className="w-full px-4 py-3 border border-warm-gray-300 rounded-2xl text-right focus:border-primary-green focus:outline-none focus:ring-1 focus:ring-primary-green bg-white transition-all"
                   placeholder="01xxxxxxxxx"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 />
-                <p className="text-xs text-[#8B7355]/60 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <p className="text-xs text-warm-gray-400 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   مثال: 01012345678
                 </p>
               </div>
             </div>
 
             <div>
-              <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <label className="block text-right text-warm-gray-700 font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 رقم هاتف إضافي (اختياري)
               </label>
               <input
@@ -600,18 +599,18 @@ export default function CustomOrders() {
                 maxLength={11}
                 value={formData.additionalPhone}
                 onChange={(e) => setFormData((p) => ({ ...p, additionalPhone: normalizePhone(e.target.value) }))}
-                className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none bg-white"
+                className="w-full px-4 py-3 border border-warm-gray-300 rounded-2xl text-right focus:border-primary-green focus:outline-none focus:ring-1 focus:ring-primary-green bg-white transition-all"
                 placeholder="01xxxxxxxxx"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               />
-              <p className="text-xs text-[#8B7355]/60 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <p className="text-xs text-warm-gray-400 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 رقم للتواصل في حالة عدم الرد على الرقم الأساسي
               </p>
             </div>
 
             <div>
-              <label className="block text-right text-[#8B7355] font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                <MapPin className="inline h-5 w-5 ml-2" />
+              <label className="block text-right text-warm-gray-700 font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <MapPin className="inline h-5 w-5 ml-2 text-primary-green" />
                 العنوان (اختياري)
               </label>
               <textarea
@@ -619,11 +618,11 @@ export default function CustomOrders() {
                 onChange={(e) => setFormData((p) => ({ ...p, address: e.target.value }))}
                 rows={2}
                 maxLength={500}
-                className="w-full px-4 py-3 border-2 border-[#E5DCC5] rounded-2xl text-right focus:border-[#D4AF37] focus:outline-none resize-none bg-white"
+                className="w-full px-4 py-3 border border-warm-gray-300 rounded-2xl text-right focus:border-primary-green focus:outline-none focus:ring-1 focus:ring-primary-green resize-none bg-white transition-all"
                 placeholder="المدينة، الشارع، رقم المنزل..."
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               />
-              <p className="text-xs text-[#8B7355]/60 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <p className="text-xs text-warm-gray-400 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 {formData.address.length}/500 حرف
               </p>
             </div>
@@ -634,7 +633,7 @@ export default function CustomOrders() {
                 if (!validateStep2()) return;
                 setStep(3);
               }}
-              className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white py-4 rounded-2xl text-lg font-bold hover:from-[#6B5644] hover:to-[#8B6644] transition-all shadow-lg hover:shadow-xl"
+              className="w-full btn-primary text-white py-4 rounded-2xl text-lg font-bold shadow-lg hover:shadow-xl"
               style={{ fontFamily: 'Tajawal, sans-serif' }}
             >
               التالي ←
@@ -647,30 +646,29 @@ export default function CustomOrders() {
         return (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <h2 className="text-2xl font-bold text-warm-gray-800 mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 مراجعة وتأكيد
               </h2>
-              <p className="text-[#8B7355]/70 text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <p className="text-warm-gray-500 text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 اختر طريقة الدفع (اختياري) ثم أكد الطلب
               </p>
             </div>
 
             <div>
-              <label className="block text-right text-[#8B7355] font-medium mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                <CreditCard className="inline h-5 w-5 ml-2" />
+              <label className="block text-right text-warm-gray-700 font-medium mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <CreditCard className="inline h-5 w-5 ml-2 text-primary-green" />
                 طريقة الدفع (اختياري)
               </label>
 
               <div className="space-y-2">
                 <label
-                  className={`flex items-center justify-end gap-3 p-4 border-2 rounded-2xl cursor-pointer transition-all ${
-                    formData.paymentMethod === null
-                      ? 'border-[#D4AF37] bg-[#FAF9F6]'
-                      : 'border-[#E5DCC5] hover:border-[#D4AF37] hover:bg-[#FAF9F6]'
-                  }`}
+                  className={`flex items-center justify-end gap-3 p-4 border rounded-2xl cursor-pointer transition-all ${formData.paymentMethod === null
+                      ? 'border-primary-green bg-green-50 ring-1 ring-primary-green'
+                      : 'border-warm-gray-200 hover:border-primary-green hover:bg-soft-white'
+                    }`}
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
-                  <span className="text-[#8B7355] font-bold flex items-center gap-2">
+                  <span className="text-warm-gray-800 font-bold flex items-center gap-2">
                     <span>✨</span>
                     <span>سأحددها لاحقاً</span>
                   </span>
@@ -680,20 +678,19 @@ export default function CustomOrders() {
                     value="none"
                     checked={formData.paymentMethod === null}
                     onChange={() => setFormData((p) => ({ ...p, paymentMethod: null }))}
-                    className="w-5 h-5 accent-[#D4AF37]"
+                    className="w-5 h-5 accent-primary-green"
                   />
                 </label>
                 {paymentMethods.map((method) => (
                   <label
                     key={method.value}
-                    className={`flex items-center justify-end gap-3 p-4 border-2 rounded-2xl cursor-pointer transition-all ${
-                      formData.paymentMethod === method.value
-                        ? 'border-[#D4AF37] bg-[#FAF9F6]'
-                        : 'border-[#E5DCC5] hover:border-[#D4AF37] hover:bg-[#FAF9F6]'
-                    }`}
+                    className={`flex items-center justify-end gap-3 p-4 border rounded-2xl cursor-pointer transition-all ${formData.paymentMethod === method.value
+                        ? 'border-primary-green bg-green-50 ring-1 ring-primary-green'
+                        : 'border-warm-gray-200 hover:border-primary-green hover:bg-soft-white'
+                      }`}
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                   >
-                    <span className="text-[#8B7355] font-bold flex items-center gap-2">
+                    <span className="text-warm-gray-800 font-bold flex items-center gap-2">
                       <span>{method.icon}</span>
                       <span>{method.label}</span>
                     </span>
@@ -703,66 +700,66 @@ export default function CustomOrders() {
                       value={String(method.value)}
                       checked={formData.paymentMethod === method.value}
                       onChange={() => setFormData((p) => ({ ...p, paymentMethod: method.value }))}
-                      className="w-5 h-5 accent-[#D4AF37]"
+                      className="w-5 h-5 accent-primary-green"
                     />
                   </label>
                 ))}
               </div>
             </div>
 
-            <div className="bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] border-2 border-[#E5DCC5] rounded-3xl p-4">
+            <div className="bg-soft-white border border-warm-gray-200 rounded-3xl p-4">
               <h3
-                className="font-bold text-[#8B7355] mb-3 text-right flex items-center justify-end gap-2"
+                className="font-bold text-warm-gray-800 mb-3 text-right flex items-center justify-end gap-2"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 <span>ملخص الطلب</span>
-                <Package className="h-5 w-5 text-[#D4AF37]" />
+                <Package className="h-5 w-5 text-primary-green" />
               </h3>
 
               <div className="space-y-2 text-sm text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 <div className="flex justify-between">
-                  <span className="text-[#8B7355]/80">{formData.customerName || '—'}</span>
-                  <span className="text-[#8B7355]/70">الاسم</span>
+                  <span className="text-warm-gray-600">{formData.customerName || '—'}</span>
+                  <span className="text-warm-gray-500">الاسم</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#8B7355]/80">{formData.customerPhone || '—'}</span>
-                  <span className="text-[#8B7355]/70">الهاتف</span>
+                  <span className="text-warm-gray-600">{formData.customerPhone || '—'}</span>
+                  <span className="text-warm-gray-500">الهاتف</span>
                 </div>
                 {formData.additionalPhone && (
                   <div className="flex justify-between">
-                    <span className="text-[#8B7355]/80">{formData.additionalPhone}</span>
-                    <span className="text-[#8B7355]/70">هاتف إضافي</span>
+                    <span className="text-warm-gray-600">{formData.additionalPhone}</span>
+                    <span className="text-warm-gray-500">هاتف إضافي</span>
                   </div>
                 )}
                 {formData.address && (
                   <div className="flex justify-between">
-                    <span className="text-[#8B7355]/80 line-clamp-2">{formData.address}</span>
-                    <span className="text-[#8B7355]/70">العنوان</span>
+                    <span className="text-warm-gray-600 line-clamp-2">{formData.address}</span>
+                    <span className="text-warm-gray-500">العنوان</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-[#8B7355]/80 line-clamp-2">{formData.requiredText || '—'}</span>
-                  <span className="text-[#8B7355]/70">النص</span>
+                  <span className="text-warm-gray-600 line-clamp-2">{formData.requiredText || '—'}</span>
+                  <span className="text-warm-gray-500">النص</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#8B7355]/80 line-clamp-2">
+                  <span className="text-warm-gray-600 line-clamp-2">
                     {sanitizeColorList(formData.preferredColors).join(', ') || '—'}
                   </span>
-                  <span className="text-[#8B7355]/70">الألوان</span>
+                  <span className="text-warm-gray-500">الألوان</span>
                 </div>
                 {formData.notes && (
                   <div className="flex justify-between">
-                    <span className="text-[#8B7355]/80 line-clamp-2">{formData.notes}</span>
-                    <span className="text-[#8B7355]/70">ملاحظات</span>
+                    <span className="text-warm-gray-600 line-clamp-2">{formData.notes}</span>
+                    <span className="text-warm-gray-500">ملاحظات</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-[#8B7355]/80">{formData.designImage ? 'تم رفع صورة' : 'بدون صورة'}</span>
-                  <span className="text-[#8B7355]/70">التصميم</span>
+                  <span className="text-warm-gray-600">{formData.designImage ? 'تم رفع صورة' : 'بدون صورة'}</span>
+                  <span className="text-warm-gray-500">التصميم</span>
                 </div>
               </div>
 
-              <p className="text-xs text-[#8B7355]/60 text-right mt-4" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <p className="text-xs text-warm-gray-400 text-right mt-4" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 * سيتم تحديد السعر النهائي بعد مراجعة التصميم والتواصل معك
               </p>
             </div>
@@ -770,7 +767,7 @@ export default function CustomOrders() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white py-4 rounded-2xl text-lg font-bold hover:from-[#6B5644] hover:to-[#8B6644] transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full btn-primary text-white py-4 rounded-2xl text-lg font-bold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               style={{ fontFamily: 'Tajawal, sans-serif' }}
             >
               {loading ? (
@@ -794,12 +791,12 @@ export default function CustomOrders() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] pt-24 pb-8" dir="rtl">
+    <div className="min-h-screen bg-soft-white pt-24 pb-8" dir="rtl">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <Link
             to="/"
-            className="inline-flex items-center space-x-reverse space-x-2 text-[#8B7355] hover:text-[#D4AF37] mb-6 transition-colors"
+            className="inline-flex items-center space-x-reverse space-x-2 text-warm-gray-600 hover:text-primary-green mb-6 transition-colors"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             <ArrowRight size={20} />
@@ -809,20 +806,20 @@ export default function CustomOrders() {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="relative inline-block mb-4">
-              <div className="absolute -top-2 -right-2 text-[#D4AF37] animate-pulse">
+              <div className="absolute -top-2 -right-2 text-primary-green animate-pulse">
                 <Sparkles className="h-6 w-6" />
               </div>
-              <div className="absolute -bottom-2 -left-2 text-[#C4A57B] animate-pulse">
+              <div className="absolute -bottom-2 -left-2 text-primary-green-light animate-pulse">
                 <Heart className="h-6 w-6 fill-current" />
               </div>
-              <div className="bg-gradient-to-r from-[#8B7355] to-[#A67C52] rounded-full p-4 shadow-xl">
+              <div className="bg-primary-green rounded-full p-4 shadow-xl">
                 <Palette className="h-12 w-12 text-white" />
               </div>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <h1 className="text-3xl md:text-4xl font-bold text-warm-gray-800 mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               اطلب تصميم خاص
             </h1>
-            <p className="text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-warm-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               اطلب منتج بتصميمك (صورة أو وصف) 👜✨
             </p>
           </div>
@@ -832,38 +829,37 @@ export default function CustomOrders() {
             {[1, 2, 3].map((s) => (
               <div key={s} className="flex items-center">
                 <div
-                  className={`h-10 w-10 rounded-full flex items-center justify-center font-bold transition-all border-2 ${
-                    s < step
-                      ? 'bg-green-500 text-white border-green-500'
+                  className={`h-10 w-10 rounded-full flex items-center justify-center font-bold transition-all border-2 ${s < step
+                      ? 'bg-primary-green text-white border-primary-green'
                       : s === step
-                      ? 'bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white border-transparent shadow-lg scale-110'
-                      : 'bg-white text-[#8B7355]/40 border-[#E5DCC5]'
-                  }`}
+                        ? 'bg-primary-green text-white border-transparent shadow-lg scale-110'
+                        : 'bg-white text-warm-gray-300 border-warm-gray-200'
+                    }`}
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
                   {s < step ? '✓' : s}
                 </div>
                 {s < 3 && (
-                  <div className={`w-8 h-1 rounded-full mx-1 transition-colors ${s < step ? 'bg-green-500' : 'bg-[#E5DCC5]'}`} />
+                  <div className={`w-8 h-1 rounded-full mx-1 transition-colors ${s < step ? 'bg-primary-green' : 'bg-warm-gray-200'}`} />
                 )}
               </div>
             ))}
           </div>
 
-          <div className="flex justify-center gap-6 mb-8 text-xs text-[#8B7355]/60" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-            <span className={step >= 1 ? 'text-[#8B7355] font-bold' : ''}>التصميم</span>
-            <span className={step >= 2 ? 'text-[#8B7355] font-bold' : ''}>البيانات</span>
-            <span className={step >= 3 ? 'text-[#8B7355] font-bold' : ''}>التأكيد</span>
+          <div className="flex justify-center gap-6 mb-8 text-xs text-warm-gray-400" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <span className={step >= 1 ? 'text-primary-green font-bold' : ''}>التصميم</span>
+            <span className={step >= 2 ? 'text-primary-green font-bold' : ''}>البيانات</span>
+            <span className={step >= 3 ? 'text-primary-green font-bold' : ''}>التأكيد</span>
           </div>
 
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl p-6 sm:p-8 border-2 border-[#E5DCC5]">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-sm p-6 sm:p-8 border border-warm-gray-200">
             {renderStep()}
 
             {step > 1 && (
               <button
                 type="button"
                 onClick={() => setStep(step - 1)}
-                className="w-full mt-4 bg-[#FAF9F6] text-[#8B7355] py-3 rounded-2xl font-bold hover:bg-[#E5DCC5] transition-colors flex items-center justify-center gap-2 border-2 border-[#E5DCC5]"
+                className="w-full mt-4 bg-soft-white text-warm-gray-600 py-3 rounded-2xl font-bold hover:bg-warm-gray-200 transition-colors flex items-center justify-center gap-2 border border-warm-gray-200"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 <ArrowRight className="h-5 w-5" />
@@ -873,21 +869,21 @@ export default function CustomOrders() {
           </div>
 
           <div className="mt-8 grid grid-cols-3 gap-3">
-            <div className="bg-white/80 rounded-2xl p-4 text-center shadow-md border border-[#E5DCC5]">
+            <div className="bg-white/80 rounded-2xl p-4 text-center shadow-sm border border-warm-gray-200">
               <span className="text-2xl block mb-1">🎨</span>
-              <p className="text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <p className="text-xs text-warm-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 تصميم حسب الطلب
               </p>
             </div>
-            <div className="bg-white/80 rounded-2xl p-4 text-center shadow-md border border-[#E5DCC5]">
+            <div className="bg-white/80 rounded-2xl p-4 text-center shadow-sm border border-warm-gray-200">
               <span className="text-2xl block mb-1">⭐</span>
-              <p className="text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <p className="text-xs text-warm-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 جودة عالية
               </p>
             </div>
-            <div className="bg-white/80 rounded-2xl p-4 text-center shadow-md border border-[#E5DCC5]">
+            <div className="bg-white/80 rounded-2xl p-4 text-center shadow-sm border border-warm-gray-200">
               <span className="text-2xl block mb-1">📞</span>
-              <p className="text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              <p className="text-xs text-warm-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 تأكيد سريع
               </p>
             </div>
