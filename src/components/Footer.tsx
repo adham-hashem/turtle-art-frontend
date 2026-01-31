@@ -14,23 +14,21 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="bg-white mt-16 py-12 pb-24 border-t-2 border-gray-200">
-      <div className="container mx-auto px-4">
+      <div className="w-full max-w-7xl mx-auto px-4 text-center">
         {/* Logo and Brand */}
         <div className="flex flex-col items-center gap-6 mb-10">
-          <div className="flex items-center gap-3">
-            <img
-              src="/turtle_art_logo.jpeg"
-              alt="Turtle Art"
-              className="h-16 w-16 rounded-full object-cover shadow-lg border-4 border-gray-200"
-            />
-            <div className="text-center">
-              <h3 className="text-xl font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                Turtle Art
-              </h3>
-              <p className="text-sm text-black font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                ✨🐢Dream Bag ? Found it!
-              </p>
-            </div>
+          <img
+            src="/turtle_art_logo.jpeg"
+            alt="Turtle Art"
+            className="h-16 w-16 rounded-full object-cover shadow-lg border-4 border-gray-200"
+          />
+          <div className="text-center">
+            <h3 className="text-xl font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              Turtle Art
+            </h3>
+            <p className="text-sm text-black font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+              ✨🐢Dream Bag ? Found it!
+            </p>
           </div>
         </div>
 
@@ -108,8 +106,8 @@ const Footer: React.FC = () => {
 
         {/* Copyright */}
         <div className="border-t-2 border-gray-200 pt-6">
-          <div className="text-center space-y-3">
-            <p className="text-gray-600 text-sm font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+          <div className="flex flex-col items-center justify-center space-y-3">
+            <p className="text-gray-600 text-sm font-medium" style={{ fontFamily: 'Tajawal, sans-serif', textAlign: 'center' }}>
               Contact the developers
             </p>
 
@@ -134,7 +132,7 @@ const Footer: React.FC = () => {
               </button>
             </div>
 
-            <p className="text-gray-400 text-xs" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-gray-400 text-xs" style={{ fontFamily: 'Tajawal, sans-serif', textAlign: 'center', width: '100%' }}>
               © {currentYear} Turtle Art. جميع الحقوق محفوظة 🐢
             </p>
           </div>
