@@ -218,15 +218,8 @@ function AppContent() {
             {/* Public Cart */}
             <Route path="cart" element={<CartPage />} />
 
-            {/* ===== Protected (Login Required) ===== */}
-            <Route
-              path="checkout"
-              element={
-                <ProtectedRoute requireAuth>
-                  <CheckoutPage />
-                </ProtectedRoute>
-              }
-            />
+            {/* Public Checkout - Supports both guest and authenticated users */}
+            <Route path="checkout" element={<CheckoutPage />} />
 
             <Route
               path="custom-designs"
