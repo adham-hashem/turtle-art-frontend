@@ -96,13 +96,12 @@ const CheckoutPage: React.FC = () => {
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
-  // --- Cart Fetching Logic (Unchanged) ---
+  // --- Cart Fetching Logic (Updated for Guest Support) ---
   const fetchCart = useCallback(async (retryCount = 3, retryDelay = 1000) => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
-      setCartError('يرجى تسجيل الدخول لعرض السلة');
+      // Guest user - use cart from AppContext (localStorage)
       setLoadingCart(false);
-      navigate('/login');
       return;
     }
     setLoadingCart(true);
@@ -116,7 +115,10 @@ const CheckoutPage: React.FC = () => {
         });
         if (!response.ok) {
           if (response.status === 401) {
-            throw new Error('جلسة منتهية، يرجى تسجيل الدخول مرة أخرى');
+            // Token expired - fall back to localStorage cart
+            localStorage.removeItem('accessToken');
+            setLoadingCart(false);
+            return;
           }
           throw new Error('فشل في جلب بيانات السلة');
         }
@@ -154,10 +156,6 @@ const CheckoutPage: React.FC = () => {
             err instanceof Error ? err.message : 'حدث خطأ أثناء جلب بيانات السلة'
           );
           setLoadingCart(false);
-          if (err instanceof Error && err.message.includes('جلسة منتهية')) {
-            localStorage.removeItem('accessToken');
-            navigate('/login');
-          }
         } else {
           await new Promise((resolve) => setTimeout(resolve, retryDelay));
         }
@@ -365,9 +363,6 @@ const CheckoutPage: React.FC = () => {
       setNotificationError(null);
       try {
         const token = localStorage.getItem('accessToken');
-        if (!token) {
-          throw new Error('authentication_required');
-        }
 
         // Upload payment proof image if provided
         let paymentProofImageUrl = null;
@@ -401,6 +396,8 @@ const CheckoutPage: React.FC = () => {
           senderDetails: formData.senderDetails.trim(),
           paymentProofImage: paymentProofImageUrl,
           paymentNotes: formData.notes.trim() || null,
+          // Send items for both guest and authenticated users
+          // Backend will use cart for authenticated, items for guests
           items: state.cart.map((item) => ({
             productId: item.product.id,
             quantity: item.quantity,
@@ -410,12 +407,18 @@ const CheckoutPage: React.FC = () => {
           })),
         };
 
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
+
+        // Add auth header only if token exists
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const response = await fetch(`${apiUrl}/api/orders`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
           body: JSON.stringify(requestBody),
         });
 
@@ -498,16 +501,19 @@ const CheckoutPage: React.FC = () => {
 
         dispatch({ type: 'ADD_ORDER', payload: localOrder });
 
-        try {
-          await sendAdminNotification(localOrder.id, total);
-        } catch {
-          setNotificationError(
-            'فشل إرسال إشعار للإدارة، تم إنشاء الطلب بنجاح'
-          );
+        // Only send notification if user is authenticated
+        if (token) {
+          try {
+            await sendAdminNotification(localOrder.id, total);
+          } catch {
+            setNotificationError(
+              'فشل إرسال إشعار للإدارة، تم إنشاء الطلب بنجاح'
+            );
+          }
         }
 
         dispatch({ type: 'CLEAR_CART' });
-        alert('تم تأكيد طلبك بنجاح! سيتم التواصل معك قريباً.');
+        alert(`تم تأكيد طلبك بنجاح! رقم الطلب: ${localOrder.id}\nسيتم التواصل معك قريباً.`);
         navigate('/', { replace: true });
       } catch (error) {
         let errorMessage =

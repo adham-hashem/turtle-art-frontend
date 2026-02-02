@@ -30,7 +30,7 @@ interface ApiCartResponse {
 // -------------------------
 
 const CartPage: React.FC = () => {
-  const { dispatch } = useApp();
+  const { dispatch, state } = useApp();
   const navigate = useNavigate();
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -45,16 +45,14 @@ const CartPage: React.FC = () => {
   useEffect(() => {
     const authToken = localStorage.getItem('accessToken');
     setToken(authToken);
-    if (!authToken) {
-      setError('يرجى تسجيل الدخول لعرض السلة');
-      navigate('/login');
-    }
+    // Don't redirect - guests can use cart too
   }, [navigate]);
 
   // Fetch cart data
   const fetchCart = useCallback(async () => {
     if (!token) {
-      setError('يرجى تسجيل الدخول لعرض السلة');
+      // Guest user - use localStorage cart managed by AppContext
+      setLoading(false);
       return;
     }
 
@@ -69,7 +67,11 @@ const CartPage: React.FC = () => {
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('جلسة منتهية، يرجى تسجيل الدخول مرة أخرى');
+          // Token expired, fall back to localStorage
+          setToken(null);
+          localStorage.removeItem('accessToken');
+          setLoading(false);
+          return;
         }
         throw new Error('فشل في جلب بيانات السلة');
       }
@@ -114,21 +116,30 @@ const CartPage: React.FC = () => {
   useEffect(() => {
     if (token) {
       fetchCart();
+    } else {
+      // Guest user - display cart from AppContext (localStorage)
+      setCartItems(state.cart);
+      setLoading(false);
     }
   }, [fetchCart, token]);
 
   const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
-    if (!token) {
-      alert('يرجى تسجيل الدخول لتعديل السلة');
-      navigate('/login');
-      return;
-    }
-
     if (newQuantity < 1) {
       handleRemoveItem(itemId);
       return;
     }
 
+    if (!token) {
+      // Guest user - update in AppContext/localStorage
+      const updatedItems = cartItems.map(item =>
+        item.id === itemId ? { ...item, quantity: newQuantity } : item
+      );
+      setCartItems(updatedItems);
+      dispatch({ type: 'SET_CART', payload: updatedItems });
+      return;
+    }
+
+    // Authenticated user - update on server
     const previousItems = [...cartItems];
     const updatedItems = cartItems.map(item =>
       item.id === itemId ? { ...item, quantity: newQuantity } : item
@@ -169,17 +180,17 @@ const CartPage: React.FC = () => {
   };
 
   const handleRemoveItem = async (itemId: string) => {
-    if (!token) {
-      alert('يرجى تسجيل الدخول لتعديل السلة');
-      navigate('/login');
-      return;
-    }
-
     const previousItems = [...cartItems];
     const updatedItems = cartItems.filter(item => item.id !== itemId);
     setCartItems(updatedItems);
     dispatch({ type: 'SET_CART', payload: updatedItems });
 
+    if (!token) {
+      // Guest user - just update localStorage via AppContext
+      return;
+    }
+
+    // Authenticated user - also update on server
     try {
       const response = await fetch(`${apiUrl}/api/cart/items/${itemId}`, {
         method: 'DELETE',
@@ -207,12 +218,6 @@ const CartPage: React.FC = () => {
   };
 
   const handleClearCart = async () => {
-    if (!token) {
-      alert('يرجى تسجيل الدخول لتعديل السلة');
-      navigate('/login');
-      return;
-    }
-
     if (!window.confirm('هل أنت متأكد من إفراغ السلة؟')) {
       return;
     }
@@ -222,6 +227,13 @@ const CartPage: React.FC = () => {
     setCartItems([]);
     dispatch({ type: 'SET_CART', payload: [] });
 
+    if (!token) {
+      // Guest user - just clear localStorage via AppContext
+      setIsClearingCart(false);
+      return;
+    }
+
+    // Authenticated user - also clear on server
     try {
       const response = await fetch(`${apiUrl}/api/cart`, {
         method: 'DELETE',
