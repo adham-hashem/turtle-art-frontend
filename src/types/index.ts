@@ -8,29 +8,33 @@ export interface ProductImage {
 export interface Product {
   id: string;
   name: string;
-  price: number;        // السعر الجديد
-  oldPrice?: number;    // السعر القديم
-  discount?: number;    // قيمة الخصم
-  isSoldOut?: boolean;
-  image: string;
+  code: string;
+  price: number;
+  description: string;
+  createdAt: string; // From API response
+  category?: number; // From API response - optional
+  sizes: string[];
+  colors: string[];
+  images: ProductImage[]; // Updated to match API response
+  inStock: boolean; // Required by ProductCard and AppContext
+  isOffer: boolean; // Used by ProductCard
+  originalPrice?: number; // Optional, used by ProductCard
+  isHidden?: boolean; // Product visibility flag
+  isAvailable?: boolean; // Product availability flag
+  isInstant?: boolean; // Quick delivery flag
+  isFeatured?: boolean; // Featured product flag
+  rating?: number; // Product rating
+  salesCount?: number; // Number of sales
+  type?: any; // Product type
+  season?: any; // Product season
 }
-س
 
 export interface CartItem {
-  id: string;
-  product: {
-    id: string;
-    name: string;
-    price: number;
-  };
+  product: Product;
   quantity: number;
-  size?: string;
-  color?: string;
-  images?: {
-    id: string;
-    imagePath: string;
-    isMain: boolean;
-  }[];
+  selectedSize?: string;
+  selectedColor?: string;
+  customization_text?: string;
 }
 
 export interface Customer {
