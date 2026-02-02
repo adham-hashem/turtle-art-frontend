@@ -10,22 +10,25 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
+
 import { AppProvider } from './contexts/AppContext';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { BottomNav } from './components/BottomNav';
-
 import ExternalBrowserGuard from './components/ExternalBrowserGuard';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 import { onForegroundMessage } from './services/firebase';
 import { Unsubscribe } from 'firebase/messaging';
 
-// Public Pages
+// ===== Public Pages =====
 import HomePage from './pages/HomePage';
+import AvailableCollection from "./pages/AvailableCollection";
 import ProductPage from './pages/ProductPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
@@ -34,6 +37,7 @@ import InstantPage from './pages/InstantPage';
 import NotFoundPage from './pages/NotFoundPage';
 import MyOrders from './pages/MyOrders';
 import OrderDetails from './pages/OrderDetails';
+import AllProductsPage from './pages/AllProductsPage';
 
 // Category pages
 import KidsBagsPage from './pages/KidsBagsPage';
@@ -44,7 +48,7 @@ import MomDaughterSetPage from './pages/MomDaughterSetPage';
 import RamadanSetPage from './pages/RamadanSetPage';
 import GiveawaysPage from './pages/GiveawaysPage';
 
-// Admin Pages
+// ===== Admin Pages =====
 import AdminPage from './pages/admin/AdminPage';
 import ProductsManagement from './pages/admin/ProductsManagement';
 import OrdersManagement from './pages/admin/OrdersManagement';
@@ -54,27 +58,21 @@ import ShippingManagement from './pages/admin/ShippingManagement';
 import OrderNotifications from './pages/admin/OrderNotifications';
 import CakeConfigurationManagement from './pages/admin/CakeConfigurationManagement';
 import CustomOrdersManagement from './pages/admin/CustomOrdersManagement';
+import CustomOrderNotifications from './pages/admin/CustomOrderNotifications';
 
+// User pages
 import CompleteProfile from './pages/CompleteProfile';
 import ProfilePage from './pages/ProfilePage';
 import CustomOrders from './pages/CustomOrders';
 import MyCustomOrders from './pages/MyCustomOrders';
-import CustomOrderNotifications from './pages/admin/CustomOrderNotifications';
-import AllProductsPage from './pages/AllProductsPage';
 
+// ===== Bottom Nav Helper =====
 function useNavPageId() {
   const { pathname } = useLocation();
 
   return useMemo(() => {
-    // ✅ map routes to BottomNav ids
     if (pathname === '/' || pathname.startsWith('/product')) return 'home';
-
     if (pathname.startsWith('/kids-bags')) return 'kids-bags';
-
-    // Girls bags (including evening/casual sub-routes)
-    if (pathname.startsWith('/girls-bags')) return 'girls-bags';
-
-    // لو عندك صفحة /girls-bags فعلاً حطها هنا
     if (
       pathname.startsWith('/girls-bags') ||
       pathname.startsWith('/mother-daughter') ||
@@ -82,17 +80,13 @@ function useNavPageId() {
     ) {
       return 'girls-bags';
     }
-
     if (pathname.startsWith('/giveaways')) return 'giveaways';
-
     if (pathname.startsWith('/cart') || pathname.startsWith('/checkout')) return 'cart';
-
-    // افتراضي
     return 'home';
   }, [pathname]);
 }
 
-// ✅ Public Layout: Header + Footer + BottomNav always
+// ===== Public Layout =====
 function PublicLayout() {
   const navigate = useNavigate();
   const currentPage = useNavPageId();
@@ -125,20 +119,16 @@ function PublicLayout() {
   return (
     <div className="min-h-screen bg-white flex flex-col" dir="rtl">
       <Header />
-
-      {/* ✅ pb-24 so pages never get covered by BottomNav */}
       <main className="flex-grow pb-24">
         <Outlet />
       </main>
-
       <Footer />
-
       <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
     </div>
   );
 }
 
-// ✅ Admin Layout: no Header/Footer/BottomNav
+// ===== Admin Layout =====
 function AdminLayout() {
   return (
     <div className="min-h-screen bg-white" dir="rtl">
@@ -147,6 +137,7 @@ function AdminLayout() {
   );
 }
 
+// ===== App Content =====
 function AppContent() {
   useEffect(() => {
     let unsubscribe: Unsubscribe | undefined;
@@ -175,17 +166,13 @@ function AppContent() {
 
   return (
     <>
-      {/* ✅ runs ASAP before routing */}
       <ExternalBrowserGuard />
 
       <Router>
         <Routes>
-          {/* ✅ Admin routes without public layout */}
+          {/* ===== Admin (Protected) ===== */}
           <Route path="/admin" element={<AdminLayout />}>
-            {/* ✅ IMPORTANT: /admin redirects to /admin/notifications */}
             <Route index element={<Navigate to="/admin/notifications" replace />} />
-
-            {/* ✅ Admin nested pages */}
             <Route
               path="*"
               element={
@@ -206,17 +193,14 @@ function AppContent() {
             </Route>
           </Route>
 
-          {/* ✅ Public routes with layout */}
+          {/* ===== Public ===== */}
           <Route path="/" element={<PublicLayout />}>
             <Route index element={<HomePage />} />
-
-            <Route path="/products" element={<AllProductsPage />} />
-
-            {/* Public category pages */}
+            <Route path="products" element={<AllProductsPage />} />
             <Route path="instant" element={<InstantPage />} />
             <Route path="kids-bags" element={<KidsBagsPage />} />
+            <Route path="available-collection" element={<AvailableCollection />} />
 
-            {/* Girls Bags main + sub-categories */}
             <Route path="girls-bags" element={<GirlsBagsPage />} />
             <Route path="girls-bags/evening" element={<GirlsBagsEveningPage />} />
             <Route path="girls-bags/casual" element={<GirlsBagsCasualPage />} />
@@ -231,11 +215,23 @@ function AppContent() {
             {/* Product */}
             <Route path="product/:id" element={<ProductPage />} />
 
-            {/* Protected */}
+            {/* Public Cart */}
+            <Route path="cart" element={<CartPage />} />
+
+            {/* ===== Protected (Login Required) ===== */}
+            <Route
+              path="checkout"
+              element={
+                <ProtectedRoute requireAuth>
+                  <CheckoutPage />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="custom-designs"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requireAuth>
                   <CustomOrders />
                 </ProtectedRoute>
               }
@@ -244,7 +240,7 @@ function AppContent() {
             <Route
               path="complete-profile"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requireAuth>
                   <CompleteProfile />
                 </ProtectedRoute>
               }
@@ -253,26 +249,8 @@ function AppContent() {
             <Route
               path="profile"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requireAuth>
                   <ProfilePage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="cart"
-              element={
-                <ProtectedRoute>
-                  <CartPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="checkout"
-              element={
-                <ProtectedRoute>
-                  <CheckoutPage />
                 </ProtectedRoute>
               }
             />
@@ -280,7 +258,7 @@ function AppContent() {
             <Route
               path="my-orders"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requireAuth>
                   <MyOrders />
                 </ProtectedRoute>
               }
@@ -289,7 +267,7 @@ function AppContent() {
             <Route
               path="my-custom-orders"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requireAuth>
                   <MyCustomOrders />
                 </ProtectedRoute>
               }
@@ -298,7 +276,7 @@ function AppContent() {
             <Route
               path="order/:id"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requireAuth>
                   <OrderDetails />
                 </ProtectedRoute>
               }
@@ -314,6 +292,7 @@ function AppContent() {
   );
 }
 
+// ===== App Wrapper =====
 const App: React.FC = () => {
   return (
     <AuthProvider>

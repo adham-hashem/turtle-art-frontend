@@ -107,15 +107,16 @@ const Header: React.FC = () => {
   const currentPage = location.pathname;
 
   const menuItems = [
-    { label: 'الرئيسية', page: 'home', icon: '🏠' },
-    { label: 'شنط أطفال', page: 'kids-bags', icon: '🧸' },
-    { label: 'شنط بناتي', page: 'girls-bags', icon: '👛' },
-    { label: 'كولكشن الأم  وبنتها', page: 'mother-daughter', icon: '👩‍👧' },
-    { label: 'منتجات رمضان', page: 'ramadan-collection', icon: '🌙' },
-    { label: 'التصميمات الخاصة', page: 'custom-designs', icon: '🎨' },
-    { label: 'التوزيعات', page: 'giveaways', icon: '🎁' },
-    { label: 'طلباتي', page: 'my-orders', icon: '🛒' },
-    { label: 'طلباتي الخاصة', page: 'my-custom-orders', icon: '👜' },
+    { label: 'الرئيسية', page: 'home'},
+    { label: 'المتاح فوري', page: 'vailable-collection'},
+    { label: 'شنط أطفال', page: 'kids-bags' },
+    { label: 'شنط بناتي', page: 'girls-bags'},
+    { label: 'كولكشن الأم  وبنتها', page: 'mother-daughter' },
+    { label: 'منتجات رمضان', page: 'ramadan-collection'},
+    { label: 'التصميمات الخاصة', page: 'custom-designs'},
+    { label: 'التوزيعات', page: 'giveaways' },
+    { label: 'طلباتي', page: 'my-orders' },
+    { label: 'طلباتي الخاصة', page: 'my-custom-orders'},
   ];
 
   const handleLogout = () => {

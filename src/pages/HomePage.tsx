@@ -185,7 +185,7 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen bg-soft-white" dir="rtl">
       <main>
         {/* Hero Section with Background - starts after header */}
-        <div className="relative w-full h-40 sm:h-48 md:h-56 overflow-hidden mt-20">
+        <div className="relative w-full h-[100vh] max-h-[650px] overflow-hidden mt-20 bg-gradient-to-r from-gray-100 via-white to-gray-100 flex items-center justify-center">
           <img
             src="/background2.jpeg"
             alt="Turtle Art"
@@ -205,10 +205,10 @@ const HomePage: React.FC = () => {
         <div className="pt-8 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <div className="flex flex-col items-center justify-center mb-8 mt-6 w-full">
             <h1 className="text-3xl font-bold text-black mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-              🤍Turtle Art
+              Turtle Art
             </h1>
             <p className="text-black text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-              ✨Special bag Just for you✨
+              ✨By Sarah Mostafa✨
             </p>
           </div>
 

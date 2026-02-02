@@ -356,7 +356,7 @@ export default function MyCustomOrders() {
                       <div className="flex items-start gap-2 text-[#8B7355]">
                         <MessageSquareText className="h-5 w-5 text-[#D4AF37] flex-shrink-0 mt-0.5" />
                         <span className="text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                          <strong>النص المطلوب:</strong> {order.requiredText}
+                          <strong>شرح التصميم المطلوب </strong> {order.requiredText}
                         </span>
                       </div>
 
@@ -556,7 +556,7 @@ export default function MyCustomOrders() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      النص المطلوب
+                      شرح التصميم المطلوب 
                     </p>
                     <p className="font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       {selectedOrder.requiredText}
@@ -564,7 +564,7 @@ export default function MyCustomOrders() {
                   </div>
                   <div>
                     <p className="text-sm text-[#8B7355]/70 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      الألوان المفضلة
+                      اللون المطلوب للشنطة
                     </p>
                     <p className="font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       {selectedOrder.preferredColors}

@@ -50,7 +50,7 @@ style.innerHTML = `
 
   /* TEXT COLOR */
   * {
-    // color: #5E8B6A !important;
+    // color: #1A3F2F !important;
     box-shadow: none !important;
     text-shadow: none !important;
   }

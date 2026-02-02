@@ -360,7 +360,7 @@ const InstantPage: React.FC = () => {
             <Cake className="h-10 w-10 text-pink-500" />
             <Sparkles className="h-8 w-8 text-purple-500" />
           </div>
-          <h1 className="text-3xl font-bold text-purple-900 mb-3">تورتات فورية</h1>
+          <h1 className="text-3xl font-bold text-purple-900 mb-3">شنط هاند ميد تعيش العمر كله </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             حلويات جاهزة الآن - اطلب واستلم في نفس الحين! تورتات مبهجة بألوان وتصاميم شخصيات محبوبة، مثالية لأعياد الميلاد والمناسبات الخاصة
           </p>

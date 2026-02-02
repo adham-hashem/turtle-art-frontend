@@ -151,7 +151,7 @@ export default function CustomOrders() {
       return false;
     }
     if (!formData.requiredText.trim()) {
-      alert('النص المطلوب مطلوب');
+      alert('شرح التصميم المطلوب');
       return false;
     }
     if (formData.requiredText.trim().length > 200) {
@@ -161,7 +161,7 @@ export default function CustomOrders() {
 
     const normalizedColors = sanitizeColorList(formData.preferredColors);
     if (normalizedColors.length === 0) {
-      alert('الألوان المفضلة مطلوبة');
+      alert('اللون المطلوب للشنطة ');
       return false;
     }
     const preferredColorsValue = normalizedColors.join(', ');
@@ -391,7 +391,7 @@ export default function CustomOrders() {
             <div>
               <label className="block text-right text-warm-gray-700 font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 <MessageSquareText className="inline h-5 w-5 ml-2 text-primary-green" />
-                النص المطلوب *
+                شرح التصميم المطلوب*
               </label>
               <input
                 type="text"
@@ -399,7 +399,7 @@ export default function CustomOrders() {
                 onChange={(e) => setFormData((p) => ({ ...p, requiredText: e.target.value }))}
                 maxLength={200}
                 className="w-full px-4 py-3 border border-warm-gray-300 rounded-2xl text-right focus:border-primary-green focus:outline-none focus:ring-1 focus:ring-primary-green resize-none bg-white transition-all"
-                placeholder="مثال: سارة محمد"
+                placeholder="مثال : سارة مصطفي"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               />
               <p className="text-xs text-warm-gray-400 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
@@ -410,7 +410,7 @@ export default function CustomOrders() {
             <div>
               <label className="block text-right text-warm-gray-700 font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 <Palette className="inline h-5 w-5 ml-2 text-primary-green" />
-                الألوان المفضلة * (اكتب كل لون في خانة)
+               اللون المطلوب للشنطة 
               </label>
               <div className="space-y-2">
                 {formData.preferredColors.map((color, index) => (
@@ -461,7 +461,7 @@ export default function CustomOrders() {
                 rows={4}
                 maxLength={1000}
                 className="w-full px-4 py-3 border border-warm-gray-300 rounded-2xl text-right focus:border-primary-green focus:outline-none focus:ring-1 focus:ring-primary-green resize-none bg-white transition-all"
-                placeholder="مثال: خط عربي، مكان الاسم على الغطاء، إضافة رمز صغير..."
+                placeholder="مثال:  اليد تكون اطول ,الاسم بدل اللجو ,اضافة بطانة"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               />
               <p className="text-xs text-warm-gray-400 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>

@@ -8,18 +8,13 @@ export interface ProductImage {
 export interface Product {
   id: string;
   name: string;
-  code: string;
-  price: number;
-  description: string;
-  createdAt: string; // From API response
-  category: number; // From API response
-  sizes: string[];
-  colors: string[];
-  images: ProductImage[]; // Updated to match API response
-  inStock: boolean; // Required by ProductCard and AppContext
-  isOffer?: boolean; // Optional, used by ProductCard
-  originalPrice?: number; // Optional, used by ProductCard
+  price: number;        // السعر الجديد
+  oldPrice?: number;    // السعر القديم
+  discount?: number;    // قيمة الخصم
+  isSoldOut?: boolean;
+  image: string;
 }
+س
 
 export interface CartItem {
   id: string;
