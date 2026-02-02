@@ -597,16 +597,16 @@ const CheckoutPage: React.FC = () => {
   // --- Loading Screen ---
   if (loadingCart) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] flex items-center justify-center px-4 pt-20" dir="rtl">
+      <div className="min-h-screen bg-soft-white flex items-center justify-center px-4 pt-20" dir="rtl">
         <div className="text-center py-12">
           <div className="relative inline-block mb-6">
-            <div className="absolute inset-0 bg-[#C4A57B] rounded-full blur-xl opacity-30 animate-pulse"></div>
-            <div className="relative bg-gradient-to-r from-[#8B7355] to-[#A67C52] rounded-full p-4">
+            <div className="absolute inset-0 bg-primary-green rounded-full blur-xl opacity-30 animate-pulse"></div>
+            <div className="relative bg-primary-green rounded-full p-4">
               <ShoppingBag className="h-12 w-12 text-white animate-bounce" />
             </div>
           </div>
-          <p className="text-[#8B7355] font-bold text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>جاري تحميل السلة...</p>
-          <p className="text-[#8B7355]/70 text-sm mt-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>انتظر لحظة 🛍️</p>
+          <p className="text-primary-green font-bold text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>جاري تحميل السلة...</p>
+          <p className="text-warm-gray-500 text-sm mt-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>انتظر لحظة 👜</p>
         </div>
       </div>
     );
@@ -615,23 +615,23 @@ const CheckoutPage: React.FC = () => {
   // --- Cart Error Screen ---
   if (cartError) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] py-6 sm:py-8 pt-24" dir="rtl">
+      <div className="min-h-screen bg-soft-white py-6 sm:py-8 pt-24" dir="rtl">
         <div className="container mx-auto px-3 sm:px-4 max-w-md">
-          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 text-center border-2 border-[#E5DCC5]">
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 text-center border border-warm-gray-200">
             <div className="text-5xl sm:text-6xl mb-4">⚠️</div>
-            <h2 className="text-lg sm:text-xl font-bold text-red-600 mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>خطأ</h2>
-            <p className="text-sm sm:text-base text-[#8B7355]/70 mb-6" style={{ fontFamily: 'Tajawal, sans-serif' }}>{cartError}</p>
+            <h2 className="text-lg sm:text-xl font-bold text-red-600 mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>حدث خطأ</h2>
+            <p className="text-sm sm:text-base text-warm-gray-500 mb-6" style={{ fontFamily: 'Tajawal, sans-serif' }}>{cartError}</p>
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => fetchCart()}
-                className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white px-6 py-3 rounded-xl hover:from-[#6B5644] hover:to-[#8B6644] transition-all font-semibold shadow-lg text-sm sm:text-base"
+                className="w-full btn-primary font-semibold shadow-lg transition-all text-sm sm:text-base"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 إعادة المحاولة
               </button>
               <button
                 onClick={() => navigate('/cart')}
-                className="w-full bg-[#F5F5DC] text-[#8B7355] px-6 py-3 rounded-xl hover:bg-[#E5DCC5] transition-colors font-medium text-sm sm:text-base"
+                className="w-full btn-secondary font-medium text-sm sm:text-base"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               >
                 العودة إلى السلة
@@ -646,17 +646,17 @@ const CheckoutPage: React.FC = () => {
   // --- Empty Cart Screen ---
   if (state.cart.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] py-6 sm:py-8 pt-24" dir="rtl">
+      <div className="min-h-screen bg-soft-white py-6 sm:py-8 pt-24" dir="rtl">
         <div className="container mx-auto px-3 sm:px-4 max-w-md">
-          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 text-center border-2 border-[#E5DCC5]">
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 text-center border border-warm-gray-200">
             <div className="text-5xl sm:text-6xl mb-4">🛒</div>
-            <h2 className="text-lg sm:text-xl font-bold text-[#8B7355] mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <h2 className="text-lg sm:text-xl font-bold text-primary-green mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               السلة فارغة
             </h2>
-            <p className="text-sm sm:text-base text-[#8B7355]/70 mb-6" style={{ fontFamily: 'Tajawal, sans-serif' }}>لا يمكن إتمام الطلب بسلة فارغة</p>
+            <p className="text-sm sm:text-base text-warm-gray-500 mb-6" style={{ fontFamily: 'Tajawal, sans-serif' }}>لا يمكن إتمام الطلب بسلة فارغة</p>
             <button
               onClick={() => navigate('/')}
-              className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white px-6 py-3 rounded-xl hover:from-[#6B5644] hover:to-[#8B6644] transition-all font-semibold shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base"
+              className="w-full btn-primary font-semibold shadow-lg transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
               style={{ fontFamily: 'Tajawal, sans-serif' }}
             >
               <Sparkles size={20} />
@@ -670,19 +670,19 @@ const CheckoutPage: React.FC = () => {
 
   // --- Main Checkout Form ---
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FAF9F6] to-[#F5F5DC] pt-24" dir="rtl">
+    <div className="min-h-screen bg-soft-white pt-24" dir="rtl">
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 md:py-8 max-w-6xl">
         <Link
           to="/cart"
-          className="flex items-center gap-2 text-[#8B7355] hover:text-[#D4AF37] mb-4 sm:mb-6 transition-colors font-medium text-sm sm:text-base"
+          className="flex items-center gap-2 text-warm-gray-600 hover:text-primary-green mb-4 sm:mb-6 transition-colors font-medium text-sm sm:text-base"
           style={{ fontFamily: 'Tajawal, sans-serif' }}
         >
           <ArrowRight size={20} />
           <span>العودة للسلة</span>
         </Link>
 
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#8B7355] mb-4 sm:mb-6 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-          <Package className="h-6 w-6 sm:h-7 sm:w-7 text-[#D4AF37]" />
+        <h1 className="text-2xl sm:text-3xl font-bold text-warm-gray-800 mb-4 sm:mb-6 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+          <Package className="h-6 w-6 sm:h-7 sm:w-7 text-primary-green" />
           <span>إتمام الطلب</span>
         </h1>
 
@@ -695,9 +695,9 @@ const CheckoutPage: React.FC = () => {
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Order Summary */}
           <div className="lg:col-span-1 lg:order-2">
-            <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 border-2 border-[#E5DCC5] sticky top-24">
-              <h2 className="text-lg sm:text-xl font-bold text-[#8B7355] mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                <Sparkles className="h-5 w-5 text-[#D4AF37]" />
+            <div className="bg-white rounded-2xl sm:rounded-3xl shadow-sm p-4 sm:p-6 border border-warm-gray-200 sticky top-24">
+              <h2 className="text-lg sm:text-xl font-bold text-warm-gray-800 mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <Sparkles className="h-5 w-5 text-primary-green" />
                 <span>ملخص الطلب</span>
               </h2>
 
@@ -705,17 +705,17 @@ const CheckoutPage: React.FC = () => {
                 {state.cart.map((item) => (
                   <div
                     key={`${item.product.id}-${item.size}-${item.color}`}
-                    className="flex justify-between items-start gap-2 pb-2 border-b border-[#E5DCC5]"
+                    className="flex justify-between items-start gap-2 pb-2 border-b border-warm-gray-100"
                   >
-                    <span className="text-[#D4AF37] font-bold text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <span className="text-primary-green font-bold text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       {(item.product.price * item.quantity).toFixed(2)} ج
                     </span>
                     <div className="text-right flex-1">
-                      <span className="text-[#8B7355] font-medium text-xs sm:text-sm block" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      <span className="text-warm-gray-800 font-medium text-xs sm:text-sm block" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                         {item.product.name} × {item.quantity}
                       </span>
                       {(item.size || item.color) && (
-                        <p className="text-[10px] sm:text-xs text-[#8B7355]/70 mt-0.5" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        <p className="text-[10px] sm:text-xs text-warm-gray-500 mt-0.5" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                           {item.size && `${item.size}`}
                           {item.size && item.color && ' • '}
                           {item.color && `${item.color}`}
@@ -726,10 +726,10 @@ const CheckoutPage: React.FC = () => {
                 ))}
               </div>
 
-              <div className="space-y-2 sm:space-y-2.5 border-t-2 border-[#E5DCC5] pt-3 sm:pt-4">
+              <div className="space-y-2 sm:space-y-2.5 border-t-2 border-warm-gray-100 pt-3 sm:pt-4">
                 <div className="flex justify-between text-xs sm:text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                  <span className="text-[#8B7355]/70">المجموع الفرعي</span>
-                  <span className="font-semibold text-[#8B7355]">{subtotal.toFixed(2)} جنيه</span>
+                  <span className="text-warm-gray-500">المجموع الفرعي</span>
+                  <span className="font-semibold text-warm-gray-800">{subtotal.toFixed(2)} جنيه</span>
                 </div>
                 {discount && (
                   <div className="flex justify-between text-xs sm:text-sm bg-green-50 p-2 rounded-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
@@ -740,25 +740,25 @@ const CheckoutPage: React.FC = () => {
                   </div>
                 )}
                 <div className="flex justify-between text-xs sm:text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                  <span className="text-[#8B7355]/70">رسوم التوصيل</span>
+                  <span className="text-warm-gray-500">رسوم التوصيل</span>
                   {loadingShippingFees ? (
-                    <Loader2 className="animate-spin text-[#C4A57B]" size={16} />
+                    <Loader2 className="animate-spin text-primary-green" size={16} />
                   ) : (
-                    <span className="font-semibold text-[#8B7355]">
+                    <span className="font-semibold text-warm-gray-800">
                       {shippingFee.toFixed(2)} جنيه
                     </span>
                   )}
                 </div>
                 {selectedGovernorate && (
-                  <p className="text-[10px] sm:text-xs text-[#8B7355]/70" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <p className="text-[10px] sm:text-xs text-warm-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     🚚 التوصيل خلال: {selectedGovernorate.deliveryTime}
                   </p>
                 )}
-                <div className="flex justify-between items-center pt-2 sm:pt-3 border-t-2 border-[#E5DCC5]">
-                  <span className="text-xl sm:text-2xl font-black text-[#D4AF37]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <div className="flex justify-between items-center pt-2 sm:pt-3 border-t-2 border-warm-gray-100">
+                  <span className="text-xl sm:text-2xl font-black text-primary-green" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     {total.toFixed(2)} جنيه
                   </span>
-                  <span className="text-base sm:text-lg font-bold text-[#8B7355]" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <span className="text-base sm:text-lg font-bold text-warm-gray-800" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     الإجمالي
                   </span>
                 </div>
@@ -769,7 +769,7 @@ const CheckoutPage: React.FC = () => {
           {/* Checkout Form */}
           <form
             onSubmit={handleSubmit}
-            className="lg:col-span-2 lg:order-1 bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 border-2 border-[#E5DCC5]"
+            className="lg:col-span-2 lg:order-1 bg-white rounded-2xl sm:rounded-3xl shadow-sm p-4 sm:p-6 border border-warm-gray-200"
           >
             {errorShippingFees && (
               <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border-2 border-red-200 rounded-xl sm:rounded-2xl text-center">
@@ -788,7 +788,7 @@ const CheckoutPage: React.FC = () => {
             <div className="space-y-3 sm:space-y-4">
               {/* Full Name */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-warm-gray-800 font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   الاسم بالكامل *
                 </label>
                 <input
@@ -797,7 +797,7 @@ const CheckoutPage: React.FC = () => {
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
                   className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none transition-colors text-sm sm:text-base ${errors.fullName
                     ? 'border-red-500 focus:border-red-600'
-                    : 'border-[#E5DCC5] focus:border-[#D4AF37]'
+                    : 'border-warm-gray-200 focus:border-primary-green'
                     }`}
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                   disabled={isSubmitting}
@@ -915,7 +915,7 @@ const CheckoutPage: React.FC = () => {
                     placeholder="أدخل الكود"
                     className={`flex-1 px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none transition-colors text-sm sm:text-base ${errorDiscount
                       ? 'border-red-500 focus:border-red-600'
-                      : 'border-[#E5DCC5] focus:border-[#D4AF37]'
+                      : 'border-warm-gray-200 focus:border-primary-green'
                       }`}
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                     disabled={loadingDiscount || isSubmitting}
@@ -926,7 +926,7 @@ const CheckoutPage: React.FC = () => {
                     disabled={loadingDiscount || isSubmitting}
                     className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all text-sm sm:text-base ${loadingDiscount || isSubmitting
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-[#D4AF37] text-white hover:bg-[#C49F27]'
+                      : 'btn-primary'
                       }`}
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                   >
@@ -952,19 +952,19 @@ const CheckoutPage: React.FC = () => {
 
               {/* Payment Method */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-3 text-sm sm:text-base flex items-center justify-end gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-warm-gray-800 font-bold mb-3 text-sm sm:text-base flex items-center justify-end gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   <span>طريقة الدفع *</span>
                   <CreditCard className="h-4 w-4 sm:h-5 sm:w-5" />
                 </label>
 
                 {/* InstaPay Option */}
-                <label className="flex items-center justify-end gap-3 p-3 sm:p-4 border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl cursor-pointer hover:bg-[#FAF9F6] transition-colors mb-3">
+                <label className="flex items-center justify-end gap-3 p-3 sm:p-4 border-2 border-warm-gray-200 rounded-lg sm:rounded-xl cursor-pointer hover:bg-soft-white transition-colors mb-3">
                   <div className="text-right flex-1">
-                    <div className="text-[#8B7355] font-medium text-sm sm:text-base flex items-center gap-2 justify-end" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <div className="text-warm-gray-800 font-medium text-sm sm:text-base flex items-center gap-2 justify-end" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       <span>InstaPay</span>
                       <CreditCard className="h-4 w-4 sm:h-5 sm:w-5" />
                     </div>
-                    <p className="text-xs text-[#8B7355]/70 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <p className="text-xs text-warm-gray-500 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       التحويل على: <span className="font-semibold">saramostapha@instapay</span>
                     </p>
                   </div>
@@ -982,13 +982,13 @@ const CheckoutPage: React.FC = () => {
                 </label>
 
                 {/* Vodafone Cash Option */}
-                <label className="flex items-center justify-end gap-3 p-3 sm:p-4 border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl cursor-pointer hover:bg-[#FAF9F6] transition-colors">
+                <label className="flex items-center justify-end gap-3 p-3 sm:p-4 border-2 border-warm-gray-200 rounded-lg sm:rounded-xl cursor-pointer hover:bg-soft-white transition-colors">
                   <div className="text-right flex-1">
-                    <div className="text-[#8B7355] font-medium text-sm sm:text-base flex items-center gap-2 justify-end" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <div className="text-warm-gray-800 font-medium text-sm sm:text-base flex items-center gap-2 justify-end" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       <span>Vodafone Cash</span>
                       <Truck className="h-4 w-4 sm:h-5 sm:w-5" />
                     </div>
-                    <p className="text-xs text-[#8B7355]/70 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <p className="text-xs text-warm-gray-500 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       التحويل على: <span className="font-semibold">01021964426</span>
                     </p>
                   </div>
@@ -1045,11 +1045,11 @@ const CheckoutPage: React.FC = () => {
                     const file = e.target.files?.[0] || null;
                     setFormData(prev => ({ ...prev, paymentProofImage: file }));
                   }}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl text-right focus:border-[#D4AF37] focus:outline-none text-sm sm:text-base"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-warm-gray-200 rounded-lg sm:rounded-xl text-right focus:border-primary-green focus:outline-none text-sm sm:text-base"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                   disabled={isSubmitting}
                 />
-                <p className="text-xs text-[#8B7355]/70 mt-1 text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <p className="text-xs text-warm-gray-500 mt-1 text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   رفع لقطة شاشة للتحويل يساعد في سرعة تأكيد الطلب
                 </p>
               </div>
@@ -1063,7 +1063,7 @@ const CheckoutPage: React.FC = () => {
                   value={formData.notes}
                   onChange={(e) => handleInputChange('notes', e.target.value)}
                   rows={3}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl text-right focus:border-[#D4AF37] focus:outline-none resize-none text-sm sm:text-base"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-warm-gray-200 rounded-lg sm:rounded-xl text-right focus:border-primary-green focus:outline-none resize-none text-sm sm:text-base"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                   placeholder="أي ملاحظات إضافية حول عملية الدفع..."
                   disabled={isSubmitting}

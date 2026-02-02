@@ -331,38 +331,41 @@ const ProductPage: React.FC = () => {
 
     try {
       const token = getAuthToken();
-      if (!token) {
-        alert('يرجى تسجيل الدخول أولاً لإضافة المنتج للسلة');
-        navigate('/login');
-        return;
+
+      // If user is authenticated, use API
+      if (token) {
+        const payload = {
+          productId: product.id,
+          quantity,
+          size: hasSizes ? selectedSize : '',
+          color: hasColors ? selectedColor : '',
+          selectedExtensions: selectedExtensions.length > 0 ? JSON.stringify(selectedExtensions) : null
+        };
+
+        const response = await fetch(`${apiUrl}/api/cart/items`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          const txt = await response.text().catch(() => '');
+          throw new Error(txt || 'فشل في إضافة المنتج إلى السلة');
+        }
       }
 
-      const payload = {
-        productId: product.id,
-        quantity,
-        size: hasSizes ? selectedSize : '',
-        color: hasColors ? selectedColor : '',
-        selectedExtensions: selectedExtensions.length > 0 ? JSON.stringify(selectedExtensions) : null
-      };
-
-      const response = await fetch(`${apiUrl}/api/cart/items`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const txt = await response.text().catch(() => '');
-        throw new Error(txt || 'فشل في إضافة المنتج إلى السلة');
-      }
-
+      // For both guest and authenticated users, update local state
       dispatch({
         type: 'ADD_TO_CART',
         payload: {
-          product,
+          product: {
+            ...product,
+            inStock: product.isAvailable ?? true,
+            isOffer: !!product.originalPrice && product.originalPrice > product.price,
+          },
           quantity,
           selectedSize: hasSizes ? selectedSize : '',
           selectedColor: hasColors ? selectedColor : '',

@@ -110,6 +110,10 @@ export default function AllProductsPage() {
     };
   }, [pageNumber]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleViewProduct = (product: Product) => {
     navigate(`/product/${product.id}`, {
       state: {
