@@ -396,7 +396,15 @@ const CheckoutPage: React.FC = () => {
             }
           } catch (error) {
             console.error('Failed to upload payment proof:', error);
-            // Continue even if image upload fails
+            // Alert user about the upload failure
+            const proceed = window.confirm(
+              'فشل رفع صورة إثبات الدفع. هل تريد متابعة الطلب بدون الصورة؟\n' +
+              'Failed to upload payment proof. Do you want to proceed without it?'
+            );
+            if (!proceed) {
+              setIsSubmitting(false);
+              return;
+            }
           }
         }
 
