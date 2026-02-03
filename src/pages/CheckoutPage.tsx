@@ -386,7 +386,7 @@ const CheckoutPage: React.FC = () => {
           imageFormData.append('upload_preset', 'turtle_art_preset'); // Update with your Cloudinary preset
 
           try {
-            const cloudinaryResponse = await fetch('https://api.cloudinary.com/v1_1/dptvzuqzp/image/upload', {
+            const cloudinaryResponse = await fetch('https://api.cloudinary.com/v1_1/dsmkdb8rk/image/upload', {
               method: 'POST',
               body: imageFormData,
             });
