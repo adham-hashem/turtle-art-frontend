@@ -53,6 +53,9 @@ interface OrderResponseDto {
   senderDetails?: string;
   paymentProofImage?: string;
   paymentNotes?: string;
+  subtotal?: number;
+  discountAmount?: number;
+  shippingFee?: number;
   items: OrderItemResponseDto[];
 }
 
@@ -1276,6 +1279,62 @@ const OrdersManagement: React.FC = () => {
                       <p className="text-gray-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.paymentNotes}</p>
                     </div>
                   )}
+                </div>
+              </div>
+
+              {/* Price Breakdown Section */}
+              <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-4 border-2 border-green-200">
+                <h4 className="text-lg font-bold text-black mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <Tag className="h-5 w-5" />
+                  تفاصيل الأسعار
+                </h4>
+                <div className="space-y-3">
+                  {/* Subtotal */}
+                  <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+                    <span className="text-gray-600 font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>المجموع الفرعي (المنتجات)</span>
+                    <span className="font-bold text-black text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      {selectedOrder.subtotal?.toFixed(2) ?? '0.00'} جنيه
+                    </span>
+                  </div>
+
+                  {/* Shipping Fee */}
+                  <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <span className="text-gray-700 font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>رسوم التوصيل</span>
+                    <span className="font-bold text-blue-700 text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      +{selectedOrder.shippingFee?.toFixed(2) ?? '0.00'} جنيه
+                    </span>
+                  </div>
+
+                  {/* Discount */}
+                  {selectedOrder.discountAmount && selectedOrder.discountAmount > 0 && (
+                    <div className="flex justify-between items-center p-3 bg-green-100 rounded-lg border-2 border-green-300">
+                      <div className="flex items-center gap-2">
+                        <Tag className="h-5 w-5 text-green-600" />
+                        <div>
+                          <span className="text-green-700 font-semibold block" style={{ fontFamily: 'Tajawal, sans-serif' }}>الخصم</span>
+                          {selectedOrder.discountCodeUsed && (
+                            <span className="text-xs text-green-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                              ({selectedOrder.discountCodeUsed})
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <span className="font-bold text-green-700 text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        -{selectedOrder.discountAmount.toFixed(2)} جنيه
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Divider */}
+                  <div className="border-t-2 border-gray-300 my-2"></div>
+
+                  {/* Final Total */}
+                  <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-600 to-primary-green rounded-lg shadow-lg">
+                    <span className="text-white font-bold text-xl" style={{ fontFamily: 'Tajawal, sans-serif' }}>الإجمالي النهائي</span>
+                    <span className="font-bold text-white text-2xl" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      {selectedOrder.total.toFixed(2)} جنيه
+                    </span>
+                  </div>
                 </div>
               </div>
 

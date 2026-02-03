@@ -28,6 +28,9 @@ interface Order {
   phoneNumber?: string;
   address?: string;
   governorate?: string;
+  subtotal?: number;
+  discountAmount?: number;
+  shippingFee?: number;
   items: OrderItem[];
 }
 
@@ -75,7 +78,7 @@ const OrderDetails: React.FC = () => {
         }
 
         const data: Order = await response.json();
-        
+
         // Map numeric status and paymentMethod to string values
         const mappedOrder = {
           ...data,
@@ -328,6 +331,64 @@ const OrderDetails: React.FC = () => {
                   </span>
                   <span className="text-[#8B7355] font-medium text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     {order.governorate || 'غير متوفر'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Price Breakdown Section */}
+          <div className="mb-8">
+            <div className="bg-gradient-to-br from-[#F5F5DC] to-[#FAF9F6] rounded-xl p-5 border-2 border-[#C4A57B]">
+              <h2 className="text-lg font-bold text-[#8B7355] mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <Tag className="h-5 w-5 text-[#D4AF37]" />
+                <span>تفاصيل الأسعار</span>
+              </h2>
+              <div className="space-y-3">
+                {/* Subtotal */}
+                <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+                  <span className="text-[#8B7355]/70 font-semibold text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>المجموع الفرعي (المنتجات)</span>
+                  <span className="font-bold text-[#8B7355] text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    {order.subtotal?.toFixed(2) ?? '0.00'} جنيه
+                  </span>
+                </div>
+
+                {/* Shipping Fee */}
+                <div className="flex justify-between items-center p-3 bg-[#C4A57B]/10 rounded-lg border border-[#C4A57B]">
+                  <span className="text-[#8B7355] font-semibold text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>رسوم التوصيل</span>
+                  <span className="font-bold text-[#8B7355] text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    +{order.shippingFee?.toFixed(2) ?? '0.00'} جنيه
+                  </span>
+                </div>
+
+                {/* Discount */}
+                {order.discountAmount && order.discountAmount > 0 && (
+                  <div className="flex justify-between items-center p-3 bg-green-100 rounded-lg border-2 border-green-300">
+                    <div className="flex items-center gap-2">
+                      <Tag className="h-5 w-5 text-green-600" />
+                      <div>
+                        <span className="text-green-700 font-semibold block text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>الخصم</span>
+                        {order.discountCodeUsed && (
+                          <span className="text-xs text-green-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                            ({order.discountCodeUsed})
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <span className="font-bold text-green-700 text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                      -{order.discountAmount.toFixed(2)} جنيه
+                    </span>
+                  </div>
+                )}
+
+                {/* Divider */}
+                <div className="border-t-2 border-[#C4A57B] my-2"></div>
+
+                {/* Final Total */}
+                <div className="flex justify-between items-center p-4 bg-gradient-to-r from-[#8B7355] to-[#A67C52] rounded-lg shadow-lg">
+                  <span className="text-white font-bold text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>الإجمالي النهائي</span>
+                  <span className="font-bold text-white text-2xl" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    {order.total.toFixed(2)} جنيه
                   </span>
                 </div>
               </div>

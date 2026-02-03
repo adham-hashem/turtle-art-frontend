@@ -254,6 +254,20 @@ const CheckoutPage: React.FC = () => {
         if (!data.isActive) {
           throw new Error('الكود غير صالح أو منتهي الصلاحية');
         }
+
+        // Check if discount code is within valid date range
+        const now = new Date();
+        const startDate = new Date(data.startDate);
+        const endDate = new Date(data.endDate);
+
+        if (now < startDate) {
+          throw new Error('كود الخصم لم يصبح ساريًا بعد');
+        }
+
+        if (now > endDate) {
+          throw new Error('انتهت صلاحية كود الخصم');
+        }
+
         const subtotalCalc = state.cart.reduce(
           (total, item) => total + item.product.price * item.quantity,
           0
