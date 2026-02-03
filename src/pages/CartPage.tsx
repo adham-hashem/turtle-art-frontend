@@ -33,7 +33,22 @@ const CartPage: React.FC = () => {
   const { dispatch, state } = useApp();
   const navigate = useNavigate();
 
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  // Local interface matching API response structure
+  interface CartPageItem {
+    id: string;
+    productId: string;
+    product: {
+      id: string;
+      name: string;
+      price: number;
+    };
+    quantity: number;
+    size?: string;
+    color?: string;
+    images: CartItemImage[];
+  }
+
+  const [cartItems, setCartItems] = useState<CartPageItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -77,8 +92,9 @@ const CartPage: React.FC = () => {
       }
 
       const data: ApiCartResponse = await response.json();
-      const normalizedItems: CartItem[] = data.items.map(item => ({
+      const normalizedItems: CartPageItem[] = data.items.map(item => ({
         id: item.id,
+        productId: item.productId,
         product: {
           id: item.productId,
           name: item.productName,
@@ -90,6 +106,8 @@ const CartPage: React.FC = () => {
         images: item.images.map(img => {
           let fullPath = img.imagePath;
           if (!fullPath.startsWith('http://') && !fullPath.startsWith('https://')) {
+            // Normalize slashes
+            fullPath = fullPath.replace(/\\/g, '/');
             fullPath = fullPath.startsWith('/') ? fullPath : `/${fullPath}`;
             fullPath = `${apiUrl}${fullPath}`;
           }
@@ -101,7 +119,9 @@ const CartPage: React.FC = () => {
       }));
 
       setCartItems(normalizedItems || []);
-      dispatch({ type: 'SET_CART', payload: normalizedItems || [] });
+      setCartItems(normalizedItems || []);
+      // Map to global type for context
+      dispatch({ type: 'SET_CART', payload: mapToGlobalCartItems(normalizedItems || []) });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'حدث خطأ غير معروف');
     } finally {
@@ -109,19 +129,59 @@ const CartPage: React.FC = () => {
     }
   }, [dispatch, token, apiUrl]);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+
+  // Helper to map Global CartItem to Local CartPageItem
+  const mapToCartPageItems = (items: CartItem[]): CartPageItem[] => {
+    return items.map((item, index) => ({
+      id: `guest-${index}-${item.product.id}`,
+      productId: item.product.id,
+      product: {
+        id: item.product.id,
+        name: item.product.name,
+        price: item.product.price
+      },
+      quantity: item.quantity,
+      size: item.selectedSize,
+      color: item.selectedColor,
+      images: item.product.images.map(img => ({
+        id: img.id,
+        imagePath: img.imagePath,
+        isMain: img.isMain
+      }))
+    }));
+  };
+
+  // Helper to map Local CartPageItem to Global CartItem
+  const mapToGlobalCartItems = (items: CartPageItem[]): CartItem[] => {
+    return items.map(item => ({
+      product: {
+        id: item.product.id,
+        name: item.product.name,
+        price: item.product.price,
+        code: 'N/A', // Default
+        description: '', // Default
+        createdAt: new Date().toISOString(),
+        sizes: [],
+        colors: [],
+        images: item.images,
+        inStock: true,
+        isOffer: false
+      },
+      quantity: item.quantity,
+      selectedSize: item.size,
+      selectedColor: item.color
+    }));
+  };
 
   useEffect(() => {
     if (token) {
       fetchCart();
     } else {
       // Guest user - display cart from AppContext (localStorage)
-      setCartItems(state.cart);
+      setCartItems(mapToCartPageItems(state.cart));
       setLoading(false);
     }
-  }, [fetchCart, token]);
+  }, [fetchCart, token, state.cart]);
 
   const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) {
@@ -135,7 +195,7 @@ const CartPage: React.FC = () => {
         item.id === itemId ? { ...item, quantity: newQuantity } : item
       );
       setCartItems(updatedItems);
-      dispatch({ type: 'SET_CART', payload: updatedItems });
+      dispatch({ type: 'SET_CART', payload: mapToGlobalCartItems(updatedItems) });
       return;
     }
 
@@ -145,7 +205,7 @@ const CartPage: React.FC = () => {
       item.id === itemId ? { ...item, quantity: newQuantity } : item
     );
     setCartItems(updatedItems);
-    dispatch({ type: 'SET_CART', payload: updatedItems });
+    dispatch({ type: 'SET_CART', payload: mapToGlobalCartItems(updatedItems) });
 
     try {
       const response = await fetch(`${apiUrl}/api/cart/items/${itemId}`, {
@@ -174,7 +234,8 @@ const CartPage: React.FC = () => {
       await fetchCart();
     } catch (err) {
       setCartItems(previousItems);
-      dispatch({ type: 'SET_CART', payload: previousItems });
+      setCartItems(previousItems);
+      dispatch({ type: 'SET_CART', payload: mapToGlobalCartItems(previousItems) });
       setError(err instanceof Error ? err.message : 'حدث خطأ أثناء تحديث الكمية');
     }
   };
@@ -183,7 +244,7 @@ const CartPage: React.FC = () => {
     const previousItems = [...cartItems];
     const updatedItems = cartItems.filter(item => item.id !== itemId);
     setCartItems(updatedItems);
-    dispatch({ type: 'SET_CART', payload: updatedItems });
+    dispatch({ type: 'SET_CART', payload: mapToGlobalCartItems(updatedItems) });
 
     if (!token) {
       // Guest user - just update localStorage via AppContext
@@ -212,7 +273,7 @@ const CartPage: React.FC = () => {
       }
     } catch (err) {
       setCartItems(previousItems);
-      dispatch({ type: 'SET_CART', payload: previousItems });
+      dispatch({ type: 'SET_CART', payload: mapToGlobalCartItems(previousItems) });
       setError(err instanceof Error ? err.message : 'حدث خطأ أثناء إزالة العنصر');
     }
   };
@@ -392,7 +453,7 @@ const CartPage: React.FC = () => {
                     className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 border border-warm-gray-200 rounded-xl sm:rounded-2xl hover:shadow-md transition-all bg-soft-white"
                   >
                     <img
-                      src={mainImage?.imagePath || 'https://via.placeholder.com/150'}
+                      src={mainImage?.imagePath || 'data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%23f3f4f6\'/%3e%3ctext x=\'50%25\' y=\'50%25\' font-family=\'Arial\' font-size=\'12\' fill=\'%239ca3af\' text-anchor=\'middle\' dy=\'.3em\'%3eNo Image%3c/text%3e%3c/svg%3e'}
                       alt={item.product.name}
                       loading="lazy"
                       className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-contain rounded-lg sm:rounded-xl bg-white border border-warm-gray-200"

@@ -41,7 +41,7 @@ interface OrderResponseDto {
   orderNumber: string;
   customerId: string;
   total: number;
-  paymentMethod: 'Cash' | 'Card' | 'OnlinePayment';
+  paymentMethod: 'InstaPay' | 'VodafoneCash' | 'OnlinePayment';
   status: 'UnderReview' | 'Confirmed' | 'Shipped' | 'Delivered' | 'Cancelled';
   date: string;
   discountCodeUsed: string | null;
@@ -129,12 +129,12 @@ const OrdersManagement: React.FC = () => {
     }
   };
 
-  const mapPaymentMethod = (method: number | string): 'Cash' | 'Card' | 'OnlinePayment' => {
+  const mapPaymentMethod = (method: number | string): 'InstaPay' | 'VodafoneCash' | 'OnlinePayment' => {
     switch (Number(method)) {
-      case 0: return 'Cash';
-      case 1: return 'Card';
+      case 0: return 'InstaPay';
+      case 1: return 'VodafoneCash';
       case 2: return 'OnlinePayment';
-      default: return 'Cash';
+      default: return 'InstaPay';
     }
   };
 
@@ -453,8 +453,8 @@ const OrdersManagement: React.FC = () => {
 
   const getPaymentMethodText = (method: string) => {
     switch (method.toLowerCase()) {
-      case 'cash': return 'الدفع عند الاستلام';
-      case 'card': return 'بطاقة ائتمانية';
+      case 'instapay': return 'InstaPay';
+      case 'vodafonecash': return 'فودافون كاش';
       case 'onlinepayment': return 'دفع إلكتروني';
       default: return method;
     }
@@ -613,8 +613,8 @@ const OrdersManagement: React.FC = () => {
             dir="rtl"
           >
             <option value="all">جميع طرق الدفع</option>
-            <option value="cash">الدفع عند الاستلام</option>
-            <option value="card">بطاقة ائتمانية</option>
+            <option value="instapay">InstaPay</option>
+            <option value="vodafonecash">فودافون كاش</option>
             <option value="onlinepayment">دفع إلكتروني</option>
           </select>
 
