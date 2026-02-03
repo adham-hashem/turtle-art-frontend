@@ -811,7 +811,7 @@ const CheckoutPage: React.FC = () => {
 
               {/* Phone */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-warm-gray-800 font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   رقم الهاتف *
                 </label>
                 <input
@@ -821,7 +821,7 @@ const CheckoutPage: React.FC = () => {
                   placeholder="01xxxxxxxxx"
                   className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none transition-colors text-sm sm:text-base ${errors.phone
                     ? 'border-red-500 focus:border-red-600'
-                    : 'border-[#E5DCC5] focus:border-[#D4AF37]'
+                    : 'border-warm-gray-200 focus:border-primary-green'
                     }`}
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                   disabled={isSubmitting}
@@ -835,7 +835,7 @@ const CheckoutPage: React.FC = () => {
 
               {/* Address */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-warm-gray-800 font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   العنوان التفصيلي *
                 </label>
                 <textarea
@@ -844,7 +844,7 @@ const CheckoutPage: React.FC = () => {
                   rows={3}
                   className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none resize-none transition-colors text-sm sm:text-base ${errors.address
                     ? 'border-red-500 focus:border-red-600'
-                    : 'border-[#E5DCC5] focus:border-[#D4AF37]'
+                    : 'border-warm-gray-200 focus:border-primary-green'
                     }`}
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                   disabled={isSubmitting}
@@ -858,16 +858,16 @@ const CheckoutPage: React.FC = () => {
 
               {/* Governorate */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-warm-gray-800 font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   المحافظة *
                 </label>
                 {loadingShippingFees ? (
-                  <div className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-[#E5DCC5] rounded-lg sm:rounded-xl bg-[#FAF9F6] flex items-center justify-end">
-                    <span className="text-xs sm:text-sm text-[#8B7355]/70 ml-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <div className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-warm-gray-200 rounded-lg sm:rounded-xl bg-soft-white flex items-center justify-end">
+                    <span className="text-xs sm:text-sm text-warm-gray-500 ml-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       جاري جلب المحافظات...
                     </span>
                     <Loader2
-                      className="animate-spin text-[#C4A57B]"
+                      className="animate-spin text-primary-green"
                       size={16}
                     />
                   </div>
@@ -879,7 +879,7 @@ const CheckoutPage: React.FC = () => {
                     }
                     className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none transition-colors text-sm sm:text-base ${errors.governorate
                       ? 'border-red-500 focus:border-red-600'
-                      : 'border-[#E5DCC5] focus:border-[#D4AF37]'
+                      : 'border-warm-gray-200 focus:border-primary-green'
                       }`}
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                     dir="rtl"
@@ -902,7 +902,7 @@ const CheckoutPage: React.FC = () => {
 
               {/* Discount Code */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-warm-gray-800 font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   كود الخصم
                 </label>
                 <div className="flex gap-2">
@@ -1008,7 +1008,7 @@ const CheckoutPage: React.FC = () => {
 
               {/* Sender Details */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-warm-gray-800 font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   {formData.paymentMethod === 'vodafonecash'
                     ? 'رقم الموبايل الذي تم التحويل منه *'
                     : 'بيانات المُحوِّل (رقم الموبايل أو عنوان InstaPay) *'
@@ -1021,7 +1021,7 @@ const CheckoutPage: React.FC = () => {
                   placeholder={formData.paymentMethod === 'vodafonecash' ? '01xxxxxxxxx' : 'yourname@instapay أو 01xxxxxxxxx'}
                   className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-lg sm:rounded-xl text-right focus:outline-none transition-colors text-sm sm:text-base ${errors.senderDetails
                     ? 'border-red-500 focus:border-red-600'
-                    : 'border-[#E5DCC5] focus:border-[#D4AF37]'
+                    : 'border-warm-gray-200 focus:border-primary-green'
                     }`}
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                   disabled={isSubmitting}
@@ -1035,7 +1035,7 @@ const CheckoutPage: React.FC = () => {
 
               {/* Payment Proof Upload */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-warm-gray-800 font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   رفع صورة إثبات الدفع (اختياري)
                 </label>
                 <input
@@ -1056,7 +1056,7 @@ const CheckoutPage: React.FC = () => {
 
               {/* Notes renamed to Payment Notes */}
               <div>
-                <label className="block text-right text-[#8B7355] font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <label className="block text-right text-warm-gray-800 font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                   ملاحظات حول الدفع
                 </label>
                 <textarea

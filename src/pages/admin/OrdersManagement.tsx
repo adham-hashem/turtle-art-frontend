@@ -50,6 +50,9 @@ interface OrderResponseDto {
   phoneNumber?: string;
   address?: string;
   governorate?: string;
+  senderDetails?: string;
+  paymentProofImage?: string;
+  paymentNotes?: string;
   items: OrderItemResponseDto[];
 }
 
@@ -670,13 +673,17 @@ const OrdersManagement: React.FC = () => {
                             </div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm">
-                            <button
-                              onClick={() => getCustomerOrders(order.customerId)}
-                              className="text-gray-600 hover:text-green-600 underline font-medium"
-                              style={{ fontFamily: 'Tajawal, sans-serif' }}
-                            >
-                              {order.customerId.substring(0, 8)}...
-                            </button>
+                            {order.customerId ? (
+                              <button
+                                onClick={() => getCustomerOrders(order.customerId)}
+                                className="text-gray-600 hover:text-green-600 underline font-medium"
+                                style={{ fontFamily: 'Tajawal, sans-serif' }}
+                              >
+                                {order.customerId.substring(0, 8)}...
+                              </button>
+                            ) : (
+                              <span className="text-gray-500 text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>زائر</span>
+                            )}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <div className="flex items-center gap-1">
@@ -818,6 +825,41 @@ const OrdersManagement: React.FC = () => {
                                   </div>
                                 )}
 
+                                {/* Payment Details Section */}
+                                {(order.senderDetails || order.paymentProofImage || order.paymentNotes) && (
+                                  <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                                    <h5 className="text-sm font-bold text-black mb-3 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                      <DollarSign className="h-4 w-4" />
+                                      تفاصيل الدفع
+                                    </h5>
+                                    <div className="space-y-2">
+                                      {order.senderDetails && (
+                                        <div className="flex items-center justify-between p-2 bg-white rounded-lg">
+                                          <span className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>بيانات المُحوِّل:</span>
+                                          <span className="text-sm font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.senderDetails}</span>
+                                        </div>
+                                      )}
+                                      {order.paymentProofImage && (
+                                        <div className="p-2 bg-white rounded-lg">
+                                          <p className="text-xs text-gray-500 mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>صورة إثبات الدفع:</p>
+                                          <img
+                                            src={order.paymentProofImage}
+                                            alt="Payment Proof"
+                                            className="w-32 h-32 object-cover rounded-lg border border-gray-300 cursor-pointer hover:opacity-90 transition-opacity"
+                                            onClick={() => window.open(order.paymentProofImage, '_blank')}
+                                          />
+                                        </div>
+                                      )}
+                                      {order.paymentNotes && (
+                                        <div className="p-2 bg-white rounded-lg">
+                                          <p className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>ملاحظات الدفع:</p>
+                                          <p className="text-sm text-gray-700" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.paymentNotes}</p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+
                                 {/* Order Items */}
                                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                                   <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
@@ -889,13 +931,17 @@ const OrdersManagement: React.FC = () => {
                   <div className="space-y-2 mb-4 border-t border-gray-100 pt-3">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>العميل:</span>
-                      <button
-                        onClick={() => getCustomerOrders(order.customerId)}
-                        className="text-sm text-gray-600 hover:text-green-600 underline font-medium"
-                        style={{ fontFamily: 'Tajawal, sans-serif' }}
-                      >
-                        {order.customerId.substring(0, 8)}...
-                      </button>
+                      {order.customerId ? (
+                        <button
+                          onClick={() => getCustomerOrders(order.customerId)}
+                          className="text-sm text-gray-600 hover:text-green-600 underline font-medium"
+                          style={{ fontFamily: 'Tajawal, sans-serif' }}
+                        >
+                          {order.customerId.substring(0, 8)}...
+                        </button>
+                      ) : (
+                        <span className="text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>زائر</span>
+                      )}
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>المبلغ:</span>
@@ -1169,6 +1215,30 @@ const OrdersManagement: React.FC = () => {
                     <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border-2 border-green-200">
                       <Tag className="h-5 w-5 text-green-600" />
                       <span className="font-bold text-green-700" style={{ fontFamily: 'Tajawal, sans-serif' }}>كود الخصم المستخدم: {selectedOrder.discountCodeUsed}</span>
+                    </div>
+                  )}
+                  {selectedOrder.senderDetails && (
+                    <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <span className="text-gray-700 font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>بيانات المُحوِّل</span>
+                      <span className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.senderDetails}</span>
+                    </div>
+                  )}
+                  {selectedOrder.paymentProofImage && (
+                    <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                      <p className="text-gray-700 font-semibold mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>صورة إثبات الدفع</p>
+                      <img
+                        src={selectedOrder.paymentProofImage}
+                        alt="Payment Proof"
+                        className="w-full max-w-md mx-auto rounded-lg border-2 border-purple-300 cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => window.open(selectedOrder.paymentProofImage, '_blank')}
+                      />
+                      <p className="text-xs text-gray-500 mt-2 text-center" style={{ fontFamily: 'Tajawal, sans-serif' }}>اضغط على الصورة لعرضها بحجم كامل</p>
+                    </div>
+                  )}
+                  {selectedOrder.paymentNotes && (
+                    <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                      <p className="text-gray-700 font-semibold mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>ملاحظات الدفع</p>
+                      <p className="text-gray-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.paymentNotes}</p>
                     </div>
                   )}
                 </div>
