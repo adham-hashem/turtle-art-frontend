@@ -988,6 +988,41 @@ const OrdersManagement: React.FC = () => {
                         </div>
                       )}
 
+                      {/* Payment Details Section */}
+                      {(order.senderDetails || order.paymentProofImage || order.paymentNotes) && (
+                        <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                          <h5 className="text-xs font-bold text-black mb-2 flex items-center gap-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                            <DollarSign className="h-3 w-3" />
+                            تفاصيل الدفع
+                          </h5>
+                          <div className="space-y-2">
+                            {order.senderDetails && (
+                              <div className="flex items-center justify-between p-2 bg-white rounded">
+                                <span className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>بيانات المُحوِّل:</span>
+                                <span className="text-xs font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.senderDetails}</span>
+                              </div>
+                            )}
+                            {order.paymentProofImage && (
+                              <div className="p-2 bg-white rounded">
+                                <p className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>صورة إثبات الدفع:</p>
+                                <img
+                                  src={order.paymentProofImage}
+                                  alt="Payment Proof"
+                                  className="w-24 h-24 object-cover rounded border border-gray-300 cursor-pointer"
+                                  onClick={() => window.open(order.paymentProofImage, '_blank')}
+                                />
+                              </div>
+                            )}
+                            {order.paymentNotes && (
+                              <div className="p-2 bg-white rounded">
+                                <p className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>ملاحظات الدفع:</p>
+                                <p className="text-xs text-gray-700" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.paymentNotes}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Order Items */}
                       <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
                         <h5 className="text-xs font-bold text-black mb-2 flex items-center gap-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
