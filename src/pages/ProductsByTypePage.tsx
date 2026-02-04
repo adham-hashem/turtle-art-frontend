@@ -6,7 +6,6 @@ import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import ProductCard from '../components/ProductCard';
 import { Product } from '../types';
-import { BottomNav } from '../components/BottomNav';
 
 interface ApiResponse {
   items: Product[];
@@ -61,12 +60,10 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
 
   const [restoreScroll, setRestoreScroll] = useState<number | null>(null);
 
-  const [currentPage, setCurrentPage] = useState<string>(config.bottomNavKey || 'home');
-
   const getAuthToken = () =>
     localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
 
-  const buildAuthHeaders = () => {
+  const buildAuthHeaders = (): HeadersInit => {
     const token = getAuthToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
@@ -278,8 +275,8 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
                   onClick={() => fetchProducts(p as number)}
                   disabled={loading}
                   className={`px-3 py-2 rounded-xl transition-all border-2 ${pageNumber === p
-                      ? 'bg-black text-white border-black shadow-lg'
-                      : 'bg-white text-black border-gray-200 hover:shadow-md'
+                    ? 'bg-black text-white border-black shadow-lg'
+                    : 'bg-white text-black border-gray-200 hover:shadow-md'
                     } ${loading ? 'cursor-not-allowed opacity-50' : ''}`}
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
@@ -303,28 +300,7 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
     );
   };
 
-  const handleNavigate = (page: string) => {
-    setCurrentPage(page);
-    switch (page) {
-      case 'home':
-        navigate('/');
-        break;
-      case 'kids-bags':
-        navigate('/kids-bags');
-        break;
-      case 'women-bags':
-        navigate('/girls-bags');
-        break;
-      case 'giveaways':
-        navigate('/giveaways');
-        break;
-      case 'cart':
-        navigate('/cart');
-        break;
-      default:
-        navigate('/');
-    }
-  };
+
 
   return (
     <div
@@ -414,9 +390,6 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
           </>
         )}
       </div>
-
-      {/* Bottom Navigation */}
-      <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
     </div>
   );
 };

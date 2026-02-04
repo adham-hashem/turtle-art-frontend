@@ -208,7 +208,7 @@ const HomePage: React.FC = () => {
               Turtle Art
             </h1>
             <p className="text-black text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-              ✨By Sarah Mostafa✨
+              ✨By Sara Mostafa✨
             </p>
           </div>
 
