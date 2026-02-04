@@ -400,7 +400,7 @@ export default function CustomOrders() {
                 onChange={(e) => setFormData((p) => ({ ...p, requiredText: e.target.value }))}
                 maxLength={200}
                 className="w-full px-4 py-3 border border-warm-gray-300 rounded-2xl text-right focus:border-primary-green focus:outline-none focus:ring-1 focus:ring-primary-green resize-none bg-white transition-all"
-                placeholder="مثال : سارة مصطفي"
+                placeholder="مثال : أريد تصميم شنطة يد باللون الذهبي مع اسم 'لجو' مطبوع عليها بخط أنيق وبحجم كبير في المنتصف"
                 style={{ fontFamily: 'Tajawal, sans-serif' }}
               />
               <p className="text-xs text-warm-gray-400 text-right mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
