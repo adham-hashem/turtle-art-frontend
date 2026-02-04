@@ -108,7 +108,7 @@ const Header: React.FC = () => {
 
   const menuItems = [
     { label: 'الرئيسية', page: 'home'},
-    { label: 'المتاح فوري', page: 'vailable-collection'},
+    { label: 'المتاح فوري', page: 'instant'},
     { label: 'شنط أطفال', page: 'kids-bags' },
     { label: 'شنط بناتي', page: 'girls-bags'},
     { label: 'كولكشن الأم  وبنتها', page: 'mother-daughter' },

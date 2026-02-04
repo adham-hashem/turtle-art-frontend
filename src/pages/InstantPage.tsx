@@ -9,7 +9,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowRight, ChevronLeft, ChevronRight, Cake, Sparkles } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, ShoppingBag, Sparkles } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import ProductCard from '../components/ProductCard';
 import { Product } from '../types';
@@ -121,48 +121,28 @@ const InstantPage: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // NEW backend preferred endpoint (filter flag)
-      const primaryUrl = `${apiUrl}/api/products?pageNumber=${page}&pageSize=10&isInstant=true`;
+      // Use the verified endpoint for instant products
+      const url = `${apiUrl}/api/products/instant?pageNumber=${page}&pageSize=10`;
 
-      // Fallback endpoint (older style)
-      const fallbackUrl = `${apiUrl}/api/products/instant?pageNumber=${page}&pageSize=10`;
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          ...buildAuthHeaders(),
+        } as Record<string, string>,
+      });
 
-      const tryFetch = async (url: string) => {
-        const res = await fetch(url, {
-          method: 'GET',
-          headers: {
-            ...buildAuthHeaders(),
-          },
-        });
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(`HTTP ${res.status}: ${text || res.statusText}`);
+      }
 
-        if (!res.ok) {
-          const text = await res.text().catch(() => '');
-          const err = new Error(`HTTP ${res.status}: ${text || res.statusText}`);
-          (err as any).status = res.status;
-          throw err;
-        }
-
-        // Some backends return JSON but wrong header; be tolerant
-        const text = await res.text();
-        try {
-          return JSON.parse(text) as ApiResponse;
-        } catch {
-          throw new Error('Invalid response format: Expected JSON');
-        }
-      };
-
-      let data: ApiResponse | null = null;
-
+      // Some backends return JSON but wrong header; be tolerant
+      const text = await res.text();
+      let data: ApiResponse;
       try {
-        data = await tryFetch(primaryUrl);
-      } catch (e: any) {
-        // If the new filter endpoint not supported, try old one
-        const status = e?.status;
-        if (status === 404 || (typeof e?.message === 'string' && e.message.includes('404'))) {
-          data = await tryFetch(fallbackUrl);
-        } else {
-          throw e;
-        }
+        data = JSON.parse(text) as ApiResponse;
+      } catch {
+        throw new Error('Invalid response format: Expected JSON');
       }
 
       if (!data || !Array.isArray(data.items)) {
@@ -317,11 +297,10 @@ const InstantPage: React.FC = () => {
                 <button
                   onClick={() => handlePageChange(page as number)}
                   disabled={loading}
-                  className={`px-3 py-2 rounded-lg transition-colors ${
-                    pageNumber === page
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
-                  } ${loading ? 'cursor-not-allowed opacity-50' : ''}`}
+                  className={`px-3 py-2 rounded-lg transition-colors ${pageNumber === page
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700'
+                    } ${loading ? 'cursor-not-allowed opacity-50' : ''}`}
                 >
                   {page}
                 </button>
@@ -343,11 +322,12 @@ const InstantPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 via-pink-50 to-white py-8">
+    <div className="min-h-screen bg-soft-white py-8" dir="rtl">
       <div className="container mx-auto px-4">
         <Link
           to="/"
-          className="flex items-center space-x-reverse space-x-2 text-gray-600 hover:text-pink-600 mb-6 transition-colors"
+          className="flex items-center space-x-reverse space-x-2 text-black hover:text-primary-green mb-6 transition-colors"
+          style={{ fontFamily: 'Tajawal, sans-serif' }}
         >
           <ArrowRight size={20} />
           <span>العودة للرئيسية</span>
@@ -356,42 +336,82 @@ const InstantPage: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <Sparkles className="h-8 w-8 text-amber-500" />
-            <Cake className="h-10 w-10 text-pink-500" />
-            <Sparkles className="h-8 w-8 text-purple-500" />
+            <Sparkles className="h-8 w-8 text-primary-green" />
+            <ShoppingBag className="h-10 w-10 text-primary-green" />
+            <Sparkles className="h-8 w-8 text-primary-green" />
           </div>
-          <h1 className="text-3xl font-bold text-purple-900 mb-3">شنط هاند ميد تعيش العمر كله </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            حلويات جاهزة الآن - اطلب واستلم في نفس الحين! تورتات مبهجة بألوان وتصاميم شخصيات محبوبة، مثالية لأعياد الميلاد والمناسبات الخاصة
+          <h1
+            className="text-3xl font-bold text-black mb-3"
+            style={{ fontFamily: 'Tajawal, sans-serif' }}
+          >
+            شنط هاند ميد تعيش العمر كله 🎒
+          </h1>
+          <p
+            className="text-gray-600 max-w-2xl mx-auto"
+            style={{ fontFamily: 'Tajawal, sans-serif' }}
+          >
+            شنط جاهزة للتوصيل الفوري! تصاميم فريدة وجودة عالية، مثالية للاستخدام اليومي والمناسبات الخاصة
           </p>
         </div>
 
         {loading && products.length === 0 ? (
           <div className="text-center py-12">
-            <Cake className="h-16 w-16 text-pink-500 mx-auto mb-4 animate-pulse" />
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">جار تحميل التورتات...</h2>
-            <p className="text-gray-600">برجاء الانتظار حتى يتم تحميل جميع التورتات الفورية.</p>
+            <ShoppingBag className="h-16 w-16 text-primary-green mx-auto mb-4 animate-pulse" />
+            <h2
+              className="text-2xl font-bold text-black mb-2"
+              style={{ fontFamily: 'Tajawal, sans-serif' }}
+            >
+              جار تحميل الشنط...
+            </h2>
+            <p
+              className="text-gray-600"
+              style={{ fontFamily: 'Tajawal, sans-serif' }}
+            >
+              برجاء الانتظار حتى يتم تحميل جميع الشنط المتاحة.
+            </p>
           </div>
         ) : error ? (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">⚠️</div>
-            <h2 className="text-2xl font-bold text-red-600 mb-4">{error}</h2>
-            <p className="text-gray-600 mb-6">حدث خطأ أثناء جلب التورتات الفورية. حاول مرة أخرى لاحقاً.</p>
+            <h2
+              className="text-2xl font-bold text-red-600 mb-4"
+              style={{ fontFamily: 'Tajawal, sans-serif' }}
+            >
+              {error}
+            </h2>
+            <p
+              className="text-gray-600 mb-6"
+              style={{ fontFamily: 'Tajawal, sans-serif' }}
+            >
+              حدث خطأ أثناء جلب الشنط. حاول مرة أخرى لاحقاً.
+            </p>
             <button
               onClick={() => fetchProducts(pageNumber)}
-              className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors font-semibold"
+              className="btn-primary px-8 py-3 rounded-xl font-semibold"
+              style={{ fontFamily: 'Tajawal, sans-serif' }}
             >
               إعادة المحاولة
             </button>
           </div>
         ) : products.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">🧁</div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">لا توجد تورتات فورية حالياً</h2>
-            <p className="text-gray-600 mb-6">نعمل على إضافة تورتات فورية جديدة ومميزة قريباً، تابعنا دائماً.</p>
+            <div className="text-6xl mb-4">👜</div>
+            <h2
+              className="text-2xl font-bold text-black mb-4"
+              style={{ fontFamily: 'Tajawal, sans-serif' }}
+            >
+              لا توجد شنط متاحة للتوصيل الفوري حالياً
+            </h2>
+            <p
+              className="text-gray-600 mb-6"
+              style={{ fontFamily: 'Tajawal, sans-serif' }}
+            >
+              نعمل على إضافة شنط جديدة قريباً، تابعنا دائماً.
+            </p>
             <button
               onClick={() => navigate('/')}
-              className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors font-semibold"
+              className="btn-primary px-8 py-3 rounded-xl font-semibold"
+              style={{ fontFamily: 'Tajawal, sans-serif' }}
             >
               العودة للرئيسية
             </button>

@@ -28,7 +28,6 @@ import { Unsubscribe } from 'firebase/messaging';
 
 // ===== Public Pages =====
 import HomePage from './pages/HomePage';
-import AvailableCollection from "./pages/AvailableCollection";
 import ProductPage from './pages/ProductPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
@@ -200,7 +199,7 @@ function AppContent() {
             <Route path="products" element={<AllProductsPage />} />
             <Route path="instant" element={<InstantPage />} />
             <Route path="kids-bags" element={<KidsBagsPage />} />
-            <Route path="available-collection" element={<AvailableCollection />} />
+            <Route path="instant" element={<InstantPage />} />
 
             <Route path="girls-bags" element={<GirlsBagsPage />} />
             <Route path="girls-bags/evening" element={<GirlsBagsEveningPage />} />
