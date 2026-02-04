@@ -81,6 +81,7 @@ function useNavPageId() {
       return 'girls-bags';
     }
     if (pathname.startsWith('/giveaways')) return 'giveaways';
+    if (pathname.startsWith('/custom-designs')) return 'custom-designs';
     if (pathname.startsWith('/cart') || pathname.startsWith('/checkout')) return 'cart';
     return 'home';
   }, [pathname]);
