@@ -118,7 +118,7 @@ const CartPage: React.FC = () => {
 
 
   // Helper to map Global CartItem to Local CartPageItem
-  const mapToCartPageItems = (items: CartItem[]): CartPageItem[] => {
+  const mapToCartPageItems = useCallback((items: CartItem[]): CartPageItem[] => {
     return items.map((item, index) => ({
       id: `guest-${index}-${item.product.id}`,
       productId: item.product.id,
@@ -136,7 +136,7 @@ const CartPage: React.FC = () => {
         isMain: img.isMain
       }))
     }));
-  };
+  }, []);
 
   // Helper to map Local CartPageItem to Global CartItem
   const mapToGlobalCartItems = (items: CartPageItem[]): CartItem[] => {
@@ -168,7 +168,14 @@ const CartPage: React.FC = () => {
       setCartItems(mapToCartPageItems(state.cart));
       setLoading(false);
     }
-  }, [fetchCart, token, state.cart]);
+  }, [token, fetchCart, mapToCartPageItems, state.cart]);
+
+  // Separate effect to update guest cart when state.cart changes
+  useEffect(() => {
+    if (!token) {
+      setCartItems(mapToCartPageItems(state.cart));
+    }
+  }, [state.cart, token, mapToCartPageItems]);
 
   const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) {
