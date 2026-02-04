@@ -172,7 +172,7 @@ function AppContent() {
         <Routes>
           {/* ===== Admin (Protected) ===== */}
           <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<Navigate to="/admin/notifications" replace />} />
+            <Route index element={<Navigate to="/admin/orders" replace />} />
             <Route
               path="*"
               element={

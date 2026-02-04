@@ -38,7 +38,7 @@ const Footer: React.FC = () => {
             href="https://www.instagram.com/turtle.aart"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-3 bg-primary-green text-black rounded-full hover:scale-110 hover:bg-primary-green-dark transition-all shadow-lg hover:shadow-xl"
+            className="p-3 bg-white text-primary-green border border-primary-green rounded-full hover:scale-110 hover:bg-primary-green hover:text-white transition-all shadow-md hover:shadow-xl"
             aria-label="Instagram"
           >
             <Instagram className="h-5 w-5" />
@@ -48,7 +48,7 @@ const Footer: React.FC = () => {
             href="https://www.facebook.com/Turtle.aart"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-3 bg-primary-green text-black rounded-full hover:scale-110 hover:bg-primary-green-dark transition-all shadow-lg hover:shadow-xl"
+            className="p-3 bg-white text-primary-green border border-primary-green rounded-full hover:scale-110 hover:bg-primary-green hover:text-white transition-all shadow-md hover:shadow-xl"
             aria-label="Facebook"
           >
             <Facebook className="h-5 w-5" />
@@ -58,7 +58,7 @@ const Footer: React.FC = () => {
             href="https://www.tiktok.com/@turtle_aart"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-3 bg-primary-green text-black rounded-full hover:scale-110 hover:bg-primary-green-dark transition-all shadow-lg hover:shadow-xl"
+            className="p-3 bg-white text-primary-green border border-primary-green rounded-full hover:scale-110 hover:bg-primary-green hover:text-white transition-all shadow-md hover:shadow-xl"
             aria-label="TikTok"
           >
             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
 
           <button
             onClick={() => openWhatsApp('201021964426')}
-            className="p-3 bg-primary-green text-black rounded-full hover:scale-110 hover:bg-primary-green-dark transition-all shadow-lg hover:shadow-xl"
+            className="p-3 bg-white text-primary-green border border-primary-green rounded-full hover:scale-110 hover:bg-primary-green hover:text-white transition-all shadow-md hover:shadow-xl"
             aria-label="WhatsApp Turtle Art"
           >
             <MessageCircle className="h-5 w-5" />
@@ -76,7 +76,7 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Quick Links */}
-        <div className="flex flex-wrap justify-center gap-4 mb-8">
+        {/* <div className="flex flex-wrap justify-center gap-4 mb-8">
           <a
             href="/"
             className="text-sm text-black hover:text-gray-600 font-medium transition-colors"
@@ -102,7 +102,7 @@ const Footer: React.FC = () => {
           >
             طلباتي
           </a>
-        </div>
+        </div> */}
 
         {/* Copyright */}
         <div className="border-t-2 border-gray-200 pt-6">
@@ -115,7 +115,7 @@ const Footer: React.FC = () => {
             <div className="flex justify-center items-center gap-3">
               <button
                 onClick={() => openWhatsApp('201013989517')}
-                className="p-2 bg-primary-green text-black rounded-full hover:scale-110 hover:bg-primary-green-dark transition-all shadow-md hover:shadow-lg"
+                className="p-2 bg-white text-primary-green border border-primary-green rounded-full hover:scale-110 hover:bg-primary-green hover:text-white transition-all shadow-md hover:shadow-lg"
                 aria-label="WhatsApp +201013989517"
                 title="+201013989517"
               >
@@ -124,7 +124,7 @@ const Footer: React.FC = () => {
 
               <button
                 onClick={() => openWhatsApp('201027548602')}
-                className="p-2 bg-primary-green text-black rounded-full hover:scale-110 hover:bg-primary-green-dark transition-all shadow-md hover:shadow-lg"
+                className="p-2 bg-white text-primary-green border border-primary-green rounded-full hover:scale-110 hover:bg-primary-green hover:text-white transition-all shadow-md hover:shadow-lg"
                 aria-label="WhatsApp +201027548602"
                 title="+201027548602"
               >

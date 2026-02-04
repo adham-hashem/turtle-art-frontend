@@ -21,14 +21,14 @@ const AdminPage: React.FC = () => {
   };
 
   const navItems = [
-    { to: '/admin/notifications', icon: Bell, label: 'إشعارات الطلبات' },
-    { to: '/admin/custom-order-notifications', icon: Bell, label: 'إشعارات الطلبات الخاصة' },
     { to: '/admin/orders', icon: ShoppingCart, label: 'إدارة الطلبات' },
     { to: '/admin/custom-orders-management', icon: Truck, label: 'طلبات خاصة' },
     { to: '/admin/products', icon: Package, label: 'إدارة المنتجات' },
     { to: '/admin/customers', icon: Users, label: 'إدارة العملاء' },
     { to: '/admin/discounts', icon: Tag, label: 'أكواد الخصم' },
     { to: '/admin/shipping', icon: Truck, label: 'رسوم الشحن' },
+    { to: '/admin/notifications', icon: Bell, label: 'إشعارات الطلبات' },
+    { to: '/admin/custom-order-notifications', icon: Bell, label: 'إشعارات الطلبات الخاصة' }
   ];
 
   return (
@@ -101,7 +101,7 @@ const AdminPage: React.FC = () => {
                   onClick={closeMobileMenu}
                   className={({ isActive }) =>
                     `flex items-center space-x-reverse space-x-3 px-4 py-3 rounded-xl transition-all font-medium ${isActive
-                      ? 'bg-primary-green text-black shadow-md'
+                      ? 'bg-primary-green text-white shadow-md'
                       : 'text-gray-600 hover:bg-gray-50'
                     }`
                   }
@@ -156,7 +156,7 @@ const AdminPage: React.FC = () => {
                     to={item.to}
                     className={({ isActive }) =>
                       `w-full flex items-center space-x-reverse space-x-3 px-4 py-3 rounded-xl transition-all font-medium ${isActive
-                        ? 'bg-primary-green text-black shadow-lg transform scale-105'
+                        ? 'bg-primary-green text-white shadow-lg transform scale-105'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-black'
                       }`
                     }
