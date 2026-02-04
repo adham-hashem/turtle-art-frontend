@@ -152,6 +152,15 @@ const ProductPage: React.FC = () => {
   const hasColors = Array.isArray(product?.colors) && (product?.colors?.length || 0) > 0;
   const hasExtensions = Array.isArray(product?.extensions) && (product?.extensions?.length || 0) > 0;
 
+  // Debug logging
+  console.log('🔍 Product Extensions Debug:', {
+    productExists: !!product,
+    extensionsRaw: product?.extensions,
+    extensionsIsArray: Array.isArray(product?.extensions),
+    extensionsLength: product?.extensions?.length,
+    hasExtensions: hasExtensions
+  });
+
   // Calculate total price including extensions
   const extensionsTotal = useMemo(() => {
     if (!hasExtensions || selectedExtensions.length === 0) return 0;
