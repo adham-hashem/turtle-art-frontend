@@ -160,22 +160,20 @@ const CartPage: React.FC = () => {
     }));
   };
 
+  // Effect for authenticated users - only fetch when token changes
   useEffect(() => {
     if (token) {
       fetchCart();
-    } else {
-      // Guest user - display cart from AppContext (localStorage)
-      setCartItems(mapToCartPageItems(state.cart));
-      setLoading(false);
     }
-  }, [token, fetchCart, mapToCartPageItems, state.cart]);
+  }, [token, fetchCart]);
 
-  // Separate effect to update guest cart when state.cart changes
+  // Effect for guest users - update display when state.cart changes
   useEffect(() => {
     if (!token) {
       setCartItems(mapToCartPageItems(state.cart));
+      setLoading(false);
     }
-  }, [state.cart, token, mapToCartPageItems]);
+  }, [token, state.cart, mapToCartPageItems]);
 
   const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) {
