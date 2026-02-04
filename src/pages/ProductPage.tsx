@@ -248,6 +248,7 @@ const ProductPage: React.FC = () => {
           sizes: Array.isArray(data.sizes) ? data.sizes : [],
           colors: Array.isArray(data.colors) ? data.colors : [],
           images: Array.isArray(data.images) ? data.images : [],
+          extensions: Array.isArray(data.extensions) ? data.extensions : [],
           isHidden: data.isHidden ?? false,
           isAvailable: data.isAvailable ?? true,
         };
