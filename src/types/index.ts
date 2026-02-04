@@ -5,6 +5,14 @@ export interface ProductImage {
   isMain: boolean;
 }
 
+export interface ProductExtension {
+  id: string;
+  productId: string;
+  name: string;
+  additionalPrice: number;
+  isActive: boolean;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -16,6 +24,7 @@ export interface Product {
   sizes: string[];
   colors: string[];
   images: ProductImage[]; // Updated to match API response
+  extensions?: ProductExtension[]; // Product extensions (e.g., gift wrapping, personalization)
   inStock: boolean; // Required by ProductCard and AppContext
   isOffer: boolean; // Used by ProductCard
   originalPrice?: number; // Optional, used by ProductCard

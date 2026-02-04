@@ -84,6 +84,7 @@ const HomePage: React.FC = () => {
         images: Array.isArray(item.images) ? item.images : [],
         sizes: Array.isArray(item.sizes) ? item.sizes : [],
         colors: Array.isArray(item.colors) ? item.colors : [],
+        extensions: Array.isArray(item.extensions) ? item.extensions : [],
 
         isHidden: item.isHidden !== undefined ? item.isHidden : false,
         isAvailable: item.isAvailable !== undefined ? item.isAvailable : true,

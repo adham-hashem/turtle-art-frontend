@@ -244,6 +244,29 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
 
+        {/* Extensions */}
+        {product.extensions && product.extensions.length > 0 && (
+          <div className="bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-xl sm:rounded-2xl p-2.5 sm:p-3">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+              <Sparkles size={12} className="sm:hidden text-amber-600" />
+              <Sparkles size={14} className="hidden sm:block text-amber-600" />
+              <span className="text-xs sm:text-sm font-bold text-amber-800" style={{ fontFamily: 'Tajawal, sans-serif' }}>إضافات متاحة:</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-end">
+              {product.extensions.map((extension, index) => (
+                <div
+                  key={index}
+                  className="text-xs sm:text-sm font-bold bg-white text-amber-800 border border-amber-300 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl hover:bg-amber-50 hover:scale-105 transition-all flex items-center gap-1"
+                  style={{ fontFamily: 'Tajawal, sans-serif' }}
+                >
+                  <span>{extension.name}</span>
+                  <span className="text-amber-600">+{extension.additionalPrice} جنيه</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Quick Info Footer */}
         {/* <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-[#E5DCC5] sm:border-t-2">
           <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-[#D4AF37] font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>

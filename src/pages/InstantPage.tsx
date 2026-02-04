@@ -74,6 +74,7 @@ const InstantPage: React.FC = () => {
 
     const sizes = Array.isArray(item?.sizes) ? item.sizes : [];
     const colors = Array.isArray(item?.colors) ? item.colors : [];
+    const extensions = Array.isArray(item?.extensions) ? item.extensions : [];
 
     const price = typeof item?.price === 'number' ? item.price : Number(item?.price || 0);
     const originalPrice =
@@ -96,6 +97,7 @@ const InstantPage: React.FC = () => {
       images,
       sizes,
       colors,
+      extensions,
 
       isHidden: item?.isHidden !== undefined ? Boolean(item.isHidden) : false,
       isAvailable,

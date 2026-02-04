@@ -227,12 +227,16 @@ const ProductPage: React.FC = () => {
   }, [addedToCart]);
 
   useEffect(() => {
-    if (product || !id) return;
+    if (!id) return;
+
+    const hasProduct = !!product;
 
     const fetchProduct = async () => {
-      setLoading(true);
-      setError(null);
-      setProductRestricted(null);
+      if (!hasProduct) {
+        setLoading(true);
+        setError(null);
+        setProductRestricted(null);
+      }
 
       try {
         const token = getAuthToken();
@@ -264,14 +268,18 @@ const ProductPage: React.FC = () => {
 
         setProduct(normalized);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'فشل في تحميل المنتج.');
+        if (!hasProduct) {
+          setError(err instanceof Error ? err.message : 'فشل في تحميل المنتج.');
+        }
       } finally {
-        setLoading(false);
+        if (!hasProduct) {
+          setLoading(false);
+        }
       }
     };
 
     fetchProduct();
-  }, [id, product]);
+  }, [id]);
 
   // ---------- share ----------
   const copyToClipboard = async () => {
