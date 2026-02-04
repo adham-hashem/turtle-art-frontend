@@ -103,22 +103,9 @@ const CartPage: React.FC = () => {
         quantity: item.quantity,
         size: item.size,
         color: item.color,
-        images: item.images.map(img => {
-          let fullPath = img.imagePath;
-          if (!fullPath.startsWith('http://') && !fullPath.startsWith('https://')) {
-            // Normalize slashes
-            fullPath = fullPath.replace(/\\/g, '/');
-            fullPath = fullPath.startsWith('/') ? fullPath : `/${fullPath}`;
-            fullPath = `${apiUrl}${fullPath}`;
-          }
-          return {
-            ...img,
-            imagePath: fullPath,
-          };
-        }),
+        images: item.images || [],
       }));
 
-      setCartItems(normalizedItems || []);
       setCartItems(normalizedItems || []);
       // Map to global type for context
       dispatch({ type: 'SET_CART', payload: mapToGlobalCartItems(normalizedItems || []) });
@@ -314,7 +301,7 @@ const CartPage: React.FC = () => {
       }
     } catch (err) {
       setCartItems(previousItems);
-      dispatch({ type: 'SET_CART', payload: previousItems });
+      dispatch({ type: 'SET_CART', payload: mapToGlobalCartItems(previousItems) });
       setError(err instanceof Error ? err.message : 'حدث خطأ أثناء إفراغ السلة');
     } finally {
       setIsClearingCart(false);
