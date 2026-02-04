@@ -107,16 +107,16 @@ const Header: React.FC = () => {
   const currentPage = location.pathname;
 
   const menuItems = [
-    { label: 'الرئيسية', page: 'home'},
-    { label: 'المتاح فوري', page: 'instant'},
+    { label: 'الرئيسية', page: 'home' },
+    { label: 'المتاح فوري', page: 'instant' },
     { label: 'شنط أطفال', page: 'kids-bags' },
-    { label: 'شنط بناتي', page: 'girls-bags'},
+    { label: 'شنط بناتي', page: 'girls-bags' },
     { label: 'كولكشن الأم  وبنتها', page: 'mother-daughter' },
-    { label: 'منتجات رمضان', page: 'ramadan-collection'},
-    { label: 'التصميمات الخاصة', page: 'custom-designs'},
+    { label: 'منتجات رمضان', page: 'ramadan-collection' },
+    { label: 'التصميمات الخاصة', page: 'custom-designs' },
     { label: 'التوزيعات', page: 'giveaways' },
     { label: 'طلباتي', page: 'my-orders' },
-    { label: 'طلباتي الخاصة', page: 'my-custom-orders'},
+    { label: 'طلباتي الخاصة', page: 'my-custom-orders' },
   ];
 
   const handleLogout = () => {
@@ -401,17 +401,15 @@ const Header: React.FC = () => {
                       navigate(`/${item.page === 'home' ? '' : item.page}`);
                       setIsMenuOpen(false);
                     }}
-                    className={`w-full text-right px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-between group ${currentPage === `/${item.page === 'home' ? '' : item.page}`
+                    className={`w-full text-right px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-between group ${currentPage === `/${item.page === 'home' ? '' : item.page}`
                       ? 'bg-primary-green/20 text-black font-bold'
                       : 'text-black hover:bg-primary-green/10'
                       }`}
                   >
-                    <span className="text-lg font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <span className="text-sm font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                       {item.label}
                     </span>
-                    <span className="text-2xl transform group-hover:scale-110 transition-transform">
-                      {item.icon}
-                    </span>
+                    {/* Icons not available in menuItems */}
                   </button>
                 ))}
               </nav>

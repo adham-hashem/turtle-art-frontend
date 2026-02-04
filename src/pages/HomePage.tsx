@@ -185,7 +185,7 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen bg-soft-white" dir="rtl">
       <main>
         {/* Hero Section with Background - starts after header */}
-        <div className="relative w-full h-[100vh] max-h-[650px] overflow-hidden mt-20 bg-gradient-to-r from-gray-100 via-white to-gray-100 flex items-center justify-center">
+        <div className="relative w-full h-[50vh] max-h-[400px] overflow-hidden mt-20 bg-gradient-to-r from-gray-100 via-white to-gray-100 flex items-center justify-center">
           <img
             src="/background2.jpeg"
             alt="Turtle Art"
