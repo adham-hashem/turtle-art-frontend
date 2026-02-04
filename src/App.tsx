@@ -222,14 +222,7 @@ function AppContent() {
             {/* Public Checkout - Supports both guest and authenticated users */}
             <Route path="checkout" element={<CheckoutPage />} />
 
-            <Route
-              path="custom-designs"
-              element={
-                <ProtectedRoute requireAuth>
-                  <CustomOrders />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="custom-designs" element={<CustomOrders />} />
 
             <Route
               path="complete-profile"

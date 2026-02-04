@@ -211,10 +211,6 @@ export default function CustomOrders() {
 
   const postOrder = async () => {
     const token = getAuthToken();
-    if (!token) {
-      alert('يجب تسجيل الدخول أولاً');
-      return;
-    }
 
     if (!validateStep1() || !validateStep2()) return;
 
@@ -247,11 +243,16 @@ export default function CustomOrders() {
     let lastErr = '';
     for (const url of candidates) {
       // eslint-disable-next-line no-await-in-loop
+      const headers: Record<string, string> = {};
+
+      // Add auth header only if token exists
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const res = await fetch(url, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
         body: fd,
       });
 
@@ -410,7 +411,7 @@ export default function CustomOrders() {
             <div>
               <label className="block text-right text-warm-gray-700 font-medium mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 <Palette className="inline h-5 w-5 ml-2 text-primary-green" />
-               اللون المطلوب للشنطة 
+                اللون المطلوب للشنطة
               </label>
               <div className="space-y-2">
                 {formData.preferredColors.map((color, index) => (
@@ -477,8 +478,8 @@ export default function CustomOrders() {
 
               <div
                 className={`relative border-2 border-dashed rounded-3xl p-6 text-center transition-all cursor-pointer ${formData.imagePreview
-                    ? 'border-green-400 bg-green-50'
-                    : 'border-warm-gray-300 hover:border-primary-green hover:bg-soft-white'
+                  ? 'border-green-400 bg-green-50'
+                  : 'border-warm-gray-300 hover:border-primary-green hover:bg-soft-white'
                   }`}
               >
                 <input
@@ -663,8 +664,8 @@ export default function CustomOrders() {
               <div className="space-y-2">
                 <label
                   className={`flex items-center justify-end gap-3 p-4 border rounded-2xl cursor-pointer transition-all ${formData.paymentMethod === null
-                      ? 'border-primary-green bg-green-50 ring-1 ring-primary-green'
-                      : 'border-warm-gray-200 hover:border-primary-green hover:bg-soft-white'
+                    ? 'border-primary-green bg-green-50 ring-1 ring-primary-green'
+                    : 'border-warm-gray-200 hover:border-primary-green hover:bg-soft-white'
                     }`}
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
@@ -685,8 +686,8 @@ export default function CustomOrders() {
                   <label
                     key={method.value}
                     className={`flex items-center justify-end gap-3 p-4 border rounded-2xl cursor-pointer transition-all ${formData.paymentMethod === method.value
-                        ? 'border-primary-green bg-green-50 ring-1 ring-primary-green'
-                        : 'border-warm-gray-200 hover:border-primary-green hover:bg-soft-white'
+                      ? 'border-primary-green bg-green-50 ring-1 ring-primary-green'
+                      : 'border-warm-gray-200 hover:border-primary-green hover:bg-soft-white'
                       }`}
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                   >
@@ -830,10 +831,10 @@ export default function CustomOrders() {
               <div key={s} className="flex items-center">
                 <div
                   className={`h-10 w-10 rounded-full flex items-center justify-center font-bold transition-all border-2 ${s < step
-                      ? 'bg-primary-green text-white border-primary-green'
-                      : s === step
-                        ? 'bg-primary-green text-white border-transparent shadow-lg scale-110'
-                        : 'bg-white text-warm-gray-300 border-warm-gray-200'
+                    ? 'bg-primary-green text-white border-primary-green'
+                    : s === step
+                      ? 'bg-primary-green text-white border-transparent shadow-lg scale-110'
+                      : 'bg-white text-warm-gray-300 border-warm-gray-200'
                     }`}
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
