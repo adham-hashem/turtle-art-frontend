@@ -36,6 +36,8 @@ interface OrderItemResponseDto {
   color: string;
   selectedExtensions?: string;
   extensionsDetails?: { id: string; name: string; additionalPrice: number }[];
+  productUrl?: string;
+  productImageUrl?: string;
 }
 
 interface OrderResponseDto {
@@ -875,12 +877,41 @@ const OrdersManagement: React.FC = () => {
                                     {order.items.map((item, index) => (
                                       <div
                                         key={index}
-                                        className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 rounded-lg border border-gray-200"
+                                        className="flex flex-col sm:flex-row sm:justify-between sm:items-start p-3 bg-gray-50 rounded-lg border border-gray-200"
                                       >
+                                        {/* Product Image */}
+                                        {item.productImageUrl && (
+                                          <div className="mb-3 sm:mb-0 sm:ml-3">
+                                            <a
+                                              href={item.productUrl || '#'}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="block"
+                                            >
+                                              <img
+                                                src={`${apiUrl}${item.productImageUrl}`}
+                                                alt={item.productName}
+                                                className="w-16 h-16 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition-opacity"
+                                              />
+                                            </a>
+                                          </div>
+                                        )}
                                         <div className="flex-1">
                                           <div className="flex items-center gap-2 mb-2">
                                             <Package className="h-4 w-4 text-gray-400" />
-                                            <p className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{item.productName}</p>
+                                            {item.productUrl ? (
+                                              <a
+                                                href={item.productUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="font-bold text-black hover:text-green-600 underline transition-colors"
+                                                style={{ fontFamily: 'Tajawal, sans-serif' }}
+                                              >
+                                                {item.productName}
+                                              </a>
+                                            ) : (
+                                              <p className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{item.productName}</p>
+                                            )}
                                           </div>
                                           <div className="text-sm text-gray-500 grid grid-cols-2 gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                             <p><span className="font-semibold">كود:</span> {item.productCode}</p>
