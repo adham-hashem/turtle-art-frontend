@@ -43,7 +43,6 @@ interface ApiCartResponse {
 
 const CartPage: React.FC = () => {
   const { dispatch, state } = useApp();
-  const { userRole } = useAuth();
   const navigate = useNavigate();
 
   // Local interface matching API response structure
@@ -75,6 +74,7 @@ const CartPage: React.FC = () => {
 
   // Fetch authentication token
   useEffect(() => {
+    window.scrollTo(0, 0);
     const authToken = localStorage.getItem('accessToken');
     setToken(authToken);
     // Don't redirect - guests can use cart too
