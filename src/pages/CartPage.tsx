@@ -106,7 +106,7 @@ const CartPage: React.FC = () => {
       }
 
       const data: ApiCartResponse = await response.json();
-      const normalizedItems: CartPageItem[] = data.items.map(item => {
+      const normalizedItems: CartPageItem[] = (data.items || []).map(item => {
         // Parse selected extensions if it's a JSON string
         let parsedSelectedExtensions: string[] = [];
         try {
@@ -180,7 +180,7 @@ const CartPage: React.FC = () => {
         quantity: item.quantity,
         size: item.selectedSize,
         color: item.selectedColor,
-        images: item.product.images.map(img => ({
+        images: (item.product.images || []).map(img => ({
           id: img.id,
           imagePath: img.imagePath,
           isMain: img.isMain
