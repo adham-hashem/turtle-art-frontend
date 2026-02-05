@@ -65,6 +65,7 @@ interface Product {
   isBreakfast?: boolean;
   isFeatured?: boolean;
   rating?: number;
+  priority?: number;
   salesCount?: number;
 }
 
@@ -123,6 +124,7 @@ const ProductsManagement: React.FC = () => {
     isInstant: boolean;
     isBreakfast: boolean;
     isFeatured: boolean;
+    priority: number;
   }>({
     code: '',
     name: '',
@@ -140,7 +142,8 @@ const ProductsManagement: React.FC = () => {
     type: 0,
     isInstant: false,
     isBreakfast: false,
-    isFeatured: false
+    isFeatured: false,
+    priority: 0
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -340,6 +343,7 @@ const ProductsManagement: React.FC = () => {
         isBreakfast: item.isBreakfast ?? false,
         isFeatured: item.isFeatured ?? false,
         rating: item.rating ?? 0,
+        priority: item.priority ?? 0,
         salesCount: item.salesCount ?? 0,
         images: (item.images ?? []).map(img => ({
           id: img.id,
@@ -660,7 +664,8 @@ const ProductsManagement: React.FC = () => {
       type: 0,
       isInstant: false,
       isBreakfast: false,
-      isFeatured: false
+      isFeatured: false,
+      priority: 0
     });
   };
 
@@ -688,7 +693,8 @@ const ProductsManagement: React.FC = () => {
       type: 0,
       isInstant: product.isInstant || false,
       isBreakfast: product.isBreakfast || false,
-      isFeatured: product.isFeatured || false
+      isFeatured: product.isFeatured || false,
+      priority: product.priority || 0
     });
 
     // Fetch extensions for this product
@@ -1279,6 +1285,27 @@ const ProductsManagement: React.FC = () => {
                               style={{ fontFamily: 'Tajawal, sans-serif' }}
                               dir="rtl"
                             />
+                          </div>
+                        </div>
+
+                        {/* Priority */}
+                        <div>
+                          <label className="block text-sm font-medium text-[#8B7355] mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                            الأولوية (Priority)
+                          </label>
+                          <div className="flex flex-col gap-1">
+                            <input
+                              type="number"
+                              value={newProduct.priority}
+                              onChange={e => setNewProduct(prev => ({ ...prev, priority: parseInt(e.target.value) || 0 }))}
+                              className="w-full px-3 py-3 border-2 border-[#E5DCC5] rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] text-right text-[#8B7355]"
+                              style={{ fontFamily: 'Tajawal, sans-serif' }}
+                              dir="rtl"
+                              placeholder="0"
+                            />
+                            <span className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                              قيم أعلى تظهر أولاً. استخدم قيم سالبة لإخفاء في الأسفل.
+                            </span>
                           </div>
                         </div>
 
