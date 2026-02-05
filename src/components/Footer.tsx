@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-white mt-16 py-12 pb-24 border-t-2 border-gray-200">
+    <footer className="bg-white mt-16 py-12 pb-40 border-t-2 border-gray-200">
       <div className="w-full max-w-7xl mx-auto px-4 text-center">
         {/* Logo and Brand */}
         <div className="flex flex-col items-center gap-6 mb-10">
