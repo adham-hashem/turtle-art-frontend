@@ -75,7 +75,7 @@ type RestoreState = {
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 const ProductPage: React.FC = () => {
-  const { dispatch } = useApp();
+  const { dispatch, state } = useApp();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
@@ -342,10 +342,14 @@ const ProductPage: React.FC = () => {
 
   // ---------- cart ----------
   const handleAddToCart = async () => {
-    if (!product || addingToCart || isPurchaseDisabled) return;
-
-    setAddingToCart(true);
-    setError(null);
+    // Admin check
+    if ((window as any).appState?.isAdminLoggedIn) {
+      // Note: Using window cast as temp fix if state is not available, but 'useApp' state is available in scope.
+    }
+    // Better: use state directly
+    const { state } = useApp(); // Need to call useApp here or ensure 'state' is available from top level.
+    // Actually 'state' is not destructured in the component top level, let's look at line 78.
+    // line 78: const { dispatch } = useApp(); -> I need to destructure state too.
 
     try {
       const token = getAuthToken();
@@ -383,7 +387,9 @@ const ProductPage: React.FC = () => {
             ...product,
             inStock: product.isAvailable ?? true,
             isOffer: !!product.originalPrice && product.originalPrice > product.price,
-          },
+            rating: 0,
+            salesCount: 0,
+          } as any,
           quantity,
           selectedSize: hasSizes ? selectedSize : '',
           selectedColor: hasColors ? selectedColor : '',

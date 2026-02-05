@@ -68,6 +68,30 @@ const CartPage: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
   const [isClearingCart, setIsClearingCart] = useState(false);
 
+  // Admin Restriction
+  if (state.isAdminLoggedIn) {
+    return (
+      <div className="min-h-screen bg-soft-white flex items-center justify-center px-4 pt-20" dir="rtl">
+        <div className="text-center bg-white p-8 rounded-3xl shadow-xl max-w-md w-full border border-warm-gray-200">
+          <div className="text-6xl mb-4">⛔</div>
+          <h2 className="text-2xl font-bold text-red-600 mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            غير مسموح
+          </h2>
+          <p className="text-warm-gray-500 mb-6" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            عذراً، هذا القسم مخصص للعملاء فقط. لا يمكن للمسؤولين الوصول إلى سلة التسوق.
+          </p>
+          <button
+            onClick={() => navigate('/admin/dashboard')}
+            className="w-full btn-primary font-semibold shadow-lg transition-all"
+            style={{ fontFamily: 'Tajawal, sans-serif' }}
+          >
+            العودة للوحة التحكم
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   // Fetch authentication token

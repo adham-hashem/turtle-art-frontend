@@ -18,7 +18,7 @@ interface HomeRestoreState {
 }
 
 const HomePage: React.FC = () => {
-  const { dispatch } = useApp();
+  const { dispatch, state } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -139,6 +139,11 @@ const HomePage: React.FC = () => {
   };
 
   const handleAddToCart = (product: Product) => {
+    if (state.isAdminLoggedIn) {
+      alert('عذرًا، لا يمكن للمسؤول إضافة منتجات للسلة.');
+      return;
+    }
+
     if (!product || !product.inStock) return;
 
     const hasSizes = Array.isArray(product.sizes) && product.sizes.length > 0;
