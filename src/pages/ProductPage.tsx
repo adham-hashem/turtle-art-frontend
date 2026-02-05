@@ -26,6 +26,7 @@ import {
   Star,
 } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 
 interface ProductImage {
   imagePath: string;
@@ -76,6 +77,7 @@ const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 const ProductPage: React.FC = () => {
   const { dispatch, state } = useApp();
+  const { userRole } = useAuth();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
@@ -343,13 +345,10 @@ const ProductPage: React.FC = () => {
   // ---------- cart ----------
   const handleAddToCart = async () => {
     // Admin check
-    if ((window as any).appState?.isAdminLoggedIn) {
-      // Note: Using window cast as temp fix if state is not available, but 'useApp' state is available in scope.
+    if (userRole === 'admin') {
+      alert('عذرًا، لا يمكن للمسؤول إضافة منتجات للسلة.');
+      return;
     }
-    // Better: use state directly
-    const { state } = useApp(); // Need to call useApp here or ensure 'state' is available from top level.
-    // Actually 'state' is not destructured in the component top level, let's look at line 78.
-    // line 78: const { dispatch } = useApp(); -> I need to destructure state too.
 
     try {
       const token = getAuthToken();

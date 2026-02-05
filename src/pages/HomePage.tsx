@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import ProductCard from '../components/ProductCard';
 import { Product } from '../types';
 import { BottomNav } from '../components/BottomNav';
@@ -19,6 +20,7 @@ interface HomeRestoreState {
 
 const HomePage: React.FC = () => {
   const { dispatch, state } = useApp();
+  const { userRole } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -139,7 +141,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleAddToCart = (product: Product) => {
-    if (state.isAdminLoggedIn) {
+    if (userRole === 'admin') {
       alert('عذرًا، لا يمكن للمسؤول إضافة منتجات للسلة.');
       return;
     }

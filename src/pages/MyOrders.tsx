@@ -120,38 +120,13 @@ const MyOrders: React.FC = () => {
       }
     };
 
-    if (userRole === 'admin') {
-      // Do nothing, will handle in render
-    } else if (isAuthenticated) {
+    if (isAuthenticated) {
       fetchOrders();
     } else {
       navigate('/login');
     }
   }, [isAuthenticated, navigate, userRole]);
 
-  // Admin Restriction Render
-  if (userRole === 'admin') {
-    return (
-      <div className="min-h-screen bg-soft-white flex items-center justify-center px-4 pt-20" dir="rtl">
-        <div className="text-center bg-white p-8 rounded-3xl shadow-xl max-w-md w-full border border-warm-gray-200">
-          <div className="text-6xl mb-4">⛔</div>
-          <h2 className="text-2xl font-bold text-red-600 mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-            غير مسموح
-          </h2>
-          <p className="text-warm-gray-500 mb-6" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-            عذراً، هذا القسم مخصص للعملاء فقط. لا يمكن للمسؤولين الوصول إلى قائمة الطلبات الشخصية.
-          </p>
-          <button
-            onClick={() => navigate('/admin/dashboard')}
-            className="w-full bg-gradient-to-r from-[#8B7355] to-[#A67C52] text-white px-6 py-3 rounded-xl hover:from-[#6B5644] hover:to-[#8B6644] transition-all font-semibold shadow-lg"
-            style={{ fontFamily: 'Tajawal, sans-serif' }}
-          >
-            العودة للوحة التحكم
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   // Helper function to get status text
   const getStatusText = (status: string) => {
