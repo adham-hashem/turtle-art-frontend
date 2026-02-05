@@ -474,6 +474,14 @@ const OrdersManagement: React.FC = () => {
     });
   };
 
+  const resolveImageUrl = (path?: string) => {
+    if (!path) return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    if (path.startsWith('data:image')) return path;
+    if (path.startsWith('/')) return `${apiUrl}${path}`;
+    return `${apiUrl}/${path}`;
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
@@ -883,13 +891,13 @@ const OrdersManagement: React.FC = () => {
                                         {item.productImageUrl && (
                                           <div className="mb-3 sm:mb-0 sm:ml-3">
                                             <a
-                                              href={item.productUrl || '#'}
+                                              href={item.productUrl || `/product/${item.productId}`}
                                               target="_blank"
                                               rel="noopener noreferrer"
                                               className="block"
                                             >
                                               <img
-                                                src={`${apiUrl}${item.productImageUrl}`}
+                                                src={resolveImageUrl(item.productImageUrl)}
                                                 alt={item.productName}
                                                 className="w-16 h-16 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition-opacity"
                                               />
@@ -1080,11 +1088,37 @@ const OrdersManagement: React.FC = () => {
                         <div className="space-y-2">
                           {order.items.map((item, index) => (
                             <div key={index} className="bg-white rounded-lg p-2 border border-gray-200">
+                              {item.productImageUrl && (
+                                <a
+                                  href={item.productUrl || `/product/${item.productId}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block mb-2"
+                                >
+                                  <img
+                                    src={resolveImageUrl(item.productImageUrl)}
+                                    alt={item.productName}
+                                    className="w-16 h-16 object-cover rounded border border-gray-300 hover:opacity-80 transition-opacity"
+                                  />
+                                </a>
+                              )}
                               <p className="text-xs font-bold text-black mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>{item.productName}</p>
                               <div className="text-xs text-gray-500 space-y-0.5" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                 <p>كود: {item.productCode} | الكمية: {item.quantity}</p>
                                 {item.size && <p>المقاس: {item.size}</p>}
                                 {item.color && <p>اللون: {item.color}</p>}
+                                {item.extensionsDetails && item.extensionsDetails.length > 0 && (
+                                  <div>
+                                    <p className="font-semibold text-green-600 mt-1">إضافات:</p>
+                                    <ul className="list-disc list-inside text-[11px] text-gray-600">
+                                      {item.extensionsDetails.map((ext) => (
+                                        <li key={ext.id}>
+                                          {ext.name} (+{ext.additionalPrice} ج.م)
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
                                 <p className="font-bold text-black mt-1">{item.priceAtPurchase.toFixed(2)} جنيه</p>
                               </div>
                             </div>
@@ -1393,15 +1427,53 @@ const OrdersManagement: React.FC = () => {
                   {selectedOrder.items.map((item, index) => (
                     <div key={index} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 rounded-xl border border-gray-200">
                       <div className="flex-1">
+                        {item.productImageUrl && (
+                          <a
+                            href={item.productUrl || `/product/${item.productId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block mb-2"
+                          >
+                            <img
+                              src={resolveImageUrl(item.productImageUrl)}
+                              alt={item.productName}
+                              className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition-opacity"
+                            />
+                          </a>
+                        )}
                         <div className="flex items-center gap-2 mb-2">
                           <Package className="h-4 w-4 text-gray-400" />
-                          <p className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{item.productName}</p>
+                          {item.productUrl ? (
+                            <a
+                              href={item.productUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-bold text-black hover:text-green-600 underline transition-colors"
+                              style={{ fontFamily: 'Tajawal, sans-serif' }}
+                            >
+                              {item.productName}
+                            </a>
+                          ) : (
+                            <p className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{item.productName}</p>
+                          )}
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                           <p><span className="font-semibold">كود المنتج:</span> {item.productCode}</p>
                           <p><span className="font-semibold">الكمية:</span> {item.quantity}</p>
                           {item.size && <p><span className="font-semibold">المقاس:</span> {item.size}</p>}
                           {item.color && <p><span className="font-semibold">اللون:</span> {item.color}</p>}
+                          {item.extensionsDetails && item.extensionsDetails.length > 0 && (
+                            <div className="col-span-2">
+                              <p className="font-semibold text-green-600 mb-1">إضافات:</p>
+                              <ul className="list-disc list-inside text-xs text-gray-600">
+                                {item.extensionsDetails.map((ext) => (
+                                  <li key={ext.id}>
+                                    {ext.name} (+{ext.additionalPrice} ج.م)
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="mt-3 sm:mt-0 sm:mr-4">
