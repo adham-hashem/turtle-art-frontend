@@ -34,6 +34,8 @@ interface OrderItemResponseDto {
   priceAtPurchase: number;
   size: string;
   color: string;
+  selectedExtensions?: string;
+  extensionsDetails?: { id: string; name: string; additionalPrice: number }[];
 }
 
 interface OrderResponseDto {
@@ -885,6 +887,18 @@ const OrdersManagement: React.FC = () => {
                                             <p><span className="font-semibold">الكمية:</span> {item.quantity}</p>
                                             {item.size && <p><span className="font-semibold">المقاس:</span> {item.size}</p>}
                                             {item.color && <p><span className="font-semibold">اللون:</span> {item.color}</p>}
+                                            {item.extensionsDetails && item.extensionsDetails.length > 0 && (
+                                              <div className="col-span-2">
+                                                <p className="font-semibold text-green-600 mb-1">إضافات:</p>
+                                                <ul className="list-disc list-inside text-xs text-gray-600">
+                                                  {item.extensionsDetails.map((ext) => (
+                                                    <li key={ext.id}>
+                                                      {ext.name} (+{ext.additionalPrice} ج.م)
+                                                    </li>
+                                                  ))}
+                                                </ul>
+                                              </div>
+                                            )}
                                           </div>
                                         </div>
                                         <div className="mt-3 sm:mt-0 sm:mr-4">

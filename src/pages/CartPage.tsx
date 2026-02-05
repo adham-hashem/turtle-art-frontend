@@ -106,22 +106,42 @@ const CartPage: React.FC = () => {
       }
 
       const data: ApiCartResponse = await response.json();
-      const normalizedItems: CartPageItem[] = data.items.map(item => ({
-        id: item.id,
-        productId: item.productId,
-        product: {
-          id: item.productId,
-          name: item.productName,
-          price: item.price,
-        },
-        quantity: item.quantity,
-        size: item.size,
-        color: item.color,
-        images: item.images || [],
-        selectedExtensions: item.selectedExtensions,
-        extensions: item.extensions || [],
-        extensionsTotal: item.extensionsTotal || 0,
-      }));
+      const normalizedItems: CartPageItem[] = data.items.map(item => {
+        // Parse selected extensions if it's a JSON string
+        let parsedSelectedExtensions: string[] = [];
+        try {
+          if (item.selectedExtensions) {
+            parsedSelectedExtensions = JSON.parse(item.selectedExtensions);
+          }
+        } catch (e) {
+          console.error("Failed to parse selectedExtensions", e);
+        }
+
+        return {
+          id: item.id,
+          productId: item.productId,
+          product: {
+            id: item.productId,
+            name: item.productName,
+            price: item.price,
+            // Ensure product has extensions so mappings work
+            extensions: item.extensions?.map(ext => ({
+              id: ext.id,
+              productId: ext.productId,
+              name: ext.name,
+              additionalPrice: ext.additionalPrice,
+              isActive: ext.isActive
+            })) || []
+          },
+          quantity: item.quantity,
+          size: item.size,
+          color: item.color,
+          images: item.images || [],
+          selectedExtensions: item.selectedExtensions, // Keep original string for CartPageItem
+          extensions: item.extensions || [],
+          extensionsTotal: item.extensionsTotal || 0,
+        };
+      });
 
       setCartItems(normalizedItems || []);
       // Map to global type for context
@@ -192,7 +212,9 @@ const CartPage: React.FC = () => {
       },
       quantity: item.quantity,
       selectedSize: item.size,
-      selectedColor: item.color
+      selectedColor: item.color,
+      // Parse JSON string back to string[] for Global CartItem
+      selectedExtensions: item.selectedExtensions ? JSON.parse(item.selectedExtensions) : undefined
     }));
   };
 

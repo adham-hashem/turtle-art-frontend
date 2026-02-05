@@ -62,6 +62,9 @@ interface ApiCartResponse {
     color: string;
     price: number;
     images: { id: string; imagePath: string; isMain: boolean }[];
+    selectedExtensions?: string;
+    extensions?: { id: string; name: string; additionalPrice: number; isActive: boolean }[];
+    extensionsTotal?: number;
   }[];
   total: number;
 }
@@ -124,26 +127,47 @@ const CheckoutPage: React.FC = () => {
         }
         const data: ApiCartResponse = await response.json();
         const normalizedItems: CartItem[] =
-          data.items?.map((item) => ({
-            id: item.id,
-            product: {
-              id: item.productId,
-              name: item.productName || 'Unknown Product',
-              price: item.price || 0,
-            },
-            quantity: item.quantity || 1,
-            size: item.size || undefined,
-            color: item.color || undefined,
-            images:
-              item.images?.map((img) => ({
-                ...img,
-                imagePath:
-                  img.imagePath.startsWith('/Uploads') ||
-                    img.imagePath.startsWith('/images')
-                    ? `${apiUrl}${img.imagePath}`
-                    : img.imagePath,
-              })) || [],
-          })) || [];
+          data.items?.map((item) => {
+            // Parse selected extensions
+            let parsedExtensions: string[] = [];
+            try {
+              if (item.selectedExtensions) {
+                parsedExtensions = JSON.parse(item.selectedExtensions);
+              }
+            } catch (e) {
+              console.error("Failed to parse extensions", e);
+            }
+
+            return {
+              id: item.id,
+              product: {
+                id: item.productId,
+                name: item.productName || 'Unknown Product',
+                price: item.price || 0,
+                // Important: Populate extensions in the product object so utils/checkout can calculate prices
+                extensions: item.extensions?.map(ext => ({
+                  id: ext.id,
+                  productId: item.productId, // Ensure productId matches
+                  name: ext.name,
+                  additionalPrice: ext.additionalPrice,
+                  isActive: ext.isActive
+                }))
+              },
+              quantity: item.quantity || 1,
+              size: item.size || undefined,
+              color: item.color || undefined,
+              selectedExtensions: parsedExtensions,
+              images:
+                item.images?.map((img) => ({
+                  ...img,
+                  imagePath:
+                    img.imagePath.startsWith('/Uploads') ||
+                      img.imagePath.startsWith('/images')
+                      ? `${apiUrl}${img.imagePath}`
+                      : img.imagePath,
+                })) || [],
+            };
+          }) || [];
         dispatch({ type: 'SET_CART', payload: normalizedItems });
         if (normalizedItems.length === 0) {
           setCartError('السلة فارغة');
@@ -208,11 +232,22 @@ const CheckoutPage: React.FC = () => {
     }
   }, [apiUrl, formData.governorate]);
 
-  // --- Calculations (Unchanged) ---
+  // --- Calculations (Updated to include extensions) ---
   const { subtotal, selectedGovernorate, shippingFee, discountAmount, total } =
     useMemo(() => {
       const subtotalCalc = state.cart.reduce(
-        (total, item) => total + item.product.price * item.quantity,
+        (total, item) => {
+          const itemPrice = item.product.price;
+          // Add extension prices if available
+          let extensionsTotal = 0;
+          if (item.selectedExtensions && item.product.extensions) {
+            extensionsTotal = item.selectedExtensions.reduce((sum, extId) => {
+              const ext = item.product.extensions?.find(e => e.id === extId);
+              return sum + (ext?.additionalPrice || 0);
+            }, 0);
+          }
+          return total + (itemPrice + extensionsTotal) * item.quantity;
+        },
         0
       );
       const selectedGov = shippingFees.find(
@@ -725,28 +760,55 @@ const CheckoutPage: React.FC = () => {
               </h2>
 
               <div className="space-y-2 sm:space-y-3 mb-4">
-                {state.cart.map((item) => (
-                  <div
-                    key={`${item.product.id}-${item.size}-${item.color}`}
-                    className="flex justify-between items-start gap-2 pb-2 border-b border-warm-gray-100"
-                  >
-                    <span className="text-primary-green font-bold text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      {(item.product.price * item.quantity).toFixed(2)} ج
-                    </span>
-                    <div className="text-right flex-1">
-                      <span className="text-warm-gray-800 font-medium text-xs sm:text-sm block" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                        {item.product.name} × {item.quantity}
+                {state.cart.map((item) => {
+                  // Calculate item total including extensions
+                  let itemExtensionsTotal = 0;
+                  if (item.selectedExtensions && item.product.extensions) {
+                    itemExtensionsTotal = item.selectedExtensions.reduce((sum, extId) => {
+                      const ext = item.product.extensions?.find(e => e.id === extId);
+                      return sum + (ext?.additionalPrice || 0);
+                    }, 0);
+                  }
+                  const itemTotal = (item.product.price + itemExtensionsTotal) * item.quantity;
+
+                  return (
+                    <div
+                      key={`${item.product.id}-${item.selectedSize}-${item.selectedColor}`}
+                      className="flex justify-between items-start gap-2 pb-2 border-b border-warm-gray-100"
+                    >
+                      <span className="text-primary-green font-bold text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        {itemTotal.toFixed(2)} ج
                       </span>
-                      {(item.size || item.color) && (
-                        <p className="text-[10px] sm:text-xs text-warm-gray-500 mt-0.5" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                          {item.size && `${item.size}`}
-                          {item.size && item.color && ' • '}
-                          {item.color && `${item.color}`}
-                        </p>
-                      )}
+                      <div className="text-right flex-1">
+                        <span className="text-warm-gray-800 font-medium text-xs sm:text-sm block" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                          {item.product.name} × {item.quantity}
+                        </span>
+
+                        {/* Display extensions */}
+                        {item.selectedExtensions && item.product.extensions && item.selectedExtensions.length > 0 && (
+                          <div className="mt-0.5">
+                            {item.selectedExtensions.map(extId => {
+                              const ext = item.product.extensions?.find(e => e.id === extId);
+                              return ext ? (
+                                <p key={ext.id} className="text-[10px] sm:text-xs text-warm-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                  + {ext.name} (+{ext.additionalPrice.toFixed(2)} ج)
+                                </p>
+                              ) : null;
+                            })}
+                          </div>
+                        )}
+
+                        {(item.selectedSize || item.selectedColor) && (
+                          <p className="text-[10px] sm:text-xs text-warm-gray-500 mt-0.5" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                            {item.selectedSize && `${item.selectedSize}`}
+                            {item.selectedSize && item.selectedColor && ' • '}
+                            {item.selectedColor && `${item.selectedColor}`}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="space-y-2 sm:space-y-2.5 border-t-2 border-warm-gray-100 pt-3 sm:pt-4">
