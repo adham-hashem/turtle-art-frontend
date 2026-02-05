@@ -58,6 +58,7 @@ import OrderNotifications from './pages/admin/OrderNotifications';
 import CakeConfigurationManagement from './pages/admin/CakeConfigurationManagement';
 import CustomOrdersManagement from './pages/admin/CustomOrdersManagement';
 import CustomOrderNotifications from './pages/admin/CustomOrderNotifications';
+import ProductPriorityManagement from './pages/admin/ProductPriorityManagement';
 
 // User pages
 import CompleteProfile from './pages/CompleteProfile';
@@ -184,6 +185,7 @@ function AppContent() {
               <Route path="notifications" element={<OrderNotifications />} />
               <Route path="custom-order-notifications" element={<CustomOrderNotifications />} />
               <Route path="products" element={<ProductsManagement />} />
+              <Route path="products-priority" element={<ProductPriorityManagement />} />
               <Route path="orders" element={<OrdersManagement />} />
               <Route path="customers" element={<CustomersManagement />} />
               <Route path="discounts" element={<DiscountCodesManagement />} />

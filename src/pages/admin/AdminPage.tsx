@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { ArrowRight, Package, Users, ShoppingCart, LogOut, Tag, Truck, Menu, X, Bell, Sparkles } from 'lucide-react';
+import { ArrowRight, Package, Users, ShoppingCart, LogOut, Tag, Truck, Menu, X, Bell, Sparkles, Star } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import NotificationButton from '../../components/NotificationButton';
 
@@ -24,6 +24,7 @@ const AdminPage: React.FC = () => {
     { to: '/admin/orders', icon: ShoppingCart, label: 'إدارة الطلبات' },
     { to: '/admin/custom-orders-management', icon: Truck, label: 'طلبات خاصة' },
     { to: '/admin/products', icon: Package, label: 'إدارة المنتجات' },
+    { to: '/admin/products-priority', icon: Star, label: 'إدارة الأولويات' },
     { to: '/admin/customers', icon: Users, label: 'إدارة العملاء' },
     { to: '/admin/discounts', icon: Tag, label: 'أكواد الخصم' },
     { to: '/admin/shipping', icon: Truck, label: 'رسوم الشحن' },

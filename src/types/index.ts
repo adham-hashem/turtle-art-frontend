@@ -32,8 +32,9 @@ export interface Product {
   isAvailable?: boolean; // Product availability flag
   isInstant?: boolean; // Quick delivery flag
   isFeatured?: boolean; // Featured product flag
-  rating?: number; // Product rating
-  salesCount?: number; // Number of sales
+  rating: number; // Product rating (0-5)
+  priority?: number; // Display priority (higher shows first), default 0
+  salesCount: number; // Number of sales
   type?: any; // Product type
   season?: any; // Product season
 }

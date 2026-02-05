@@ -129,6 +129,7 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
       isOffer: originalPrice !== undefined && originalPrice > price,
 
       rating: item?.rating !== undefined ? Number(item.rating) : 0,
+      priority: item?.priority !== undefined ? Number(item.priority) : 0,
       salesCount: item?.salesCount !== undefined ? Number(item.salesCount) : 0,
 
       category: item?.category ?? undefined,

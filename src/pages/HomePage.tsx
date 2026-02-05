@@ -95,6 +95,7 @@ const HomePage: React.FC = () => {
         isOffer: item.originalPrice !== undefined && item.originalPrice > item.price ? true : false,
 
         rating: item.rating !== undefined ? item.rating : 0,
+        priority: item.priority ?? 0,
         salesCount: item.salesCount !== undefined ? item.salesCount : 0,
 
         category: item.category || undefined,
