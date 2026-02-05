@@ -136,7 +136,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div
           className="hidden md:flex absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 items-end justify-center pb-6 gap-3"
           style={{
-            background: 'linear-gradient(to bottom, rgba(22, 163, 74, 0.9), rgba(34, 197, 94, 0.95))'
+            background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6))'
           }}
         >
           <button
@@ -148,7 +148,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             style={{ fontFamily: 'Tajawal, sans-serif' }}
           >
             <Eye size={18} />
-            <span>عرض التفاصيل</span>
+            <span>عرض</span>
           </button>
         </div>
       </div>
