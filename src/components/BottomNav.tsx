@@ -20,7 +20,7 @@ export function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-lg pb-safe" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
       <div className="w-full">
         <div className="grid grid-cols-6 gap-0 md:flex md:justify-center md:gap-12 py-2 px-0 sm:px-4">
           {navItems.map((item) => {
