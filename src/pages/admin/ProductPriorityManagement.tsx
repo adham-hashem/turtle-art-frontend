@@ -30,7 +30,7 @@ const ProductPriorityManagement = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('jwt_token');
+            const token = localStorage.getItem('accessToken');
 
             // 1. Fetch priority values
             const prioritiesRes = await fetch(`${apiUrl}/api/products/priorities`, {
@@ -87,7 +87,7 @@ const ProductPriorityManagement = () => {
     const handleUpdatePriority = async (productId: string, newPriority: number) => {
         try {
             setUpdating(true);
-            const token = localStorage.getItem('jwt_token');
+            const token = localStorage.getItem('accessToken');
 
             const res = await fetch(`${apiUrl}/api/products/${productId}/priority`, {
                 method: 'PATCH',

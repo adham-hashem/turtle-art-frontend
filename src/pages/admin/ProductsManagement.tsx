@@ -1742,11 +1742,11 @@ const ProductsManagement: React.FC = () => {
                                     </span>
                                   )}
 
-                                  {product.salesCount !== undefined && (
+                                  {/* {product.salesCount !== undefined && (
                                     <span className="text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                       📦 {product.salesCount} مبيعات
                                     </span>
-                                  )}
+                                  )} */}
                                 </div>
 
                                 {product.description && (
