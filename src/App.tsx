@@ -22,6 +22,7 @@ import ExternalBrowserGuard from './components/ExternalBrowserGuard';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 
 import { onForegroundMessage } from './services/firebase';
 import { Unsubscribe } from 'firebase/messaging';
@@ -275,6 +276,7 @@ function AppContent() {
         </Routes>
 
         <ToastContainer />
+        <PWAInstallPrompt />
       </Router>
     </>
   );
