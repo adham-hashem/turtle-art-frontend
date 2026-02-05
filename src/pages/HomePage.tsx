@@ -219,6 +219,14 @@ const HomePage: React.FC = () => {
             <p className="text-black text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               ✨By Sara Mostafa✨
             </p>
+
+            {/* Guest Shopping Notice */}
+            <div className="mt-4 bg-primary-green/10 border border-primary-green/20 rounded-xl px-4 py-2 flex items-center gap-2 animate-fade-in">
+              <span className="text-xl">💡</span>
+              <p className="text-primary-green-dark font-medium text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                معلومة: يمكنك التسوق وإتمام الطلب كزائر دون الحاجة لتسجيل الدخول!
+              </p>
+            </div>
           </div>
 
           {loading && products.length === 0 ? (

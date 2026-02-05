@@ -200,6 +200,13 @@ const LoginPage: React.FC = () => {
               <p className="text-gray-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                 سجل دخولك واستمتع بأجمل الحقائب المصممة بعناية
               </p>
+
+              {/* Guest Notice */}
+              <div className="mt-4 text-center">
+                <p className="text-xs text-gray-500 bg-gray-50 py-2 px-3 rounded-lg inline-block border border-gray-100" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  👋 لا تريد التسجيل الآن؟ <Link to="/" className="text-primary-green hover:underline font-bold">يمكنك التسوق كزائر</Link>
+                </p>
+              </div>
             </div>
 
             {/* Error Message */}
