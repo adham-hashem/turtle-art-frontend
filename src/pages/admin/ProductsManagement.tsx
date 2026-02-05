@@ -407,6 +407,7 @@ const ProductsManagement: React.FC = () => {
       formData.append('isInstant', newProduct.isInstant.toString());
       formData.append('isBreakfast', newProduct.isBreakfast.toString());
       formData.append('isFeatured', newProduct.isFeatured.toString());
+      formData.append('priority', newProduct.priority.toString());
       formData.append('type', newProduct.type.toString());
 
       // IMPORTANT: category is now string enum name, send empty if not chosen
@@ -547,6 +548,7 @@ const ProductsManagement: React.FC = () => {
       formData.append('isInstant', newProduct.isInstant.toString());
       formData.append('isBreakfast', newProduct.isBreakfast.toString());
       formData.append('isFeatured', newProduct.isFeatured.toString());
+      formData.append('priority', newProduct.priority.toString());
       formData.append('type', newProduct.type.toString());
 
       // UPDATED
