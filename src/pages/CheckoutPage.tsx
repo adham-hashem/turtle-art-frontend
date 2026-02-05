@@ -426,6 +426,7 @@ const CheckoutPage: React.FC = () => {
             priceAtPurchase: item.product.price,
             size: item.size || null,
             color: item.color || null,
+            selectedExtensions: item.selectedExtensions ? JSON.stringify(item.selectedExtensions) : null,
           })),
         };
 

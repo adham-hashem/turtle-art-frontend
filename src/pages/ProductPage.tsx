@@ -387,6 +387,7 @@ const ProductPage: React.FC = () => {
           quantity,
           selectedSize: hasSizes ? selectedSize : '',
           selectedColor: hasColors ? selectedColor : '',
+          selectedExtensions: selectedExtensions.length > 0 ? selectedExtensions : undefined,
         },
       });
 

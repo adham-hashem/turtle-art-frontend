@@ -45,6 +45,7 @@ export interface CartItem {
   selectedSize?: string;
   selectedColor?: string;
   customization_text?: string;
+  selectedExtensions?: string[]; // Array of selected extension IDs
 }
 
 export interface Customer {

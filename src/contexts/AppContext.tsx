@@ -49,7 +49,8 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
           item.product.id === action.payload.product.id &&
           item.selectedSize === action.payload.selectedSize &&
           item.selectedColor === action.payload.selectedColor &&
-          item.customization_text === action.payload.customization_text
+          item.customization_text === action.payload.customization_text &&
+          JSON.stringify(item.selectedExtensions || []) === JSON.stringify(action.payload.selectedExtensions || [])
       );
 
       if (existingItem) {
@@ -57,9 +58,10 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
           ...state,
           cart: state.cart.map(item =>
             item.product.id === action.payload.product.id &&
-            item.selectedSize === action.payload.selectedSize &&
-            item.selectedColor === action.payload.selectedColor &&
-            item.customization_text === action.payload.customization_text
+              item.selectedSize === action.payload.selectedSize &&
+              item.selectedColor === action.payload.selectedColor &&
+              item.customization_text === action.payload.customization_text &&
+              JSON.stringify(item.selectedExtensions || []) === JSON.stringify(action.payload.selectedExtensions || [])
               ? { ...item, quantity: item.quantity + action.payload.quantity }
               : item
           ),
@@ -221,7 +223,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const getTotalAmount = () => {
-    return state.cart.reduce((total, item) => total + item.product.price * item.quantity, 0);
+    return state.cart.reduce((total, item) => {
+      let itemPrice = item.product.price;
+
+      // Add extension prices if available
+      if (item.selectedExtensions && item.product.extensions) {
+        const extensionsTotal = item.selectedExtensions.reduce((extTotal, extId) => {
+          const extension = item.product.extensions?.find(e => e.id === extId);
+          return extTotal + (extension?.additionalPrice || 0);
+        }, 0);
+        itemPrice += extensionsTotal;
+      }
+
+      return total + itemPrice * item.quantity;
+    }, 0);
   };
 
   const getItemCount = () => {

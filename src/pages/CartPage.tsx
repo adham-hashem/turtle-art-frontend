@@ -11,6 +11,14 @@ interface CartItemImage {
   isMain: boolean;
 }
 
+interface ProductExtension {
+  id: string;
+  productId: string;
+  name: string;
+  additionalPrice: number;
+  isActive: boolean;
+}
+
 interface ApiCartResponse {
   id: string;
   userId: string;
@@ -24,6 +32,9 @@ interface ApiCartResponse {
     color: string;
     price: number;
     images: CartItemImage[];
+    selectedExtensions?: string;
+    extensions?: ProductExtension[];
+    extensionsTotal?: number;
   }[];
   total: number;
 }
@@ -46,6 +57,9 @@ const CartPage: React.FC = () => {
     size?: string;
     color?: string;
     images: CartItemImage[];
+    selectedExtensions?: string;
+    extensions?: ProductExtension[];
+    extensionsTotal?: number;
   }
 
   const [cartItems, setCartItems] = useState<CartPageItem[]>([]);
@@ -104,6 +118,9 @@ const CartPage: React.FC = () => {
         size: item.size,
         color: item.color,
         images: item.images || [],
+        selectedExtensions: item.selectedExtensions,
+        extensions: item.extensions || [],
+        extensionsTotal: item.extensionsTotal || 0,
       }));
 
       setCartItems(normalizedItems || []);
@@ -119,23 +136,40 @@ const CartPage: React.FC = () => {
 
   // Helper to map Global CartItem to Local CartPageItem
   const mapToCartPageItems = useCallback((items: CartItem[]): CartPageItem[] => {
-    return items.map((item, index) => ({
-      id: `guest-${index}-${item.product.id}`,
-      productId: item.product.id,
-      product: {
-        id: item.product.id,
-        name: item.product.name,
-        price: item.product.price
-      },
-      quantity: item.quantity,
-      size: item.selectedSize,
-      color: item.selectedColor,
-      images: item.product.images.map(img => ({
-        id: img.id,
-        imagePath: img.imagePath,
-        isMain: img.isMain
-      }))
-    }));
+    return items.map((item, index) => {
+      // Calculate extensions for guest users
+      let extensions: ProductExtension[] = [];
+      let extensionsTotal = 0;
+
+      if (item.selectedExtensions && item.product.extensions) {
+        extensions = item.selectedExtensions
+          .map(extId => item.product.extensions?.find(e => e.id === extId))
+          .filter((ext): ext is ProductExtension => ext !== undefined && ext.isActive);
+
+        extensionsTotal = extensions.reduce((sum, ext) => sum + ext.additionalPrice, 0);
+      }
+
+      return {
+        id: `guest-${index}-${item.product.id}`,
+        productId: item.product.id,
+        product: {
+          id: item.product.id,
+          name: item.product.name,
+          price: item.product.price
+        },
+        quantity: item.quantity,
+        size: item.selectedSize,
+        color: item.selectedColor,
+        images: item.product.images.map(img => ({
+          id: img.id,
+          imagePath: img.imagePath,
+          isMain: img.isMain
+        })),
+        selectedExtensions: item.selectedExtensions ? JSON.stringify(item.selectedExtensions) : undefined,
+        extensions: extensions,
+        extensionsTotal: extensionsTotal
+      };
+    });
   }, []);
 
   // Helper to map Local CartPageItem to Global CartItem
@@ -152,7 +186,9 @@ const CartPage: React.FC = () => {
         colors: [],
         images: item.images,
         inStock: true,
-        isOffer: false
+        isOffer: false,
+        rating: 0,
+        salesCount: 0
       },
       quantity: item.quantity,
       selectedSize: item.size,
@@ -313,7 +349,10 @@ const CartPage: React.FC = () => {
     }
   };
 
-  const subtotal = cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0);
+  const subtotal = cartItems.reduce((total, item) => {
+    const itemPrice = item.product.price + (item.extensionsTotal || 0);
+    return total + itemPrice * item.quantity;
+  }, 0);
   const total = subtotal;
 
   if (loading) {
@@ -454,14 +493,20 @@ const CartPage: React.FC = () => {
                       <h3 className="font-bold text-warm-gray-800 text-sm sm:text-base md:text-lg truncate" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                         {item.product.name}
                       </h3>
-                      {/* <p className="text-xs sm:text-sm text-warm-gray-500 mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                        المقاس: <span className="font-medium text-primary-green">{item.size || 'غير محدد'}</span>
-                      </p>
-                      <p className="text-xs sm:text-sm text-warm-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                        اللون: <span className="font-medium text-primary-green">{item.color || 'غير محدد'}</span>
-                      </p> */}
+
+                      {/* Display extensions if any */}
+                      {item.extensions && item.extensions.length > 0 && (
+                        <div className="mt-1 space-y-0.5">
+                          {item.extensions.map((ext) => (
+                            <p key={ext.id} className="text-xs text-warm-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                              + {ext.name} (+{ext.additionalPrice.toFixed(2)} جنيه)
+                            </p>
+                          ))}
+                        </div>
+                      )}
+
                       <p className="text-primary-green font-black text-base sm:text-lg md:text-xl mt-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                        {item.product.price.toFixed(2)} جنيه
+                        {(item.product.price + (item.extensionsTotal || 0)).toFixed(2)} جنيه
                       </p>
                     </div>
 
