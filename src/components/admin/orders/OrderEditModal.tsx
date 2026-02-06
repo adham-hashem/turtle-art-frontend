@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Trash2, AlertCircle, RefreshCw } from 'lucide-react';
-import { useAuth } from '../../../contexts/AuthContext';
+import { X, Save, Trash2, AlertCircle, RefreshCw, Plus, Minus } from 'lucide-react';
+
 
 interface OrderItem {
     id: string;
@@ -13,19 +13,6 @@ interface OrderItem {
     shouldDelete?: boolean;
 }
 
-interface OrderEditDto {
-    orderId: string;
-    status?: number; // using numeric enum value
-    fullName?: string;
-    phoneNumber?: string;
-    address?: string;
-    governorate?: string;
-    items?: OrderItem[];
-    discountCode?: string;
-    manualDiscountAmount?: number;
-    changeNote?: string;
-}
-
 interface OrderEditModalProps {
     order: any; // Using any for now to match parent's loose type or define interface properly
     isOpen: boolean;
@@ -34,7 +21,7 @@ interface OrderEditModalProps {
 }
 
 const OrderEditModal: React.FC<OrderEditModalProps> = ({ order, isOpen, onClose, onSave }) => {
-    const { token } = useAuth(); // Assuming existing AuthContext provides token
+    // const { token } = useAuth(); // Unused, using localStorage directly
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -44,7 +31,7 @@ const OrderEditModal: React.FC<OrderEditModalProps> = ({ order, isOpen, onClose,
     const [address, setAddress] = useState('');
     const [governorate, setGovernorate] = useState('');
     const [items, setItems] = useState<OrderItem[]>([]);
-    const [status, setStatus] = useState<number>(0);
+    // const [status, setStatus] = useState<number>(0); // Unused
 
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -54,7 +41,7 @@ const OrderEditModal: React.FC<OrderEditModalProps> = ({ order, isOpen, onClose,
             setPhoneNumber(order.phoneNumber || '');
             setAddress(order.address || '');
             setGovernorate(order.governorate || '');
-            setStatus(order.status); // Assuming order.status might be string or number, check backend mapping
+            // setStatus(order.status);
 
             // Map items
             if (order.items) {
@@ -78,54 +65,32 @@ const OrderEditModal: React.FC<OrderEditModalProps> = ({ order, isOpen, onClose,
         ));
     };
 
+    const handleUpdateQuantity = (itemId: string, newQuantity: number) => {
+        if (newQuantity < 1) return; // Prevent quantity less than 1
+        setItems(prev => prev.map(item =>
+            item.id === itemId ? { ...item, quantity: newQuantity } : item
+        ));
+    };
+
     const handleSave = async () => {
         setLoading(true);
         setError(null);
 
         try {
-            const editDto: OrderEditDto = {
-                orderId: order.id,
-                fullName,
-                phoneNumber,
-                address,
-                governorate,
-                items: items.filter(i => i.shouldDelete).map(i => ({ ...i, shouldDelete: true })), // Only send items marked for deletion/modification
-                // If we want to support editing other item props, we'd include them all. 
-                // Backend logic iterates all items passed to update/delete.
-                // For now, let's send ALL items with their state so backend knows what to keep/delete?
-                // Wait, backend implementation iterates:
-                // foreach (var item in editDto.Items.Where(i => i.ShouldDelete && i.Id.HasValue)) { delete }
-                // So passing only deleted items works for deletion.
-            };
-
-            // BUT if we want to change customer info, we pass that too.
-            // And backend checks: if (!string.IsNullOrEmpty(editDto.FullName) && ...)
-
-            // However, for items, my backend implementation ONLY handles deletion:
-            // if (editDto.Items != null && editDto.Items.Any())
-            // {
-            //    // ... logs history ...
-            //    // Remove deleted items
-            //    foreach (var item in editDto.Items.Where(i => i.ShouldDelete && i.Id.HasValue)) ...
-            //    // Recalculate
-            // }
-
-            // So I should pass the items array containing at least the deleted ones.
-            // To be safe and if I expand backend logic later, passing just deleted ones is efficient for now.
-
             const payload = {
                 orderId: order.id,
                 fullName,
                 phoneNumber,
                 address,
                 governorate,
-                items: items.filter(i => i.shouldDelete) // Only sending deleted items to trigger backend logic
+                // Send all items so backend can detect changes (quantity updates) and deletions
+                items: items
             };
 
             const response = await fetch(`${apiUrl}/api/orders/${order.id}/edit`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`, // fallback if context doesn't have token
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(payload),
@@ -229,10 +194,31 @@ const OrderEditModal: React.FC<OrderEditModalProps> = ({ order, isOpen, onClose,
                                         <p className={`font-medium ${item.shouldDelete ? 'text-red-700 line-through' : 'text-gray-900'}`} style={{ fontFamily: 'Tajawal, sans-serif' }}>
                                             {item.productName}
                                         </p>
-                                        <p className="text-sm text-gray-500">
-                                            {item.quantity} x {item.priceAtPurchase.toLocaleString()} EGP
-                                            {item.size && ` | الحجم: ${item.size}`}
-                                        </p>
+
+                                        <div className="flex items-center gap-3 mt-1">
+                                            <div className="text-sm text-gray-500">
+                                                {item.priceAtPurchase.toLocaleString()} EGP
+                                                {item.size && ` | الحجم: ${item.size}`}
+                                            </div>
+
+                                            {/* Quantity Controls */}
+                                            <div className={`flex items-center bg-gray-50 rounded-lg border border-gray-200 ${item.shouldDelete ? 'opacity-50 pointer-events-none' : ''}`}>
+                                                <button
+                                                    onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                                                    className="p-1 hover:bg-white hover:shadow-sm rounded transition-all text-green-600"
+                                                >
+                                                    <Plus className="w-4 h-4" />
+                                                </button>
+                                                <span className="w-8 text-center font-medium text-gray-700">{item.quantity}</span>
+                                                <button
+                                                    onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                                                    className="p-1 hover:bg-white hover:shadow-sm rounded transition-all text-red-600 disabled:opacity-50"
+                                                    disabled={item.quantity <= 1}
+                                                >
+                                                    <Minus className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <button
