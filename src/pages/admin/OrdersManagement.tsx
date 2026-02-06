@@ -20,9 +20,18 @@ import {
   ShoppingCart,
   Calendar,
   DollarSign,
-  Tag
+  Tag,
+  Edit,
+  Wallet,
+  MessageSquare,
+  History as HistoryIcon,
+  CreditCard
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import OrderEditModal from '../../components/admin/orders/OrderEditModal';
+import PaymentTrackingPanel from '../../components/admin/orders/PaymentTrackingPanel';
+import OrderNotesPanel from '../../components/admin/orders/OrderNotesPanel';
+import OrderHistoryPanel from '../../components/admin/orders/OrderHistoryPanel';
 
 // Interfaces based on backend DTOs
 interface OrderItemResponseDto {
@@ -89,6 +98,17 @@ const OrdersManagement: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [customerOrders, setCustomerOrders] = useState<OrderResponseDto[]>([]);
   const [showCustomerOrders, setShowCustomerOrders] = useState(false);
+
+  // Advanced Filter States
+  const [dateFrom, setDateFrom] = useState<string>('');
+  const [dateTo, setDateTo] = useState<string>('');
+  const [minTotal, setMinTotal] = useState<string>('');
+  const [maxTotal, setMaxTotal] = useState<string>('');
+  const [useAdvancedFilters, setUseAdvancedFilters] = useState(false);
+
+  // Order Details Modal State
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [orderDetailsTab, setOrderDetailsTab] = useState<'details' | 'payments' | 'notes' | 'history'>('details');
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const pageSize = 10;
@@ -280,6 +300,108 @@ const OrdersManagement: React.FC = () => {
       setShowCustomerOrders(true);
     } catch (err) {
       alert(err instanceof Error ? err.message : 'فشل في جلب طلبات العميل');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch orders with advanced filters
+  const fetchFilteredOrders = async (page: number = 1) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        navigate('/login');
+        throw new Error('No authentication token found. Please log in again.');
+      }
+
+      // Build filter payload
+      const filterPayload: any = {
+        pageNumber: page,
+        pageSize: pageSize,
+      };
+
+      // Add status filter
+      if (statusFilter !== 'all') {
+        const statusMap: { [key: string]: number } = {
+          'UnderReview': 0,
+          'Confirmed': 1,
+          'Shipped': 2,
+          'Delivered': 3,
+          'Cancelled': 4
+        };
+        filterPayload.status = statusMap[statusFilter];
+      }
+
+      // Add payment method filter
+      if (paymentMethodFilter !== 'all') {
+        const paymentMap: { [key: string]: number } = {
+          'InstaPay': 0,
+          'VodafoneCash': 1,
+          'OnlinePayment': 2
+        };
+        filterPayload.paymentMethod = paymentMap[paymentMethodFilter];
+      }
+
+      // Add date filters
+      if (dateFrom) {
+        filterPayload.dateFrom = dateFrom;
+      }
+      if (dateTo) {
+        filterPayload.dateTo = dateTo;
+      }
+
+      // Add order value filters
+      if (minTotal) {
+        filterPayload.minTotal = parseFloat(minTotal);
+      }
+      if (maxTotal) {
+        filterPayload.maxTotal = parseFloat(maxTotal);
+      }
+
+      // Add search term
+      if (searchTerm.trim()) {
+        filterPayload.searchTerm = searchTerm.trim();
+      }
+
+      const response = await fetch(`${apiUrl}/api/orders/filter`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(filterPayload),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('accessToken');
+          navigate('/login');
+          throw new Error('Unauthorized: Please log in again.');
+        } else if (response.status === 403) {
+          navigate('/');
+          throw new Error('Forbidden: Admin access required.');
+        }
+        const errorText = await response.text();
+        throw new Error(`Failed to fetch filtered orders: ${response.status} ${errorText}`);
+      }
+
+      const data: PaginatedOrdersResponse = await response.json();
+
+      const mappedOrders = data.items.map(order => ({
+        ...order,
+        status: mapStatus(order.status),
+        paymentMethod: mapPaymentMethod(order.paymentMethod),
+      }));
+
+      setOrders(mappedOrders);
+      setTotalPages(data.totalPages);
+      setTotalItems(data.totalItems);
+      setCurrentPage(data.pageNumber);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch filtered orders');
     } finally {
       setLoading(false);
     }
@@ -631,13 +753,123 @@ const OrdersManagement: React.FC = () => {
           </select>
 
           <button
-            onClick={() => fetchOrders(1)}
-            className="bg-primary-green text-black px-6 py-3 rounded-xl hover:bg-primary-green-dark transition-all flex items-center justify-center font-semibold shadow-md"
+            onClick={() => {
+              setUseAdvancedFilters(!useAdvancedFilters);
+            }}
+            className={`px-6 py-3 rounded-xl transition-all flex items-center justify-center font-semibold shadow-md ${useAdvancedFilters
+              ? 'bg-blue-500 text-white hover:bg-blue-600'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            style={{ fontFamily: 'Tajawal, sans-serif' }}
+          >
+            <Filter className="h-4 w-4 ml-2" />
+            فلاتر متقدمة
+          </button>
+        </div>
+
+        {/* Advanced Filters Row */}
+        {useAdvancedFilters && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-200">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1 text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <Calendar className="inline h-4 w-4 ml-1" />
+                من تاريخ
+              </label>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 text-black"
+                style={{ fontFamily: 'Tajawal, sans-serif' }}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1 text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <Calendar className="inline h-4 w-4 ml-1" />
+                إلى تاريخ
+              </label>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 text-black"
+                style={{ fontFamily: 'Tajawal, sans-serif' }}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1 text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <DollarSign className="inline h-4 w-4 ml-1" />
+                قيمة الطلب من
+              </label>
+              <input
+                type="number"
+                value={minTotal}
+                onChange={(e) => setMinTotal(e.target.value)}
+                placeholder="0"
+                min="0"
+                step="0.01"
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 text-black"
+                style={{ fontFamily: 'Tajawal, sans-serif' }}
+                dir="rtl"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1 text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                <DollarSign className="inline h-4 w-4 ml-1" />
+                قيمة الطلب إلى
+              </label>
+              <input
+                type="number"
+                value={maxTotal}
+                onChange={(e) => setMaxTotal(e.target.value)}
+                placeholder="9999"
+                min="0"
+                step="0.01"
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 text-black"
+                style={{ fontFamily: 'Tajawal, sans-serif' }}
+                dir="rtl"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Apply Filters Button */}
+        <div className="mt-4 flex gap-3">
+          <button
+            onClick={() => {
+              if (useAdvancedFilters || statusFilter !== 'all' || paymentMethodFilter !== 'all' || searchTerm) {
+                fetchFilteredOrders(1);
+              } else {
+                fetchOrders(1);
+              }
+            }}
+            className="flex-1 bg-primary-green text-black px-6 py-3 rounded-xl hover:bg-primary-green-dark transition-all flex items-center justify-center font-semibold shadow-md"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
             disabled={loading}
           >
-            <RefreshCw className={`h-4 w-4 ml-2 ${loading ? 'animate-spin' : ''}`} />
-            تحديث
+            <Search className={`h-4 w-4 ml-2 ${loading ? 'animate-spin' : ''}`} />
+            تطبيق الفلاتر
+          </button>
+
+          <button
+            onClick={() => {
+              setStatusFilter('all');
+              setPaymentMethodFilter('all');
+              setSearchTerm('');
+              setDateFrom('');
+              setDateTo('');
+              setMinTotal('');
+              setMaxTotal('');
+              setUseAdvancedFilters(false);
+              fetchOrders(1);
+            }}
+            className="bg-gray-200 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-300 transition-all flex items-center justify-center font-semibold"
+            style={{ fontFamily: 'Tajawal, sans-serif' }}
+          >
+            <X className="h-4 w-4 ml-2" />
           </button>
         </div>
       </div>
@@ -1232,355 +1464,446 @@ const OrdersManagement: React.FC = () => {
             </div>
           )}
         </>
-      )}
+      )
+      }
 
       {/* Order Details Modal */}
-      {showOrderDetails && selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200">
-            <div className="sticky top-0 bg-gray-50 p-6 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-2xl font-bold text-black flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                <ShoppingCart className="h-6 w-6" />
-                تفاصيل الطلب #{selectedOrder.orderNumber}
-              </h3>
-              <button
-                onClick={() => setShowOrderDetails(false)}
-                className="text-gray-500 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg transition-all"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
+      {
+        showOrderDetails && selectedOrder && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200">
+              <div className="sticky top-0 bg-gray-50 z-10">
+                <div className="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                  <h3 className="text-2xl font-bold text-black flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                    <ShoppingCart className="h-6 w-6" />
+                    تفاصيل الطلب #{selectedOrder.orderNumber}
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setShowEditModal(true)}
+                      className="bg-white text-gray-700 hover:text-blue-600 px-4 py-2 border border-gray-200 rounded-lg transition-all flex items-center gap-2 hover:bg-blue-50 hover:border-blue-200"
+                      style={{ fontFamily: 'Tajawal, sans-serif' }}
+                    >
+                      <Edit className="h-4 w-4" />
+                      <span className="font-bold text-sm">تعديل الطلب</span>
+                    </button>
+                    <button
+                      onClick={() => setShowOrderDetails(false)}
+                      className="text-gray-500 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg transition-all"
+                    >
+                      <X className="h-6 w-6" />
+                    </button>
+                  </div>
+                </div>
 
-            <div className="p-6 space-y-6">
-              {/* Order Status */}
-              <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                <div className="flex flex-wrap justify-between items-center gap-4">
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>حالة الطلب</p>
-                    <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold ${getStatusColor(selectedOrder.status)}`} style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      {getStatusText(selectedOrder.status)}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>تاريخ الطلب</p>
-                    <div className="flex items-center gap-2 text-black">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      <span className="font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>{formatDate(selectedOrder.date)}</span>
+                {/* Tab Navigation */}
+                <div className="flex border-b border-gray-200 bg-white px-2">
+                  <button
+                    className={`flex-1 py-4 text-sm font-bold text-center border-b-2 transition-colors ${orderDetailsTab === 'details' ? 'border-primary-green text-primary-green' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    onClick={() => setOrderDetailsTab('details')}
+                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <Package className="w-4 h-4" />
+                      التفاصيل
                     </div>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>إجمالي المبلغ</p>
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="h-5 w-5 text-green-600" />
-                      <span className="text-xl font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.total.toFixed(2)} جنيه</span>
+                  </button>
+                  <button
+                    className={`flex-1 py-4 text-sm font-bold text-center border-b-2 transition-colors ${orderDetailsTab === 'payments' ? 'border-primary-green text-primary-green' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    onClick={() => setOrderDetailsTab('payments')}
+                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <CreditCard className="w-4 h-4" />
+                      المدفوعات
                     </div>
-                  </div>
+                  </button>
+                  <button
+                    className={`flex-1 py-4 text-sm font-bold text-center border-b-2 transition-colors ${orderDetailsTab === 'notes' ? 'border-primary-green text-primary-green' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    onClick={() => setOrderDetailsTab('notes')}
+                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <MessageSquare className="w-4 h-4" />
+                      الملاحظات
+                    </div>
+                  </button>
+                  <button
+                    className={`flex-1 py-4 text-sm font-bold text-center border-b-2 transition-colors ${orderDetailsTab === 'history' ? 'border-primary-green text-primary-green' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    onClick={() => setOrderDetailsTab('history')}
+                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <HistoryIcon className="w-4 h-4" />
+                      السجل
+                    </div>
+                  </button>
                 </div>
               </div>
 
-              {/* Customer Information */}
-              <div className="bg-white rounded-xl p-4 border border-gray-200">
-                <h4 className="text-lg font-bold text-black mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                  <User className="h-5 w-5" />
-                  معلومات العميل
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <User className="h-5 w-5 text-gray-400" />
-                    <div>
-                      <p className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>الاسم الكامل</p>
-                      <p className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.fullName || 'غير متوفر'}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <Phone className="h-5 w-5 text-gray-400" />
-                    <div>
-                      <p className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>رقم الهاتف</p>
-                      <p className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.phoneNumber || 'غير متوفر'}</p>
-                    </div>
-                  </div>
-                  {selectedOrder.address && (
-                    <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg md:col-span-2">
-                      <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
-                      <div>
-                        <p className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>العنوان</p>
-                        <p className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.address}, {selectedOrder.governorate}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Payment Information */}
-              <div className="bg-white rounded-xl p-4 border border-gray-200">
-                <h4 className="text-lg font-bold text-black mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                  <DollarSign className="h-5 w-5" />
-                  معلومات الدفع
-                </h4>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <span className="text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>طريقة الدفع</span>
-                    <span className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{getPaymentMethodText(selectedOrder.paymentMethod)}</span>
-                  </div>
-                  {selectedOrder.paymentTransactionId && (
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>معرف المعاملة</span>
-                      <span className="font-mono text-sm text-black">{selectedOrder.paymentTransactionId}</span>
-                    </div>
-                  )}
-                  {selectedOrder.discountCodeUsed && (
-                    <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border-2 border-green-200">
-                      <Tag className="h-5 w-5 text-green-600" />
-                      <span className="font-bold text-green-700" style={{ fontFamily: 'Tajawal, sans-serif' }}>كود الخصم المستخدم: {selectedOrder.discountCodeUsed}</span>
-                    </div>
-                  )}
-                  {selectedOrder.senderDetails && (
-                    <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <span className="text-gray-700 font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>بيانات المُحوِّل</span>
-                      <span className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.senderDetails}</span>
-                    </div>
-                  )}
-                  {selectedOrder.paymentProofImage && (
-                    <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
-                      <p className="text-gray-700 font-semibold mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>صورة إثبات الدفع</p>
-                      <img
-                        src={selectedOrder.paymentProofImage}
-                        alt="Payment Proof"
-                        className="w-full max-w-md mx-auto rounded-lg border-2 border-purple-300 cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => window.open(selectedOrder.paymentProofImage, '_blank')}
-                      />
-                      <p className="text-xs text-gray-500 mt-2 text-center" style={{ fontFamily: 'Tajawal, sans-serif' }}>اضغط على الصورة لعرضها بحجم كامل</p>
-                    </div>
-                  )}
-                  {selectedOrder.paymentNotes && (
-                    <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                      <p className="text-gray-700 font-semibold mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>ملاحظات الدفع</p>
-                      <p className="text-gray-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.paymentNotes}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Price Breakdown Section */}
-              <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-4 border-2 border-green-200">
-                <h4 className="text-lg font-bold text-black mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                  <Tag className="h-5 w-5" />
-                  تفاصيل الأسعار
-                </h4>
-                <div className="space-y-3">
-                  {/* Subtotal */}
-                  <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-                    <span className="text-gray-600 font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>المجموع الفرعي (المنتجات)</span>
-                    <span className="font-bold text-black text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      {selectedOrder.subtotal?.toFixed(2) ?? '0.00'} جنيه
-                    </span>
-                  </div>
-
-                  {/* Shipping Fee */}
-                  <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <span className="text-gray-700 font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>رسوم التوصيل</span>
-                    <span className="font-bold text-blue-700 text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      +{selectedOrder.shippingFee?.toFixed(2) ?? '0.00'} جنيه
-                    </span>
-                  </div>
-
-                  {/* Discount */}
-                  {selectedOrder.discountAmount && selectedOrder.discountAmount > 0 && (
-                    <div className="flex justify-between items-center p-3 bg-green-100 rounded-lg border-2 border-green-300">
-                      <div className="flex items-center gap-2">
-                        <Tag className="h-5 w-5 text-green-600" />
+              <div className="p-6 bg-gray-50 min-h-[500px]">
+                {orderDetailsTab === 'details' && (
+                  <div className="space-y-6">
+                    {/* Order Status */}
+                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                      <div className="flex flex-wrap justify-between items-center gap-4">
                         <div>
-                          <span className="text-green-700 font-semibold block" style={{ fontFamily: 'Tajawal, sans-serif' }}>الخصم</span>
-                          {selectedOrder.discountCodeUsed && (
-                            <span className="text-xs text-green-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                              ({selectedOrder.discountCodeUsed})
-                            </span>
-                          )}
+                          <p className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>حالة الطلب</p>
+                          <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold ${getStatusColor(selectedOrder.status)}`} style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                            {getStatusText(selectedOrder.status)}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>تاريخ الطلب</p>
+                          <div className="flex items-center gap-2 text-black">
+                            <Calendar className="h-4 w-4 text-gray-400" />
+                            <span className="font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>{formatDate(selectedOrder.date)}</span>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>إجمالي المبلغ</p>
+                          <div className="flex items-center gap-1">
+                            <DollarSign className="h-5 w-5 text-green-600" />
+                            <span className="text-xl font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.total.toFixed(2)} جنيه</span>
+                          </div>
                         </div>
                       </div>
-                      <span className="font-bold text-green-700 text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                        -{selectedOrder.discountAmount.toFixed(2)} جنيه
-                      </span>
                     </div>
-                  )}
 
-                  {/* Divider */}
-                  <div className="border-t-2 border-gray-300 my-2"></div>
-
-                  {/* Final Total */}
-                  <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-600 to-primary-green rounded-lg shadow-lg">
-                    <span className="text-white font-bold text-xl" style={{ fontFamily: 'Tajawal, sans-serif' }}>الإجمالي النهائي</span>
-                    <span className="font-bold text-white text-2xl" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                      {selectedOrder.total.toFixed(2)} جنيه
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Order Items */}
-              <div className="bg-white rounded-xl p-4 border border-gray-200">
-                <h4 className="text-lg font-bold text-black mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                  <Package className="h-5 w-5" />
-                  عناصر الطلب ({selectedOrder.items.length})
-                </h4>
-                <div className="space-y-3">
-                  {selectedOrder.items.map((item, index) => (
-                    <div key={index} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 rounded-xl border border-gray-200">
-                      <div className="flex-1">
-                        {item.productImageUrl && (
-                          <a
-                            href={item.productUrl || `/product/${item.productId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block mb-2"
-                          >
-                            <img
-                              src={resolveImageUrl(item.productImageUrl)}
-                              alt={item.productName}
-                              className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition-opacity"
-                            />
-                          </a>
-                        )}
-                        <div className="flex items-center gap-2 mb-2">
-                          <Package className="h-4 w-4 text-gray-400" />
-                          {item.productUrl ? (
-                            <a
-                              href={item.productUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="font-bold text-black hover:text-green-600 underline transition-colors"
-                              style={{ fontFamily: 'Tajawal, sans-serif' }}
-                            >
-                              {item.productName}
-                            </a>
-                          ) : (
-                            <p className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{item.productName}</p>
-                          )}
+                    {/* Customer Information */}
+                    <div className="bg-white rounded-xl p-4 border border-gray-200">
+                      <h4 className="text-lg font-bold text-black mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        <User className="h-5 w-5" />
+                        معلومات العميل
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                          <User className="h-5 w-5 text-gray-400" />
+                          <div>
+                            <p className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>الاسم الكامل</p>
+                            <p className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.fullName || 'غير متوفر'}</p>
+                          </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-2 text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                          <p><span className="font-semibold">كود المنتج:</span> {item.productCode}</p>
-                          <p><span className="font-semibold">الكمية:</span> {item.quantity}</p>
-                          {item.size && <p><span className="font-semibold">المقاس:</span> {item.size}</p>}
-                          {item.color && <p><span className="font-semibold">اللون:</span> {item.color}</p>}
-                          {item.extensionsDetails && item.extensionsDetails.length > 0 && (
-                            <div className="col-span-2">
-                              <p className="font-semibold text-green-600 mb-1">إضافات:</p>
-                              <ul className="list-disc list-inside text-xs text-gray-600">
-                                {item.extensionsDetails.map((ext) => (
-                                  <li key={ext.id}>
-                                    {ext.name} (+{ext.additionalPrice} ج.م)
-                                  </li>
-                                ))}
-                              </ul>
+                        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                          <Phone className="h-5 w-5 text-gray-400" />
+                          <div>
+                            <p className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>رقم الهاتف</p>
+                            <p className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.phoneNumber || 'غير متوفر'}</p>
+                          </div>
+                        </div>
+                        {selectedOrder.address && (
+                          <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg md:col-span-2">
+                            <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
+                            <div>
+                              <p className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>العنوان</p>
+                              <p className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.address}, {selectedOrder.governorate}</p>
                             </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="mt-3 sm:mt-0 sm:mr-4">
-                        <p className="font-bold text-black text-xl" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                          {item.priceAtPurchase.toFixed(2)} جنيه
-                        </p>
-                        <p className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                          الإجمالي: {(item.priceAtPurchase * item.quantity).toFixed(2)} جنيه
-                        </p>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
 
-            {/* Modal Footer */}
-            <div className="sticky bottom-0 bg-gray-50 p-6 border-t border-gray-200">
-              <button
-                onClick={() => setShowOrderDetails(false)}
-                className="w-full bg-primary-green text-black py-3 px-6 rounded-xl hover:bg-primary-green-dark transition-all font-semibold shadow-lg"
-                style={{ fontFamily: 'Tajawal, sans-serif' }}
-              >
-                إغلاق
-              </button>
+                    {/* Payment Information */}
+                    <div className="bg-white rounded-xl p-4 border border-gray-200">
+                      <h4 className="text-lg font-bold text-black mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        <DollarSign className="h-5 w-5" />
+                        معلومات الدفع
+                      </h4>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                          <span className="text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>طريقة الدفع</span>
+                          <span className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{getPaymentMethodText(selectedOrder.paymentMethod)}</span>
+                        </div>
+                        {selectedOrder.paymentTransactionId && (
+                          <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span className="text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>معرف المعاملة</span>
+                            <span className="font-mono text-sm text-black">{selectedOrder.paymentTransactionId}</span>
+                          </div>
+                        )}
+                        {selectedOrder.discountCodeUsed && (
+                          <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border-2 border-green-200">
+                            <Tag className="h-5 w-5 text-green-600" />
+                            <span className="font-bold text-green-700" style={{ fontFamily: 'Tajawal, sans-serif' }}>كود الخصم المستخدم: {selectedOrder.discountCodeUsed}</span>
+                          </div>
+                        )}
+                        {selectedOrder.senderDetails && (
+                          <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <span className="text-gray-700 font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>بيانات المُحوِّل</span>
+                            <span className="font-semibold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.senderDetails}</span>
+                          </div>
+                        )}
+                        {selectedOrder.paymentProofImage && (
+                          <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                            <p className="text-gray-700 font-semibold mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>صورة إثبات الدفع</p>
+                            <img
+                              src={selectedOrder.paymentProofImage}
+                              alt="Payment Proof"
+                              className="w-full max-w-md mx-auto rounded-lg border-2 border-purple-300 cursor-pointer hover:opacity-90 transition-opacity"
+                              onClick={() => window.open(selectedOrder.paymentProofImage, '_blank')}
+                            />
+                            <p className="text-xs text-gray-500 mt-2 text-center" style={{ fontFamily: 'Tajawal, sans-serif' }}>اضغط على الصورة لعرضها بحجم كامل</p>
+                          </div>
+                        )}
+                        {selectedOrder.paymentNotes && (
+                          <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                            <p className="text-gray-700 font-semibold mb-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>ملاحظات الدفع</p>
+                            <p className="text-gray-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>{selectedOrder.paymentNotes}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Price Breakdown Section */}
+                    <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-4 border-2 border-green-200">
+                      <h4 className="text-lg font-bold text-black mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        <Tag className="h-5 w-5" />
+                        تفاصيل الأسعار
+                      </h4>
+                      <div className="space-y-3">
+                        {/* Subtotal */}
+                        <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+                          <span className="text-gray-600 font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>المجموع الفرعي (المنتجات)</span>
+                          <span className="font-bold text-black text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                            {selectedOrder.subtotal?.toFixed(2) ?? '0.00'} جنيه
+                          </span>
+                        </div>
+
+                        {/* Shipping Fee */}
+                        <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+                          <span className="text-gray-700 font-semibold" style={{ fontFamily: 'Tajawal, sans-serif' }}>رسوم التوصيل</span>
+                          <span className="font-bold text-blue-700 text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                            +{selectedOrder.shippingFee?.toFixed(2) ?? '0.00'} جنيه
+                          </span>
+                        </div>
+
+                        {/* Discount */}
+                        {selectedOrder.discountAmount && selectedOrder.discountAmount > 0 && (
+                          <div className="flex justify-between items-center p-3 bg-green-100 rounded-lg border-2 border-green-300">
+                            <div className="flex items-center gap-2">
+                              <Tag className="h-5 w-5 text-green-600" />
+                              <div>
+                                <span className="text-green-700 font-semibold block" style={{ fontFamily: 'Tajawal, sans-serif' }}>الخصم</span>
+                                {selectedOrder.discountCodeUsed && (
+                                  <span className="text-xs text-green-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                    ({selectedOrder.discountCodeUsed})
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <span className="font-bold text-green-700 text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                              -{selectedOrder.discountAmount.toFixed(2)} جنيه
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Divider */}
+                        <div className="border-t-2 border-gray-300 my-2"></div>
+
+                        {/* Final Total */}
+                        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-600 to-primary-green rounded-lg shadow-lg">
+                          <span className="text-white font-bold text-xl" style={{ fontFamily: 'Tajawal, sans-serif' }}>الإجمالي النهائي</span>
+                          <span className="font-bold text-white text-2xl" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                            {selectedOrder.total.toFixed(2)} جنيه
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Order Items */}
+                    <div className="bg-white rounded-xl p-4 border border-gray-200">
+                      <h4 className="text-lg font-bold text-black mb-4 flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        <Package className="h-5 w-5" />
+                        عناصر الطلب ({selectedOrder.items.length})
+                      </h4>
+                      <div className="space-y-3">
+                        {selectedOrder.items.map((item, index) => (
+                          <div key={index} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 rounded-xl border border-gray-200">
+                            <div className="flex-1">
+                              {item.productImageUrl && (
+                                <a
+                                  href={item.productUrl || `/product/${item.productId}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block mb-2"
+                                >
+                                  <img
+                                    src={resolveImageUrl(item.productImageUrl)}
+                                    alt={item.productName}
+                                    className="w-20 h-20 object-cover rounded-lg border border-gray-300 hover:opacity-80 transition-opacity"
+                                  />
+                                </a>
+                              )}
+                              <div className="flex items-center gap-2 mb-2">
+                                <Package className="h-4 w-4 text-gray-400" />
+                                {item.productUrl ? (
+                                  <a
+                                    href={item.productUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-bold text-black hover:text-green-600 underline transition-colors"
+                                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                                  >
+                                    {item.productName}
+                                  </a>
+                                ) : (
+                                  <p className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{item.productName}</p>
+                                )}
+                              </div>
+                              <div className="grid grid-cols-2 gap-2 text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                <p><span className="font-semibold">كود المنتج:</span> {item.productCode}</p>
+                                <p><span className="font-semibold">الكمية:</span> {item.quantity}</p>
+                                {item.size && <p><span className="font-semibold">المقاس:</span> {item.size}</p>}
+                                {item.color && <p><span className="font-semibold">اللون:</span> {item.color}</p>}
+                                {item.extensionsDetails && item.extensionsDetails.length > 0 && (
+                                  <div className="col-span-2">
+                                    <p className="font-semibold text-green-600 mb-1">إضافات:</p>
+                                    <ul className="list-disc list-inside text-xs text-gray-600">
+                                      {item.extensionsDetails.map((ext) => (
+                                        <li key={ext.id}>
+                                          {ext.name} (+{ext.additionalPrice} ج.م)
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="mt-3 sm:mt-0 sm:mr-4">
+                              <p className="font-bold text-black text-xl" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                {item.priceAtPurchase.toFixed(2)} جنيه
+                              </p>
+                              <p className="text-xs text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                الإجمالي: {(item.priceAtPurchase * item.quantity).toFixed(2)} جنيه
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {orderDetailsTab === 'payments' && (
+                  <PaymentTrackingPanel
+                    orderId={selectedOrder.id}
+                    onPaymentRecorded={() => getOrderDetails(selectedOrder.id)}
+                  />
+                )}
+
+                {orderDetailsTab === 'notes' && (
+                  <OrderNotesPanel orderId={selectedOrder.id} />
+                )}
+
+                {orderDetailsTab === 'history' && (
+                  <OrderHistoryPanel orderId={selectedOrder.id} />
+                )}
+              </div>
+
+              {showEditModal && (
+                <OrderEditModal
+                  order={selectedOrder}
+                  isOpen={showEditModal}
+                  onClose={() => setShowEditModal(false)}
+                  onSave={() => {
+                    getOrderDetails(selectedOrder.id);
+                  }}
+                />
+              )}
+
+              {/* Modal Footer */}
+              <div className="sticky bottom-0 bg-gray-50 p-6 border-t border-gray-200">
+                <button
+                  onClick={() => setShowOrderDetails(false)}
+                  className="w-full bg-primary-green text-black py-3 px-6 rounded-xl hover:bg-primary-green-dark transition-all font-semibold shadow-lg"
+                  style={{ fontFamily: 'Tajawal, sans-serif' }}
+                >
+                  إغلاق
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Customer Orders Modal */}
-      {showCustomerOrders && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto border border-gray-200">
-            <div className="sticky top-0 bg-gray-50 p-6 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-2xl font-bold text-black flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                <User className="h-6 w-6" />
-                طلبات العميل ({customerOrders.length})
-              </h3>
-              <button
-                onClick={() => setShowCustomerOrders(false)}
-                className="text-gray-500 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg transition-all"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
+      {
+        showCustomerOrders && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto border border-gray-200">
+              <div className="sticky top-0 bg-gray-50 p-6 border-b border-gray-200 flex justify-between items-center">
+                <h3 className="text-2xl font-bold text-black flex items-center gap-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                  <User className="h-6 w-6" />
+                  طلبات العميل ({customerOrders.length})
+                </h3>
+                <button
+                  onClick={() => setShowCustomerOrders(false)}
+                  className="text-gray-500 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg transition-all"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
 
-            <div className="p-6">
-              {customerOrders.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="text-6xl mb-4">📦</div>
-                  <p className="text-xl font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>لا توجد طلبات لهذا العميل</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {customerOrders.map((order) => (
-                    <div key={order.id} className="bg-white rounded-xl p-4 border border-gray-200 hover:shadow-lg transition-all">
-                      <div className="flex flex-wrap justify-between items-center gap-4">
-                        <div className="flex items-center gap-3">
-                          <ShoppingCart className="h-5 w-5 text-gray-400" />
-                          <div>
-                            <p className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>#{order.orderNumber}</p>
-                            <p className="text-xs text-gray-500 flex items-center gap-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                              <Calendar className="h-3 w-3" />
-                              {formatDate(order.date)}
-                            </p>
+              <div className="p-6">
+                {customerOrders.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="text-6xl mb-4">📦</div>
+                    <p className="text-xl font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>لا توجد طلبات لهذا العميل</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {customerOrders.map((order) => (
+                      <div key={order.id} className="bg-white rounded-xl p-4 border border-gray-200 hover:shadow-lg transition-all">
+                        <div className="flex flex-wrap justify-between items-center gap-4">
+                          <div className="flex items-center gap-3">
+                            <ShoppingCart className="h-5 w-5 text-gray-400" />
+                            <div>
+                              <p className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>#{order.orderNumber}</p>
+                              <p className="text-xs text-gray-500 flex items-center gap-1" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                <Calendar className="h-3 w-3" />
+                                {formatDate(order.date)}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(order.status)}`} style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                            {getStatusText(order.status)}
-                          </span>
-                          <div className="flex items-center gap-1">
-                            <DollarSign className="h-4 w-4 text-green-600" />
-                            <span className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.total.toFixed(2)} جنيه</span>
+                          <div className="flex items-center gap-3">
+                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(order.status)}`} style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                              {getStatusText(order.status)}
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <DollarSign className="h-4 w-4 text-green-600" />
+                              <span className="font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.total.toFixed(2)} جنيه</span>
+                            </div>
                           </div>
+                          <button
+                            onClick={() => {
+                              setSelectedOrder(order);
+                              setShowCustomerOrders(false);
+                              setShowOrderDetails(true);
+                            }}
+                            className="text-gray-500 hover:text-green-600 p-2 hover:bg-gray-100 rounded-lg transition-all"
+                          >
+                            <Eye className="h-5 w-5" />
+                          </button>
                         </div>
-                        <button
-                          onClick={() => {
-                            setSelectedOrder(order);
-                            setShowCustomerOrders(false);
-                            setShowOrderDetails(true);
-                          }}
-                          className="text-gray-500 hover:text-green-600 p-2 hover:bg-gray-100 rounded-lg transition-all"
-                        >
-                          <Eye className="h-5 w-5" />
-                        </button>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-            <div className="sticky bottom-0 bg-gray-50 p-6 border-t border-gray-200">
-              <button
-                onClick={() => setShowCustomerOrders(false)}
-                className="w-full bg-primary-green text-black py-3 px-6 rounded-xl hover:bg-primary-green-dark transition-all font-semibold shadow-lg"
-                style={{ fontFamily: 'Tajawal, sans-serif' }}
-              >
-                إغلاق
-              </button>
+              <div className="sticky bottom-0 bg-gray-50 p-6 border-t border-gray-200">
+                <button
+                  onClick={() => setShowCustomerOrders(false)}
+                  className="w-full bg-primary-green text-black py-3 px-6 rounded-xl hover:bg-primary-green-dark transition-all font-semibold shadow-lg"
+                  style={{ fontFamily: 'Tajawal, sans-serif' }}
+                >
+                  إغلاق
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 
