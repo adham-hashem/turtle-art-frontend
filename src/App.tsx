@@ -23,6 +23,8 @@ import ExternalBrowserGuard from './components/ExternalBrowserGuard';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 import { onForegroundMessage } from './services/firebase';
 import { Unsubscribe } from 'firebase/messaging';
@@ -277,6 +279,8 @@ function AppContent() {
 
         <ToastContainer />
         <PWAInstallPrompt />
+        <Analytics />
+        <SpeedInsights />
       </Router>
     </>
   );
