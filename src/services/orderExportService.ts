@@ -1,9 +1,4 @@
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
 import type { TDocumentDefinitions, Content, TableCell } from 'pdfmake/interfaces';
-
-// Initialize pdfMake with fonts
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 export interface OrderItemForExport {
     productName: string;
@@ -56,7 +51,21 @@ const paymentMethodTranslations: { [key: string]: string } = {
     '2': 'Online Payment'
 };
 
-export const generateOrdersPDF = (orders: OrderForExport[], filterInfo?: string) => {
+export const generateOrdersPDF = async (orders: OrderForExport[], filterInfo?: string) => {
+    // Dynamically import pdfmake to avoid vfs issues
+    const pdfMakeModule = await import('pdfmake/build/pdfmake');
+    const pdfFontsModule = await import('pdfmake/build/vfs_fonts');
+
+    const pdfMake = pdfMakeModule.default || pdfMakeModule;
+    const pdfFonts = pdfFontsModule.default || pdfFontsModule;
+
+    // Set fonts
+    if (pdfFonts && pdfFonts.pdfMake) {
+        pdfMake.vfs = pdfFonts.pdfMake.vfs;
+    } else if (pdfFonts && pdfFonts.vfs) {
+        pdfMake.vfs = pdfFonts.vfs;
+    }
+
     const exportDate = new Date().toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
