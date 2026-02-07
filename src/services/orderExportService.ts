@@ -1,5 +1,4 @@
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import html2pdf from 'html2pdf.js';
 
 export interface OrderItemForExport {
     productName: string;
@@ -28,250 +27,299 @@ export interface OrderForExport {
     customerNotes?: CustomerNoteForExport[];
 }
 
-// Status translations to English
+// Status translations to Arabic
 const statusTranslations: { [key: string]: string } = {
-    'UnderReview': 'Under Review',
-    'Confirmed': 'Confirmed',
-    'Shipped': 'Shipped',
-    'Delivered': 'Delivered',
-    'Cancelled': 'Cancelled',
-    '0': 'Under Review',
-    '1': 'Confirmed',
-    '2': 'Shipped',
-    '3': 'Delivered',
-    '4': 'Cancelled'
+    'UnderReview': 'تحت المراجعة',
+    'Confirmed': 'مؤكد',
+    'Shipped': 'تم الشحن',
+    'Delivered': 'تم التسليم',
+    'Cancelled': 'ملغي',
+    '0': 'تحت المراجعة',
+    '1': 'مؤكد',
+    '2': 'تم الشحن',
+    '3': 'تم التسليم',
+    '4': 'ملغي'
 };
 
-// Payment method translations to English
+// Payment method translations to Arabic
 const paymentMethodTranslations: { [key: string]: string } = {
-    'InstaPay': 'InstaPay',
-    'VodafoneCash': 'Vodafone Cash',
-    'OnlinePayment': 'Online Payment',
-    '0': 'InstaPay',
-    '1': 'Vodafone Cash',
-    '2': 'Online Payment'
+    'InstaPay': 'إنستاباي',
+    'VodafoneCash': 'فودافون كاش',
+    'OnlinePayment': 'دفع إلكتروني',
+    '0': 'إنستاباي',
+    '1': 'فودافون كاش',
+    '2': 'دفع إلكتروني'
 };
 
 export const generateOrdersPDF = (orders: OrderForExport[], filterInfo?: string) => {
-    const doc = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-    });
+    // Create HTML content for the PDF
+    const htmlContent = `
+        <!DOCTYPE html>
+        <html dir="rtl" lang="ar">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+                
+                * {
+                    font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    margin: 0;
+                    padding: 20px;
+                    background: white;
+                    color: #333;
+                    direction: rtl;
+                }
+                
+                .header {
+                    background: linear-gradient(135deg, #8B7355 0%, #6B5845 100%);
+                    color: white;
+                    padding: 30px;
+                    text-align: center;
+                    border-radius: 10px;
+                    margin-bottom: 30px;
+                }
+                
+                .header h1 {
+                    margin: 0 0 10px 0;
+                    font-size: 32px;
+                    font-weight: 700;
+                }
+                
+                .header p {
+                    margin: 5px 0;
+                    font-size: 14px;
+                    opacity: 0.95;
+                }
+                
+                .order-card {
+                    border: 2px solid #E5DCC5;
+                    border-radius: 12px;
+                    padding: 20px;
+                    margin-bottom: 25px;
+                    background: white;
+                    page-break-inside: avoid;
+                }
+                
+                .order-header {
+                    background: #E5DCC5;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    margin: -20px -20px 20px -20px;
+                }
+                
+                .order-number {
+                    font-size: 20px;
+                    font-weight: 700;
+                    color: #8B7355;
+                    margin: 0;
+                }
+                
+                .info-row {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 8px;
+                    font-size: 14px;
+                }
+                
+                .info-label {
+                    font-weight: 600;
+                    color: #555;
+                }
+                
+                .info-value {
+                    color: #333;
+                }
+                
+                .section-title {
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #8B7355;
+                    margin: 20px 0 10px 0;
+                    padding-bottom: 8px;
+                    border-bottom: 2px solid #E5DCC5;
+                }
+                
+                .items-list {
+                    list-style: none;
+                    padding: 0;
+                    margin: 10px 0;
+                }
+                
+                .item {
+                    padding: 10px;
+                    background: #FAFAF8;
+                    border-radius: 6px;
+                    margin-bottom: 8px;
+                    font-size: 13px;
+                }
+                
+                .total-section {
+                    background: #F5F5F0;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin-top: 15px;
+                }
+                
+                .total-amount {
+                    font-size: 20px;
+                    font-weight: 700;
+                    color: #8B7355;
+                    text-align: center;
+                }
+                
+                .notes-section {
+                    background: #FFFEF0;
+                    border: 2px solid #F0E68C;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin-top: 15px;
+                }
+                
+                .note-item {
+                    padding: 10px;
+                    margin-bottom: 8px;
+                    background: white;
+                    border-radius: 6px;
+                    border-right: 3px solid #8B7355;
+                    font-size: 13px;
+                }
+                
+                .note-date {
+                    color: #888;
+                    font-size: 11px;
+                    margin-top: 5px;
+                }
+                
+                .page-break {
+                    page-break-after: always;
+                }
+                
+                @media print {
+                    body {
+                        padding: 10px;
+                    }
+                    .order-card {
+                        page-break-inside: avoid;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>🐢 Turtle Art - تقرير الطلبات</h1>
+                <p>تاريخ التصدير: ${new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                ${filterInfo ? `<p>الفلاتر المطبقة: ${filterInfo}</p>` : ''}
+            </div>
+            
+            ${orders.map((order, index) => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <h2 class="order-number">طلب رقم: ${order.orderNumber}</h2>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">اسم العميل:</span>
+                        <span class="info-value">${order.fullName}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">رقم الهاتف:</span>
+                        <span class="info-value">${order.phoneNumber}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">العنوان:</span>
+                        <span class="info-value">${order.address}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">المحافظة:</span>
+                        <span class="info-value">${order.governorate}</span>
+                    </div>
+                    
+                    <h3 class="section-title">المنتجات</h3>
+                    <ul class="items-list">
+                        ${order.items.map(item => `
+                            <li class="item">
+                                <strong>${item.productName}</strong>
+                                <br>
+                                الكمية: ${item.quantity} × ${item.priceAtPurchase.toFixed(2)} جنيه = ${(item.quantity * item.priceAtPurchase).toFixed(2)} جنيه
+                                ${item.size ? `<br>المقاس: ${item.size}` : ''}
+                            </li>
+                        `).join('')}
+                    </ul>
+                    
+                    <div class="total-section">
+                        <div class="total-amount">الإجمالي: ${order.total.toFixed(2)} جنيه</div>
+                        <div class="info-row" style="margin-top: 10px;">
+                            <span class="info-label">الحالة:</span>
+                            <span class="info-value">${statusTranslations[order.status] || order.status}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">طريقة الدفع:</span>
+                            <span class="info-value">${paymentMethodTranslations[order.paymentMethod] || order.paymentMethod}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">تاريخ الطلب:</span>
+                            <span class="info-value">${new Date(order.date).toLocaleDateString('ar-EG')}</span>
+                        </div>
+                    </div>
+                    
+                    ${order.customerNotes && order.customerNotes.length > 0 ? `
+                        <div class="notes-section">
+                            <h3 class="section-title">📝 ملاحظات للعميل</h3>
+                            ${order.customerNotes.map(note => `
+                                <div class="note-item">
+                                    ${note.noteText}
+                                    <div class="note-date">${new Date(note.createdAt).toLocaleDateString('ar-EG')}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+                ${index < orders.length - 1 && (index + 1) % 2 === 0 ? '<div class="page-break"></div>' : ''}
+            `).join('')}
+        </body>
+        </html>
+    `;
 
-    // Brand colors
-    const primaryColor: [number, number, number] = [139, 115, 85]; // #8B7355
-    const accentColor: [number, number, number] = [229, 220, 197]; // #E5DCC5
-    const textColor: [number, number, number] = [0, 0, 0];
+    // Create a temporary container
+    const container = document.createElement('div');
+    container.innerHTML = htmlContent;
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    document.body.appendChild(container);
 
-    let yPosition = 20;
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 15;
-
-    // Helper function to add a new page
-    const addNewPage = () => {
-        doc.addPage();
-        yPosition = 20;
-        addPageFooter();
-    };
-
-    // Helper function to check if we need a new page
-    const checkPageBreak = (requiredSpace: number) => {
-        if (yPosition + requiredSpace > pageHeight - 30) {
-            addNewPage();
-            return true;
+    // Configure html2pdf options
+    const options = {
+        margin: 10,
+        filename: `Turtle_Art_Orders_${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            letterRendering: true
+        },
+        jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait'
         }
-        return false;
     };
 
-    // Add page footer
-    const addPageFooter = () => {
-        const pageCount = (doc as any).internal.getNumberOfPages();
-        doc.setFontSize(8);
-        doc.setTextColor(...textColor);
-        doc.text(
-            `Page ${pageCount}`,
-            pageWidth / 2,
-            pageHeight - 10,
-            { align: 'center' }
-        );
-        doc.text(
-            `Generated: ${new Date().toLocaleString('en-US')}`,
-            pageWidth - margin,
-            pageHeight - 10,
-            { align: 'right' }
-        );
-    };
-
-    // Add header
-    doc.setFillColor(...primaryColor);
-    doc.rect(0, 0, pageWidth, 35, 'F');
-
-    // Title
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Turtle Art - Orders Export', pageWidth / 2, 15, { align: 'center' });
-
-    // Export date
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    const exportDate = new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-    doc.text(`Export Date: ${exportDate}`, pageWidth / 2, 25, { align: 'center' });
-
-    // Filter info
-    if (filterInfo) {
-        doc.setFontSize(9);
-        doc.text(`Filters Applied: ${filterInfo}`, pageWidth / 2, 31, { align: 'center' });
-    }
-
-    yPosition = 45;
-
-    // Process each order
-    orders.forEach((order, index) => {
-        checkPageBreak(60);
-
-        // Order header box
-        doc.setFillColor(...accentColor);
-        doc.roundedRect(margin, yPosition, pageWidth - 2 * margin, 12, 2, 2, 'F');
-
-        // Order number
-        doc.setTextColor(...primaryColor);
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`Order: ${order.orderNumber}`, margin + 5, yPosition + 8);
-
-        yPosition += 18;
-
-        // Customer info section
-        doc.setTextColor(...textColor);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-
-        const customerInfo = [
-            `Customer: ${order.fullName}`,
-            `Phone: ${order.phoneNumber}`,
-            `Address: ${order.address}`,
-            `Governorate: ${order.governorate}`
-        ];
-
-        customerInfo.forEach(info => {
-            doc.text(info, margin + 5, yPosition);
-            yPosition += 6;
+    // Generate PDF
+    html2pdf()
+        .set(options)
+        .from(container)
+        .save()
+        .then(() => {
+            // Clean up
+            document.body.removeChild(container);
+        })
+        .catch((error: Error) => {
+            console.error('PDF generation error:', error);
+            document.body.removeChild(container);
+            alert('حدث خطأ أثناء إنشاء PDF. يرجى المحاولة مرة أخرى.');
         });
-
-        yPosition += 3;
-
-        // Divider line
-        doc.setDrawColor(...accentColor);
-        doc.setLineWidth(0.5);
-        doc.line(margin, yPosition, pageWidth - margin, yPosition);
-
-        yPosition += 8;
-
-        // Items section
-        doc.setFont('helvetica', 'bold');
-        doc.text('Products:', margin + 5, yPosition);
-        yPosition += 6;
-
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
-
-        order.items.forEach(item => {
-            const itemTotal = item.priceAtPurchase * item.quantity;
-            let itemText = `- ${item.productName} x${item.quantity} @ ${item.priceAtPurchase} EGP = ${itemTotal} EGP`;
-
-            if (item.size) {
-                itemText += ` (Size: ${item.size})`;
-            }
-
-            doc.text(itemText, margin + 10, yPosition);
-            yPosition += 5;
-        });
-
-        yPosition += 5;
-
-        // Separator
-        doc.setLineWidth(0.3);
-        doc.line(margin, yPosition, pageWidth - margin, yPosition);
-        yPosition += 6;
-
-        // Order totals and info
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`Total: ${order.total.toFixed(2)} EGP`, margin + 5, yPosition);
-        yPosition += 6;
-
-        doc.setFont('helvetica', 'normal');
-        const statusText = statusTranslations[order.status] || order.status;
-        const paymentText = paymentMethodTranslations[order.paymentMethod] || order.paymentMethod;
-
-        doc.text(`Status: ${statusText}`, margin + 5, yPosition);
-        yPosition += 5;
-        doc.text(`Payment: ${paymentText}`, margin + 5, yPosition);
-        yPosition += 5;
-
-        const orderDate = new Date(order.date).toLocaleDateString('en-US');
-        doc.text(`Date: ${orderDate}`, margin + 5, yPosition);
-        yPosition += 8;
-
-        // Customer notes section (if any)
-        if (order.customerNotes && order.customerNotes.length > 0) {
-            checkPageBreak(30);
-
-            doc.setFillColor(255, 252, 240); // Light yellow background
-            const notesHeight = 8 + (order.customerNotes.length * 6);
-            doc.roundedRect(margin, yPosition, pageWidth - 2 * margin, notesHeight, 2, 2, 'F');
-
-            doc.setTextColor(...primaryColor);
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Customer Notes:', margin + 5, yPosition + 6);
-            yPosition += 10;
-
-            doc.setTextColor(...textColor);
-            doc.setFontSize(9);
-            doc.setFont('helvetica', 'italic');
-
-            order.customerNotes.forEach(note => {
-                const noteDate = new Date(note.createdAt).toLocaleDateString('en-US');
-                const noteText = `- "${note.noteText}" (${noteDate})`;
-                doc.text(noteText, margin + 10, yPosition);
-                yPosition += 6;
-            });
-
-            yPosition += 5;
-        }
-
-        // Spacing between orders
-        yPosition += 10;
-
-        // Add separator between orders (except for last one)
-        if (index < orders.length - 1) {
-            checkPageBreak(15);
-            doc.setDrawColor(...primaryColor);
-            doc.setLineWidth(0.8);
-            doc.line(margin + 40, yPosition, pageWidth - margin - 40, yPosition);
-            yPosition += 15;
-        }
-    });
-
-    // Add footer to all pages
-    const totalPages = (doc as any).internal.getNumberOfPages();
-    for (let i = 1; i <= totalPages; i++) {
-        doc.setPage(i);
-        addPageFooter();
-    }
-
-    // Generate filename
-    const timestamp = new Date().toISOString().split('T')[0];
-    const filename = `Turtle_Art_Orders_${timestamp}.pdf`;
-
-    // Download PDF
-    doc.save(filename);
 };
