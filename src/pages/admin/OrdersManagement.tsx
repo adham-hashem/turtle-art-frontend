@@ -408,6 +408,110 @@ const OrdersManagement: React.FC = () => {
     }
   };
 
+  // Export to CSV
+  const handleExportCSV = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('accessToken');
+
+      let ordersToExport: any[] = [];
+
+      // Check if any filters are applied
+      const hasFilters = statusFilter !== 'all' ||
+        paymentMethodFilter !== 'all' ||
+        searchTerm.trim() !== '' ||
+        (useAdvancedFilters && (dateFrom || dateTo || minTotal || maxTotal));
+
+      if (hasFilters) {
+        const filterPayload: any = {
+          pageNumber: 1,
+          pageSize: 10000
+        };
+
+        if (statusFilter !== 'all') {
+          const statusMap: { [key: string]: number } = {
+            'UnderReview': 0, 'Confirmed': 1, 'Shipped': 2, 'Delivered': 3, 'Cancelled': 4
+          };
+          filterPayload.status = statusMap[statusFilter];
+        }
+
+        if (paymentMethodFilter !== 'all') {
+          const paymentMap: { [key: string]: number } = {
+            'InstaPay': 0, 'VodafoneCash': 1, 'OnlinePayment': 2
+          };
+          filterPayload.paymentMethod = paymentMap[paymentMethodFilter];
+        }
+
+        if (useAdvancedFilters) {
+          if (dateFrom) filterPayload.dateFrom = dateFrom;
+          if (dateTo) filterPayload.dateTo = dateTo;
+          if (minTotal) filterPayload.minTotal = parseFloat(minTotal);
+          if (maxTotal) filterPayload.maxTotal = parseFloat(maxTotal);
+        }
+
+        if (searchTerm.trim()) {
+          filterPayload.searchTerm = searchTerm.trim();
+        }
+
+        const response = await fetch(`${apiUrl}/api/orders/filter`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(filterPayload)
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch filtered orders');
+        const data = await response.json();
+        ordersToExport = data.items;
+      } else {
+        const response = await fetch(`${apiUrl}/api/orders?pageNumber=1&pageSize=10000`, {
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) throw new Error('Failed to fetch orders');
+        const data = await response.json();
+        ordersToExport = data.items;
+      }
+
+      // Generate CSV
+      const headers = ['Order #', 'Customer', 'Phone', 'Governorate', 'Address', 'Status', 'Total', 'Date', 'Payment', 'Items'];
+      const csvRows = [headers.join(',')];
+
+      for (const order of ordersToExport) {
+        const itemsStr = order.items?.map((i: any) => `${i.productName} (${i.quantity})`).join('; ') || '';
+        const row = [
+          order.orderNumber,
+          `"${order.fullName || ''}"`,
+          `"${order.phoneNumber || ''}"`,
+          `"${order.governorate || ''}"`,
+          `"${order.address || ''}"`,
+          order.status,
+          order.total,
+          new Date(order.date).toLocaleDateString(),
+          order.paymentMethod,
+          `"${itemsStr}"`
+        ];
+        csvRows.push(row.join(','));
+      }
+
+      const csvContent = '\uFEFF' + csvRows.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `orders_export_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      alert('Failed to export CSV');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Export to PDF
   const handleExportPDF = async () => {
     try {
@@ -950,14 +1054,25 @@ const OrdersManagement: React.FC = () => {
           </button>
 
           <button
+            onClick={handleExportCSV}
+            className="px-6 py-3 rounded-xl transition-all flex items-center justify-center font-bold shadow-md bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg"
+            style={{ fontFamily: 'Tajawal, sans-serif' }}
+            disabled={loading}
+            title="تصدير إلى Excel/CSV"
+          >
+            <Download className="h-4 w-4 ml-2" />
+            CSV
+          </button>
+
+          <button
             onClick={handleExportPDF}
             className="px-6 py-3 rounded-xl transition-all flex items-center justify-center font-bold shadow-md bg-green-600 text-white hover:bg-green-700 hover:shadow-lg"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
             disabled={loading}
-            title="تصدير إلى PDF"
+            title="تصدير إلى PDF مع الملاحظات"
           >
             <Download className="h-4 w-4 ml-2" />
-            تصدير
+            PDF
           </button>
         </div>
 

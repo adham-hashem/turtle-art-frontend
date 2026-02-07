@@ -28,28 +28,28 @@ export interface OrderForExport {
     customerNotes?: CustomerNoteForExport[];
 }
 
-// Status translations
+// Status translations to English
 const statusTranslations: { [key: string]: string } = {
-    'UnderReview': 'تحت المراجعة',
-    'Confirmed': 'مؤكد',
-    'Shipped': 'تم الشحن',
-    'Delivered': 'تم التسليم',
-    'Cancelled': 'ملغي',
-    '0': 'تحت المراجعة',
-    '1': 'مؤكد',
-    '2': 'تم الشحن',
-    '3': 'تم التسليم',
-    '4': 'ملغي'
+    'UnderReview': 'Under Review',
+    'Confirmed': 'Confirmed',
+    'Shipped': 'Shipped',
+    'Delivered': 'Delivered',
+    'Cancelled': 'Cancelled',
+    '0': 'Under Review',
+    '1': 'Confirmed',
+    '2': 'Shipped',
+    '3': 'Delivered',
+    '4': 'Cancelled'
 };
 
-// Payment method translations
+// Payment method translations to English
 const paymentMethodTranslations: { [key: string]: string } = {
-    'InstaPay': 'إنستاباي',
-    'VodafoneCash': 'فودافون كاش',
-    'OnlinePayment': 'دفع إلكتروني',
-    '0': 'إنستاباي',
-    '1': 'فودافون كاش',
-    '2': 'دفع إلكتروني'
+    'InstaPay': 'InstaPay',
+    'VodafoneCash': 'Vodafone Cash',
+    'OnlinePayment': 'Online Payment',
+    '0': 'InstaPay',
+    '1': 'Vodafone Cash',
+    '2': 'Online Payment'
 };
 
 export const generateOrdersPDF = (orders: OrderForExport[], filterInfo?: string) => {
@@ -97,7 +97,7 @@ export const generateOrdersPDF = (orders: OrderForExport[], filterInfo?: string)
             { align: 'center' }
         );
         doc.text(
-            `Generated: ${new Date().toLocaleString('ar-EG')}`,
+            `Generated: ${new Date().toLocaleString('en-US')}`,
             pageWidth - margin,
             pageHeight - 10,
             { align: 'right' }
@@ -112,29 +112,28 @@ export const generateOrdersPDF = (orders: OrderForExport[], filterInfo?: string)
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text('🐢 Turtle Art - تصدير الطلبات', pageWidth / 2, 15, { align: 'center' });
+    doc.text('Turtle Art - Orders Export', pageWidth / 2, 15, { align: 'center' });
 
     // Export date
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    const exportDate = new Date().toLocaleDateString('ar-EG', {
+    const exportDate = new Date().toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
     });
-    doc.text(`تاريخ التصدير: ${exportDate}`, pageWidth / 2, 25, { align: 'center' });
+    doc.text(`Export Date: ${exportDate}`, pageWidth / 2, 25, { align: 'center' });
 
     // Filter info
     if (filterInfo) {
         doc.setFontSize(9);
-        doc.text(`${filterInfo}`, pageWidth / 2, 31, { align: 'center' });
+        doc.text(`Filters Applied: ${filterInfo}`, pageWidth / 2, 31, { align: 'center' });
     }
 
     yPosition = 45;
 
     // Process each order
     orders.forEach((order, index) => {
-        // Check if we need a new page for this order
         checkPageBreak(60);
 
         // Order header box
@@ -145,7 +144,7 @@ export const generateOrdersPDF = (orders: OrderForExport[], filterInfo?: string)
         doc.setTextColor(...primaryColor);
         doc.setFontSize(14);
         doc.setFont('helvetica', 'bold');
-        doc.text(`طلب رقم: ${order.orderNumber}`, pageWidth - margin - 5, yPosition + 8, { align: 'right' });
+        doc.text(`Order: ${order.orderNumber}`, margin + 5, yPosition + 8);
 
         yPosition += 18;
 
@@ -155,14 +154,14 @@ export const generateOrdersPDF = (orders: OrderForExport[], filterInfo?: string)
         doc.setFont('helvetica', 'normal');
 
         const customerInfo = [
-            `العميل: ${order.fullName}`,
-            `الهاتف: ${order.phoneNumber}`,
-            `العنوان: ${order.address}`,
-            `المحافظة: ${order.governorate}`
+            `Customer: ${order.fullName}`,
+            `Phone: ${order.phoneNumber}`,
+            `Address: ${order.address}`,
+            `Governorate: ${order.governorate}`
         ];
 
         customerInfo.forEach(info => {
-            doc.text(info, pageWidth - margin - 5, yPosition, { align: 'right' });
+            doc.text(info, margin + 5, yPosition);
             yPosition += 6;
         });
 
@@ -177,7 +176,7 @@ export const generateOrdersPDF = (orders: OrderForExport[], filterInfo?: string)
 
         // Items section
         doc.setFont('helvetica', 'bold');
-        doc.text('المنتجات:', pageWidth - margin - 5, yPosition, { align: 'right' });
+        doc.text('Products:', margin + 5, yPosition);
         yPosition += 6;
 
         doc.setFont('helvetica', 'normal');
@@ -185,13 +184,13 @@ export const generateOrdersPDF = (orders: OrderForExport[], filterInfo?: string)
 
         order.items.forEach(item => {
             const itemTotal = item.priceAtPurchase * item.quantity;
-            let itemText = `• ${item.productName} × ${item.quantity} @ ${item.priceAtPurchase} جنيه = ${itemTotal} جنيه`;
+            let itemText = `- ${item.productName} x${item.quantity} @ ${item.priceAtPurchase} EGP = ${itemTotal} EGP`;
 
             if (item.size) {
-                itemText += ` (المقاس: ${item.size})`;
+                itemText += ` (Size: ${item.size})`;
             }
 
-            doc.text(itemText, pageWidth - margin - 10, yPosition, { align: 'right' });
+            doc.text(itemText, margin + 10, yPosition);
             yPosition += 5;
         });
 
@@ -205,20 +204,20 @@ export const generateOrdersPDF = (orders: OrderForExport[], filterInfo?: string)
         // Order totals and info
         doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
-        doc.text(`الإجمالي: ${order.total.toFixed(2)} جنيه`, pageWidth - margin - 5, yPosition, { align: 'right' });
+        doc.text(`Total: ${order.total.toFixed(2)} EGP`, margin + 5, yPosition);
         yPosition += 6;
 
         doc.setFont('helvetica', 'normal');
         const statusText = statusTranslations[order.status] || order.status;
         const paymentText = paymentMethodTranslations[order.paymentMethod] || order.paymentMethod;
 
-        doc.text(`الحالة: ${statusText}`, pageWidth - margin - 5, yPosition, { align: 'right' });
+        doc.text(`Status: ${statusText}`, margin + 5, yPosition);
         yPosition += 5;
-        doc.text(`طريقة الدفع: ${paymentText}`, pageWidth - margin - 5, yPosition, { align: 'right' });
+        doc.text(`Payment: ${paymentText}`, margin + 5, yPosition);
         yPosition += 5;
 
-        const orderDate = new Date(order.date).toLocaleDateString('ar-EG');
-        doc.text(`التاريخ: ${orderDate}`, pageWidth - margin - 5, yPosition, { align: 'right' });
+        const orderDate = new Date(order.date).toLocaleDateString('en-US');
+        doc.text(`Date: ${orderDate}`, margin + 5, yPosition);
         yPosition += 8;
 
         // Customer notes section (if any)
@@ -232,7 +231,7 @@ export const generateOrdersPDF = (orders: OrderForExport[], filterInfo?: string)
             doc.setTextColor(...primaryColor);
             doc.setFontSize(10);
             doc.setFont('helvetica', 'bold');
-            doc.text('📝 ملاحظات للعميل:', pageWidth - margin - 5, yPosition + 6, { align: 'right' });
+            doc.text('Customer Notes:', margin + 5, yPosition + 6);
             yPosition += 10;
 
             doc.setTextColor(...textColor);
@@ -240,9 +239,9 @@ export const generateOrdersPDF = (orders: OrderForExport[], filterInfo?: string)
             doc.setFont('helvetica', 'italic');
 
             order.customerNotes.forEach(note => {
-                const noteDate = new Date(note.createdAt).toLocaleDateString('ar-EG');
-                const noteText = `• "${note.noteText}" (${noteDate})`;
-                doc.text(noteText, pageWidth - margin - 10, yPosition, { align: 'right' });
+                const noteDate = new Date(note.createdAt).toLocaleDateString('en-US');
+                const noteText = `- "${note.noteText}" (${noteDate})`;
+                doc.text(noteText, margin + 10, yPosition);
                 yPosition += 6;
             });
 
