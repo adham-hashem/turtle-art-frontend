@@ -414,45 +414,85 @@ const OrdersManagement: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
 
-      // Build query string based on current filters but with large page size
-      const queryParams = new URLSearchParams();
-      queryParams.append('pageNumber', '1');
-      queryParams.append('pageSize', '10000'); // Export all
-      if (statusFilter !== 'all') queryParams.append('status', statusFilter);
-      if (searchTerm) queryParams.append('search', searchTerm);
-
-      // Add advanced filters if applied
-      if (advancedFilter) {
-        // Assuming API supports these via query params or we need to use the POST endpoint if it's "GetFilteredOrders"
-        // Wait, fetchOrders usually calls GET /api/orders.
-        // But fetchFilteredOrders calls POST /api/orders/filtered.
-        // I need to check which one is active.
-        // If filtersApplied state is true, we use the filter endpoint.
-      }
-
       let ordersToExport: any[] = [];
 
-      if (filtersApplied && advancedFilter) {
+      // Check if any filters are applied
+      const hasFilters = statusFilter !== 'all' ||
+        paymentMethodFilter !== 'all' ||
+        searchTerm.trim() !== '' ||
+        (useAdvancedFilters && (dateFrom || dateTo || minTotal || maxTotal));
+
+      if (hasFilters) {
+        // Build filter payload for POST /api/orders/filter endpoint
+        const filterPayload: any = {
+          pageNumber: 1,
+          pageSize: 10000
+        };
+
+        // Add status filter
+        if (statusFilter !== 'all') {
+          const statusMap: { [key: string]: number } = {
+            'UnderReview': 0,
+            'Confirmed': 1,
+            'Shipped': 2,
+            'Delivered': 3,
+            'Cancelled': 4
+          };
+          filterPayload.status = statusMap[statusFilter];
+        }
+
+        // Add payment method filter
+        if (paymentMethodFilter !== 'all') {
+          const paymentMap: { [key: string]: number } = {
+            'InstaPay': 0,
+            'VodafoneCash': 1,
+            'OnlinePayment': 2
+          };
+          filterPayload.paymentMethod = paymentMap[paymentMethodFilter];
+        }
+
+        // Add advanced filters if enabled
+        if (useAdvancedFilters) {
+          if (dateFrom) filterPayload.dateFrom = dateFrom;
+          if (dateTo) filterPayload.dateTo = dateTo;
+          if (minTotal) filterPayload.minTotal = parseFloat(minTotal);
+          if (maxTotal) filterPayload.maxTotal = parseFloat(maxTotal);
+        }
+
+        // Add search term
+        if (searchTerm.trim()) {
+          filterPayload.searchTerm = searchTerm.trim();
+        }
+
         // Use POST filtered endpoint
-        const response = await fetch(`${apiUrl}/api/orders/filtered`, {
+        const response = await fetch(`${apiUrl}/api/orders/filter`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({
-            ...advancedFilter,
-            pageNumber: 1,
-            pageSize: 10000
-          })
+          body: JSON.stringify(filterPayload)
         });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch filtered orders for export');
+        }
+
         const data = await response.json();
         ordersToExport = data.items;
       } else {
-        // Use GET all endpoint
-        const response = await fetch(`${apiUrl}/api/orders?${queryParams.toString()}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
+        // Use GET all orders endpoint
+        const response = await fetch(`${apiUrl}/api/orders?pageNumber=1&pageSize=10000`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch orders for export');
+        }
+
         const data = await response.json();
         ordersToExport = data.items;
       }
