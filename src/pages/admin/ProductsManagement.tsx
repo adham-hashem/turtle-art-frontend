@@ -1118,7 +1118,7 @@ const ProductsManagement: React.FC = () => {
                         key={key}
                         onClick={() => switchTab(key)}
                         className={`px-3 py-2 rounded-lg border text-sm transition-colors ${activeTab === key
-                          ? 'bg-primary-green text-black border-primary-green'
+                          ? 'bg-primary-green text-white border-primary-green'
                           : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
                           }`}
                         style={{ fontFamily: 'Tajawal, sans-serif' }}

@@ -474,11 +474,39 @@ const OrdersManagement: React.FC = () => {
         ordersToExport = data.items;
       }
 
-      // Generate CSV
-      const headers = ['Order #', 'Customer', 'Phone', 'Governorate', 'Address', 'Status', 'Total', 'Date', 'Payment', 'Items'];
+      // Fetch customer-visible notes for each order
+      const ordersWithNotes = await Promise.all(
+        ordersToExport.map(async (order) => {
+          try {
+            const notesResponse = await fetch(`${apiUrl}/api/orders/${order.id}/notes`, {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+
+            if (notesResponse.ok) {
+              const allNotes = await notesResponse.json();
+              // Filter only customer-visible notes
+              const customerNotes = allNotes
+                .filter((note: any) => note.isCustomerVisible)
+                .map((note: any) => note.noteText)
+                .join(' | ');
+
+              return { ...order, customerNotes };
+            }
+            return { ...order, customerNotes: '' };
+          } catch (error) {
+            return { ...order, customerNotes: '' };
+          }
+        })
+      );
+
+      // Generate CSV with Customer Notes column
+      const headers = ['Order #', 'Customer', 'Phone', 'Governorate', 'Address', 'Status', 'Total', 'Date', 'Payment', 'Items', 'Customer Notes'];
       const csvRows = [headers.join(',')];
 
-      for (const order of ordersToExport) {
+      for (const order of ordersWithNotes) {
         const itemsStr = order.items?.map((i: any) => `${i.productName} (${i.quantity})`).join('; ') || '';
         const row = [
           order.orderNumber,
@@ -490,7 +518,8 @@ const OrdersManagement: React.FC = () => {
           order.total,
           new Date(order.date).toLocaleDateString(),
           order.paymentMethod,
-          `"${itemsStr}"`
+          `"${itemsStr}"`,
+          `"${order.customerNotes || ''}"`
         ];
         csvRows.push(row.join(','));
       }
@@ -1064,7 +1093,7 @@ const OrdersManagement: React.FC = () => {
             CSV
           </button>
 
-          <button
+          {/* <button
             onClick={handleExportPDF}
             className="px-6 py-3 rounded-xl transition-all flex items-center justify-center font-bold shadow-md bg-green-600 text-white hover:bg-green-700 hover:shadow-lg"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
@@ -1073,7 +1102,7 @@ const OrdersManagement: React.FC = () => {
           >
             <Download className="h-4 w-4 ml-2" />
             PDF
-          </button>
+          </button> */}
         </div>
 
         {/* Advanced Filters Row */}
