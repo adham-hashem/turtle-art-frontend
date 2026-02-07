@@ -408,8 +408,8 @@ const OrdersManagement: React.FC = () => {
     }
   };
 
-  // Export to CSV
-  const handleExportCSV = async () => {
+  // Export to PDF
+  const handleExportPDF = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('accessToken');
@@ -497,40 +497,94 @@ const OrdersManagement: React.FC = () => {
         ordersToExport = data.items;
       }
 
-      // Generate CSV
-      const headers = ['Order #', 'Customer', 'Phone', 'Governorate', 'Address', 'Status', 'Total', 'Date', 'Payment', 'Items'];
-      const csvRows = [headers.join(',')];
+      // Fetch customer-visible notes for each order
+      const ordersWithNotes = await Promise.all(
+        ordersToExport.map(async (order) => {
+          try {
+            const notesResponse = await fetch(`${apiUrl}/api/orders/${order.id}/notes`, {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            });
 
-      for (const order of ordersToExport) {
-        const itemsStr = order.items?.map((i: any) => `${i.productName} (${i.quantity})`).join('; ') || '';
-        const row = [
-          order.orderNumber,
-          `"${order.fullName || ''}"`,
-          `"${order.phoneNumber || ''}"`,
-          `"${order.governorate || ''}"`,
-          `"${order.address || ''}"`,
-          order.status,
-          order.total,
-          new Date(order.date).toLocaleDateString(),
-          order.paymentMethod,
-          `"${itemsStr}"`
-        ];
-        csvRows.push(row.join(','));
+            if (notesResponse.ok) {
+              const allNotes = await notesResponse.json();
+              // Filter only customer-visible notes
+              const customerNotes = allNotes
+                .filter((note: any) => note.isCustomerVisible)
+                .map((note: any) => ({
+                  noteText: note.noteText,
+                  createdAt: note.createdAt
+                }));
+
+              return {
+                ...order,
+                customerNotes: customerNotes.length > 0 ? customerNotes : undefined
+              };
+            }
+
+            return order;
+          } catch (error) {
+            console.error(`Failed to fetch notes for order ${order.orderNumber}:`, error);
+            return order;
+          }
+        })
+      );
+
+      // Build filter info string for PDF header
+      let filterInfo = '';
+      const filterParts: string[] = [];
+
+      if (statusFilter !== 'all') {
+        const statusLabels: { [key: string]: string } = {
+          'UnderReview': 'تحت المراجعة',
+          'Confirmed': 'مؤكد',
+          'Shipped': 'تم الشحن',
+          'Delivered': 'تم التسليم',
+          'Cancelled': 'ملغي'
+        };
+        filterParts.push(`الحالة: ${statusLabels[statusFilter]}`);
       }
 
-      const csvContent = '\uFEFF' + csvRows.join('\n'); // Add BOM for Excel
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `orders_export_${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      if (paymentMethodFilter !== 'all') {
+        const paymentLabels: { [key: string]: string } = {
+          'InstaPay': 'إنستاباي',
+          'VodafoneCash': 'فودافون كاش',
+          'OnlinePayment': 'دفع إلكتروني'
+        };
+        filterParts.push(`طريقة الدفع: ${paymentLabels[paymentMethodFilter]}`);
+      }
+
+      if (dateFrom || dateTo) {
+        const dateStr = dateFrom && dateTo
+          ? `${dateFrom} إلى ${dateTo}`
+          : dateFrom
+            ? `من ${dateFrom}`
+            : `حتى ${dateTo}`;
+        filterParts.push(`التاريخ: ${dateStr}`);
+      }
+
+      if (minTotal || maxTotal) {
+        const totalStr = minTotal && maxTotal
+          ? `${minTotal} - ${maxTotal} جنيه`
+          : minTotal
+            ? `أكثر من ${minTotal} جنيه`
+            : `أقل من ${maxTotal} جنيه`;
+        filterParts.push(`المبلغ: ${totalStr}`);
+      }
+
+      if (filterParts.length > 0) {
+        filterInfo = `الفلاتر المطبقة: ${filterParts.join(' | ')}`;
+      }
+
+      // Import and call PDF generation service
+      const { generateOrdersPDF } = await import('../../services/orderExportService');
+      generateOrdersPDF(ordersWithNotes, filterInfo || undefined);
 
     } catch (err) {
-      alert('Failed to export orders');
-      console.error(err);
+      alert('فشل تصدير الطلبات. يرجى المحاولة مرة أخرى.');
+      console.error('Export error:', err);
     } finally {
       setLoading(false);
     }
@@ -896,11 +950,11 @@ const OrdersManagement: React.FC = () => {
           </button>
 
           <button
-            onClick={handleExportCSV}
+            onClick={handleExportPDF}
             className="px-6 py-3 rounded-xl transition-all flex items-center justify-center font-bold shadow-md bg-green-600 text-white hover:bg-green-700 hover:shadow-lg"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
             disabled={loading}
-            title="تصدير إلى Excel/CSV"
+            title="تصدير إلى PDF"
           >
             <Download className="h-4 w-4 ml-2" />
             تصدير

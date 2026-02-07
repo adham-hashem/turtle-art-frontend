@@ -278,7 +278,7 @@ const OrderEditModal: React.FC<OrderEditModalProps> = ({ order, isOpen, onClose,
                     <button
                         onClick={handleSave}
                         disabled={loading}
-                        className="flex-1 px-6 py-3 bg-primary-green text-black font-semibold rounded-xl hover:bg-primary-green-dark transition-colors flex items-center justify-center shadow-sm"
+                        className="flex-1 px-6 py-3 bg-primary-green text-white font-semibold rounded-xl hover:bg-primary-green-dark transition-colors flex items-center justify-center shadow-sm"
                         style={{ fontFamily: 'Tajawal, sans-serif' }}
                     >
                         {loading ? (
