@@ -126,7 +126,7 @@ const PaymentTrackingPanel: React.FC<PaymentTrackingPanelProps> = ({ orderId, on
                 </h3>
                 <button
                     onClick={() => setShowAddModal(true)}
-                    className="bg-primary-green text-black px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-primary-green-dark transition-colors flex items-center"
+                    className="bg-primary-green text-white px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-primary-green-dark transition-colors flex items-center"
                     style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
                     <Plus className="w-4 h-4 ml-1" />

@@ -986,7 +986,7 @@ const OrdersManagement: React.FC = () => {
                 fetchOrders(1);
               }
             }}
-            className="flex-1 bg-primary-green text-black px-6 py-3 rounded-xl hover:bg-primary-green-dark transition-all flex items-center justify-center font-semibold shadow-md"
+            className="flex-1 bg-primary-green text-white px-6 py-3 rounded-xl hover:bg-primary-green-dark transition-all flex items-center justify-center font-semibold shadow-md"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
             disabled={loading}
           >
@@ -1954,7 +1954,7 @@ const OrdersManagement: React.FC = () => {
               <div className="sticky bottom-0 bg-gray-50 p-6 border-t border-gray-200">
                 <button
                   onClick={() => setShowOrderDetails(false)}
-                  className="w-full bg-primary-green text-black py-3 px-6 rounded-xl hover:bg-primary-green-dark transition-all font-semibold shadow-lg"
+                  className="w-full bg-primary-green text-white py-3 px-6 rounded-xl hover:bg-primary-green-dark transition-all font-semibold shadow-lg"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
                 >
                   إغلاق
