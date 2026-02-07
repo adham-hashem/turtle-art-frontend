@@ -25,7 +25,8 @@ import {
   Wallet,
   MessageSquare,
   History as HistoryIcon,
-  CreditCard
+  CreditCard,
+  Download
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import OrderEditModal from '../../components/admin/orders/OrderEditModal';
@@ -407,6 +408,94 @@ const OrdersManagement: React.FC = () => {
     }
   };
 
+  // Export to CSV
+  const handleExportCSV = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('accessToken');
+
+      // Build query string based on current filters but with large page size
+      const queryParams = new URLSearchParams();
+      queryParams.append('pageNumber', '1');
+      queryParams.append('pageSize', '10000'); // Export all
+      if (statusFilter !== 'all') queryParams.append('status', statusFilter);
+      if (searchQuery) queryParams.append('search', searchQuery);
+
+      // Add advanced filters if applied
+      if (advancedFilter) {
+        // Assuming API supports these via query params or we need to use the POST endpoint if it's "GetFilteredOrders"
+        // Wait, fetchOrders usually calls GET /api/orders.
+        // But fetchFilteredOrders calls POST /api/orders/filtered.
+        // I need to check which one is active.
+        // If filtersApplied state is true, we use the filter endpoint.
+      }
+
+      let ordersToExport: any[] = [];
+
+      if (filtersApplied && advancedFilter) {
+        // Use POST filtered endpoint
+        const response = await fetch(`${apiUrl}/api/orders/filtered`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            ...advancedFilter,
+            pageNumber: 1,
+            pageSize: 10000
+          })
+        });
+        const data = await response.json();
+        ordersToExport = data.items;
+      } else {
+        // Use GET all endpoint
+        const response = await fetch(`${apiUrl}/api/orders?${queryParams.toString()}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        ordersToExport = data.items;
+      }
+
+      // Generate CSV
+      const headers = ['Order #', 'Customer', 'Phone', 'Governorate', 'Address', 'Status', 'Total', 'Date', 'Payment', 'Items'];
+      const csvRows = [headers.join(',')];
+
+      for (const order of ordersToExport) {
+        const itemsStr = order.items?.map((i: any) => `${i.productName} (${i.quantity})`).join('; ') || '';
+        const row = [
+          order.orderNumber,
+          `"${order.fullName || ''}"`,
+          `"${order.phoneNumber || ''}"`,
+          `"${order.governorate || ''}"`,
+          `"${order.address || ''}"`,
+          order.status,
+          order.total,
+          new Date(order.date).toLocaleDateString(),
+          order.paymentMethod,
+          `"${itemsStr}"`
+        ];
+        csvRows.push(row.join(','));
+      }
+
+      const csvContent = '\uFEFF' + csvRows.join('\n'); // Add BOM for Excel
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `orders_export_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+    } catch (err) {
+      alert('Failed to export orders');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Update order status
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
@@ -764,6 +853,17 @@ const OrdersManagement: React.FC = () => {
           >
             <Filter className="h-4 w-4 ml-2" />
             فلاتر متقدمة
+          </button>
+
+          <button
+            onClick={handleExportCSV}
+            className="px-6 py-3 rounded-xl transition-all flex items-center justify-center font-bold shadow-md bg-green-600 text-white hover:bg-green-700 hover:shadow-lg"
+            style={{ fontFamily: 'Tajawal, sans-serif' }}
+            disabled={loading}
+            title="تصدير إلى Excel/CSV"
+          >
+            <Download className="h-4 w-4 ml-2" />
+            تصدير
           </button>
         </div>
 

@@ -4,10 +4,10 @@
 
 :root {
     /* Primary Green Colors */
-    --color-primary-green: #1A3F2F;
-    --color-primary-green-dark: #1A3F2F;
-    --color-primary-green-light: #1A3F2F;
-    --color-primary-green-hover: #1A3F2F;
+    --color-primary-green: #2C5F46;
+    --color-primary-green-dark: #214835;
+    --color-primary-green-light: #3D7A5E;
+    --color-primary-green-hover: #214835;
 
     /* Soft Accent Colors */
     --color-accent-teal: #1A3F2F;
@@ -41,7 +41,7 @@
 
     /* Text Colors */
     --color-text-primary: #1c1917;
-    --color-text-secondary:#1A3F2F;
+    --color-text-secondary: #1A3F2F;
     --color-text-white: #ffffff;
 
     /* Background Colors */
