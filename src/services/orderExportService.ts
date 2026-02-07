@@ -1,4 +1,5 @@
-import html2pdf from 'html2pdf.js';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export interface OrderItemForExport {
     productName: string;
@@ -27,7 +28,7 @@ export interface OrderForExport {
     customerNotes?: CustomerNoteForExport[];
 }
 
-// Status translations to Arabic
+// Status translations
 const statusTranslations: { [key: string]: string } = {
     'UnderReview': 'تحت المراجعة',
     'Confirmed': 'مؤكد',
@@ -41,7 +42,7 @@ const statusTranslations: { [key: string]: string } = {
     '4': 'ملغي'
 };
 
-// Payment method translations to Arabic
+// Payment method translations
 const paymentMethodTranslations: { [key: string]: string } = {
     'InstaPay': 'إنستاباي',
     'VodafoneCash': 'فودافون كاش',
@@ -52,274 +53,208 @@ const paymentMethodTranslations: { [key: string]: string } = {
 };
 
 export const generateOrdersPDF = (orders: OrderForExport[], filterInfo?: string) => {
-    // Create HTML content for the PDF
-    const htmlContent = `
-        <!DOCTYPE html>
-        <html dir="rtl" lang="ar">
-        <head>
-            <meta charset="UTF-8">
-            <style>
-                @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
-                
-                * {
-                    font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
-                    box-sizing: border-box;
-                }
-                
-                body {
-                    margin: 0;
-                    padding: 20px;
-                    background: white;
-                    color: #333;
-                    direction: rtl;
-                }
-                
-                .header {
-                    background: linear-gradient(135deg, #8B7355 0%, #6B5845 100%);
-                    color: white;
-                    padding: 30px;
-                    text-align: center;
-                    border-radius: 10px;
-                    margin-bottom: 30px;
-                }
-                
-                .header h1 {
-                    margin: 0 0 10px 0;
-                    font-size: 32px;
-                    font-weight: 700;
-                }
-                
-                .header p {
-                    margin: 5px 0;
-                    font-size: 14px;
-                    opacity: 0.95;
-                }
-                
-                .order-card {
-                    border: 2px solid #E5DCC5;
-                    border-radius: 12px;
-                    padding: 20px;
-                    margin-bottom: 25px;
-                    background: white;
-                    page-break-inside: avoid;
-                }
-                
-                .order-header {
-                    background: #E5DCC5;
-                    padding: 15px 20px;
-                    border-radius: 8px;
-                    margin: -20px -20px 20px -20px;
-                }
-                
-                .order-number {
-                    font-size: 20px;
-                    font-weight: 700;
-                    color: #8B7355;
-                    margin: 0;
-                }
-                
-                .info-row {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-bottom: 8px;
-                    font-size: 14px;
-                }
-                
-                .info-label {
-                    font-weight: 600;
-                    color: #555;
-                }
-                
-                .info-value {
-                    color: #333;
-                }
-                
-                .section-title {
-                    font-size: 16px;
-                    font-weight: 700;
-                    color: #8B7355;
-                    margin: 20px 0 10px 0;
-                    padding-bottom: 8px;
-                    border-bottom: 2px solid #E5DCC5;
-                }
-                
-                .items-list {
-                    list-style: none;
-                    padding: 0;
-                    margin: 10px 0;
-                }
-                
-                .item {
-                    padding: 10px;
-                    background: #FAFAF8;
-                    border-radius: 6px;
-                    margin-bottom: 8px;
-                    font-size: 13px;
-                }
-                
-                .total-section {
-                    background: #F5F5F0;
-                    padding: 15px;
-                    border-radius: 8px;
-                    margin-top: 15px;
-                }
-                
-                .total-amount {
-                    font-size: 20px;
-                    font-weight: 700;
-                    color: #8B7355;
-                    text-align: center;
-                }
-                
-                .notes-section {
-                    background: #FFFEF0;
-                    border: 2px solid #F0E68C;
-                    border-radius: 8px;
-                    padding: 15px;
-                    margin-top: 15px;
-                }
-                
-                .note-item {
-                    padding: 10px;
-                    margin-bottom: 8px;
-                    background: white;
-                    border-radius: 6px;
-                    border-right: 3px solid #8B7355;
-                    font-size: 13px;
-                }
-                
-                .note-date {
-                    color: #888;
-                    font-size: 11px;
-                    margin-top: 5px;
-                }
-                
-                .page-break {
-                    page-break-after: always;
-                }
-                
-                @media print {
-                    body {
-                        padding: 10px;
-                    }
-                    .order-card {
-                        page-break-inside: avoid;
-                    }
-                }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h1>🐢 Turtle Art - تقرير الطلبات</h1>
-                <p>تاريخ التصدير: ${new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                ${filterInfo ? `<p>الفلاتر المطبقة: ${filterInfo}</p>` : ''}
-            </div>
-            
-            ${orders.map((order, index) => `
-                <div class="order-card">
-                    <div class="order-header">
-                        <h2 class="order-number">طلب رقم: ${order.orderNumber}</h2>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label">اسم العميل:</span>
-                        <span class="info-value">${order.fullName}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">رقم الهاتف:</span>
-                        <span class="info-value">${order.phoneNumber}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">العنوان:</span>
-                        <span class="info-value">${order.address}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">المحافظة:</span>
-                        <span class="info-value">${order.governorate}</span>
-                    </div>
-                    
-                    <h3 class="section-title">المنتجات</h3>
-                    <ul class="items-list">
-                        ${order.items.map(item => `
-                            <li class="item">
-                                <strong>${item.productName}</strong>
-                                <br>
-                                الكمية: ${item.quantity} × ${item.priceAtPurchase.toFixed(2)} جنيه = ${(item.quantity * item.priceAtPurchase).toFixed(2)} جنيه
-                                ${item.size ? `<br>المقاس: ${item.size}` : ''}
-                            </li>
-                        `).join('')}
-                    </ul>
-                    
-                    <div class="total-section">
-                        <div class="total-amount">الإجمالي: ${order.total.toFixed(2)} جنيه</div>
-                        <div class="info-row" style="margin-top: 10px;">
-                            <span class="info-label">الحالة:</span>
-                            <span class="info-value">${statusTranslations[order.status] || order.status}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">طريقة الدفع:</span>
-                            <span class="info-value">${paymentMethodTranslations[order.paymentMethod] || order.paymentMethod}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">تاريخ الطلب:</span>
-                            <span class="info-value">${new Date(order.date).toLocaleDateString('ar-EG')}</span>
-                        </div>
-                    </div>
-                    
-                    ${order.customerNotes && order.customerNotes.length > 0 ? `
-                        <div class="notes-section">
-                            <h3 class="section-title">📝 ملاحظات للعميل</h3>
-                            ${order.customerNotes.map(note => `
-                                <div class="note-item">
-                                    ${note.noteText}
-                                    <div class="note-date">${new Date(note.createdAt).toLocaleDateString('ar-EG')}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-                </div>
-                ${index < orders.length - 1 && (index + 1) % 2 === 0 ? '<div class="page-break"></div>' : ''}
-            `).join('')}
-        </body>
-        </html>
-    `;
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+    });
 
-    // Create a temporary container
-    const container = document.createElement('div');
-    container.innerHTML = htmlContent;
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
-    document.body.appendChild(container);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    let currentY = 20;
 
-    // Configure html2pdf options
-    const options = {
-        margin: 10,
-        filename: `Turtle_Art_Orders_${new Date().toISOString().split('T')[0]}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            letterRendering: true
-        },
-        jsPDF: {
-            unit: 'mm',
-            format: 'a4',
-            orientation: 'portrait'
+    // Header
+    doc.setFillColor(139, 115, 85);
+    doc.rect(0, 0, pageWidth, 35, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Turtle Art - Orders Report', pageWidth / 2, 15, { align: 'center' });
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    const exportDate = new Date().toLocaleDateString('en-US');
+    doc.text(`Export Date: ${exportDate}`, pageWidth / 2, 25, { align: 'center' });
+
+    if (filterInfo) {
+        doc.setFontSize(8);
+        doc.text(`Filters: ${filterInfo}`, pageWidth / 2, 31, { align: 'center' });
+    }
+
+    currentY = 45;
+
+    // Process each order
+    orders.forEach((order, orderIndex) => {
+        // Check if we need a new page
+        if (currentY > pageHeight - 60) {
+            doc.addPage();
+            currentY = 20;
         }
-    };
 
-    // Generate PDF
-    html2pdf()
-        .set(options)
-        .from(container)
-        .save()
-        .then(() => {
-            // Clean up
-            document.body.removeChild(container);
-        })
-        .catch((error: Error) => {
-            console.error('PDF generation error:', error);
-            document.body.removeChild(container);
-            alert('حدث خطأ أثناء إنشاء PDF. يرجى المحاولة مرة أخرى.');
+        // Order header
+        doc.setFillColor(229, 220, 197);
+        doc.roundedRect(10, currentY, pageWidth - 20, 10, 2, 2, 'F');
+
+        doc.setTextColor(139, 115, 85);
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`Order: ${order.orderNumber}`, 15, currentY + 7);
+
+        currentY += 15;
+
+        // Customer info table
+        const customerData = [
+            ['Customer', order.fullName],
+            ['Phone', order.phoneNumber],
+            ['Address', order.address],
+            ['Governorate', order.governorate]
+        ];
+
+        autoTable(doc, {
+            startY: currentY,
+            head: [],
+            body: customerData,
+            theme: 'plain',
+            styles: {
+                fontSize: 9,
+                cellPadding: 2,
+                textColor: [0, 0, 0]
+            },
+            columnStyles: {
+                0: { fontStyle: 'bold', cellWidth: 30 },
+                1: { cellWidth: 'auto' }
+            },
+            margin: { left: 15, right: 15 }
         });
+
+        currentY = (doc as any).lastAutoTable.finalY + 5;
+
+        // Items table
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(139, 115, 85);
+        doc.text('Products:', 15, currentY);
+        currentY += 5;
+
+        const itemsData = order.items.map(item => {
+            const itemTotal = item.priceAtPurchase * item.quantity;
+            return [
+                item.productName,
+                item.quantity.toString(),
+                `${item.priceAtPurchase.toFixed(2)} EGP`,
+                `${itemTotal.toFixed(2)} EGP`,
+                item.size || '-'
+            ];
+        });
+
+        autoTable(doc, {
+            startY: currentY,
+            head: [['Product', 'Qty', 'Price', 'Total', 'Size']],
+            body: itemsData,
+            theme: 'striped',
+            headStyles: {
+                fillColor: [139, 115, 85],
+                textColor: [255, 255, 255],
+                fontSize: 9,
+                fontStyle: 'bold'
+            },
+            styles: {
+                fontSize: 8,
+                cellPadding: 3
+            },
+            margin: { left: 15, right: 15 }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 8;
+
+        // Order summary
+        const statusText = statusTranslations[order.status] || order.status;
+        const paymentText = paymentMethodTranslations[order.paymentMethod] || order.paymentMethod;
+        const orderDate = new Date(order.date).toLocaleDateString('en-US');
+
+        const summaryData = [
+            ['Total', `${order.total.toFixed(2)} EGP`],
+            ['Status', statusText],
+            ['Payment', paymentText],
+            ['Date', orderDate]
+        ];
+
+        autoTable(doc, {
+            startY: currentY,
+            head: [],
+            body: summaryData,
+            theme: 'plain',
+            styles: {
+                fontSize: 9,
+                cellPadding: 2,
+                textColor: [0, 0, 0]
+            },
+            columnStyles: {
+                0: { fontStyle: 'bold', cellWidth: 30 },
+                1: { cellWidth: 'auto', fontStyle: 'bold', textColor: [139, 115, 85] }
+            },
+            margin: { left: 15, right: 15 }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 5;
+
+        // Customer notes (if any)
+        if (order.customerNotes && order.customerNotes.length > 0) {
+            if (currentY > pageHeight - 40) {
+                doc.addPage();
+                currentY = 20;
+            }
+
+            doc.setFillColor(255, 252, 240);
+            const notesBoxHeight = 10 + (order.customerNotes.length * 8);
+            doc.roundedRect(10, currentY, pageWidth - 20, notesBoxHeight, 2, 2, 'F');
+
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(139, 115, 85);
+            doc.text('Customer Notes:', 15, currentY + 7);
+            currentY += 12;
+
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'italic');
+            doc.setTextColor(0, 0, 0);
+
+            order.customerNotes.forEach(note => {
+                const noteDate = new Date(note.createdAt).toLocaleDateString('en-US');
+                const noteText = `- "${note.noteText}" (${noteDate})`;
+                doc.text(noteText, 20, currentY, { maxWidth: pageWidth - 40 });
+                currentY += 6;
+            });
+
+            currentY += 5;
+        }
+
+        // Separator between orders
+        if (orderIndex < orders.length - 1) {
+            currentY += 5;
+            doc.setDrawColor(139, 115, 85);
+            doc.setLineWidth(0.5);
+            doc.line(40, currentY, pageWidth - 40, currentY);
+            currentY += 10;
+        }
+    });
+
+    // Add page numbers
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(100, 100, 100);
+        doc.text(
+            `Page ${i} of ${pageCount}`,
+            pageWidth / 2,
+            pageHeight - 10,
+            { align: 'center' }
+        );
+    }
+
+    // Save the PDF
+    const timestamp = new Date().toISOString().split('T')[0];
+    doc.save(`Turtle_Art_Orders_${timestamp}.pdf`);
 };
