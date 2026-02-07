@@ -35,6 +35,23 @@ const OrderEditModal: React.FC<OrderEditModalProps> = ({ order, isOpen, onClose,
 
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
+    const [shippingFees, setShippingFees] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchShippingFees = async () => {
+            try {
+                const response = await fetch(`${apiUrl}/api/shipping-fees?pageNumber=1&pageSize=100`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setShippingFees(data.items || []);
+                }
+            } catch (err) {
+                console.error("Failed to fetch shipping fees", err);
+            }
+        };
+        fetchShippingFees();
+    }, [apiUrl]);
+
     useEffect(() => {
         if (order) {
             setFullName(order.fullName || '');
@@ -168,13 +185,25 @@ const OrderEditModal: React.FC<OrderEditModalProps> = ({ order, isOpen, onClose,
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1 text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>المحافظة</label>
-                            <input
-                                type="text"
+
+                            {/* Datalist for flexible input or Select if strict */}
+                            <select
                                 value={governorate}
                                 onChange={(e) => setGovernorate(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-right"
                                 style={{ fontFamily: 'Tajawal, sans-serif' }}
-                            />
+                            >
+                                <option value="">اختر المحافظة</option>
+                                {shippingFees.map((fee: any) => (
+                                    <option key={fee.id} value={fee.governorate}>
+                                        {fee.governorate} ({fee.fee} ج.م)
+                                    </option>
+                                ))}
+                                {/* If current order governorate is not in the list (legacy or typo), show it as an option */}
+                                {governorate && !shippingFees.find((f: any) => f.governorate === governorate) && (
+                                    <option value={governorate}>{governorate}</option>
+                                )}
+                            </select>
                         </div>
                     </div>
 

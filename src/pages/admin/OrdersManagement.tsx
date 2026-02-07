@@ -419,7 +419,7 @@ const OrdersManagement: React.FC = () => {
       queryParams.append('pageNumber', '1');
       queryParams.append('pageSize', '10000'); // Export all
       if (statusFilter !== 'all') queryParams.append('status', statusFilter);
-      if (searchQuery) queryParams.append('search', searchQuery);
+      if (searchTerm) queryParams.append('search', searchTerm);
 
       // Add advanced filters if applied
       if (advancedFilter) {

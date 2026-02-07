@@ -932,7 +932,7 @@ const ProductPage: React.FC = () => {
             هل لديك سؤال عن هذا المنتج؟
           </p>
           <a
-            href={`https://wa.me/201000070653?text=${encodeURIComponent(`مرحباً، أريد الاستفسار عن: ${product.name}`)}`}
+            href={`https://wa.me/201021964426?text=${encodeURIComponent(`مرحباً، أريد الاستفسار عن: ${product.name}`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-green-500 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-medium hover:bg-green-600 transition-all shadow-lg hover:shadow-xl text-sm sm:text-base"
