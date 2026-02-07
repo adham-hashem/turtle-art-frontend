@@ -52,9 +52,8 @@ const OrderHistoryPanel: React.FC<OrderHistoryPanelProps> = ({ orderId }) => {
     };
 
     const formatChangeType = (type: string) => {
-        // Basic mapping for readability (or leave as is if backend sends readable string)
-        // Assuming backend sends enum string like "StatusChanged"
-        return type.replace(/([A-Z])/g, ' $1').trim();
+        if (!type) return 'Unknown Change';
+        return String(type).replace(/([A-Z])/g, ' $1').trim();
     };
 
     if (loading) return <div className="p-4 text-center text-gray-400">جاري تحميل السجل...</div>;
