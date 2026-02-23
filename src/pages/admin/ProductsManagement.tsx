@@ -1,24 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Plus,
-  Edit,
-  Trash2,
-  Upload,
-  Menu,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  EyeOff,
-  Eye,
-  Package,
-  Zap,
-  Coffee,
-  ShoppingBag,
-  Gift,
-  Users,
-  Moon
-} from 'lucide-react';
+import { Trash2, Plus, Upload, Save, X, Search, Filter, AlertCircle, RefreshCw, Sparkles, User, Settings, Image as ImageIcon, ChevronRight, ChevronLeft, Layout, Tag, DollarSign, Package, Check, Menu, Coffee, Star, Info, Share2, Heart, ExternalLink, ArrowRight, ArrowLeft, ShoppingBag, Users, Moon, Gift, EyeOff, Eye, Zap, Edit } from 'lucide-react';
+import { colorMap } from '../../utils/colorUtils';
 
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -125,6 +108,7 @@ const ProductsManagement: React.FC = () => {
     isBreakfast: boolean;
     isFeatured: boolean;
     priority: number;
+    mainImageIndex: number;
   }>({
     code: '',
     name: '',
@@ -143,7 +127,8 @@ const ProductsManagement: React.FC = () => {
     isInstant: false,
     isBreakfast: false,
     isFeatured: false,
-    priority: 0
+    priority: 0,
+    mainImageIndex: 0
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -436,8 +421,7 @@ const ProductsManagement: React.FC = () => {
       }
 
       if (newProduct.originalPrice) formData.append('originalPrice', newProduct.originalPrice);
-
-      formData.append('mainImageIndex', '0');
+      formData.append('mainImageIndex', newProduct.mainImageIndex.toString());
 
       // Images: data URLs -> File
       const imageFiles = await Promise.all(
@@ -596,8 +580,11 @@ const ProductsManagement: React.FC = () => {
       }
 
       if (newImages.length > 0) {
-        formData.append('mainImageIndex', '0');
+        formData.append('mainImageIndex', newProduct.mainImageIndex.toString());
         newImages.forEach(file => formData.append('imageFiles', file));
+      } else {
+        // If no new images, still send the mainImageIndex for potential change to existing images
+        formData.append('mainImageIndex', newProduct.mainImageIndex.toString());
       }
 
       // Send deleted image IDs
@@ -667,7 +654,8 @@ const ProductsManagement: React.FC = () => {
       isInstant: false,
       isBreakfast: false,
       isFeatured: false,
-      priority: 0
+      priority: 0,
+      mainImageIndex: 0
     });
   };
 
@@ -696,7 +684,8 @@ const ProductsManagement: React.FC = () => {
       isInstant: product.isInstant || false,
       isBreakfast: product.isBreakfast || false,
       isFeatured: product.isFeatured || false,
-      priority: product.priority || 0
+      priority: product.priority || 0,
+      mainImageIndex: product.images?.findIndex(img => img.isMain) >= 0 ? product.images.findIndex(img => img.isMain) : 0
     });
 
     // Fetch extensions for this product
@@ -1448,6 +1437,119 @@ const ProductsManagement: React.FC = () => {
                           />
                         </div>
 
+                        {/* Sizes & Colors (ADDED) */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                          {/* Sizes */}
+                          <div>
+                            <label className="block text-sm font-medium text-black mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                              المقاسات المتاحة
+                            </label>
+                            <div className="space-y-2">
+                              {newProduct.sizes.map((size, index) => (
+                                <div key={index} className="flex gap-2">
+                                  <input
+                                    type="text"
+                                    value={size}
+                                    onChange={e => updateSizeField(index, e.target.value)}
+                                    placeholder="مثلاً: Large أو 42"
+                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-right text-black"
+                                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                                    dir="rtl"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => setNewProduct(prev => ({ ...prev, sizes: prev.sizes.filter((_, i) => i !== index) || [''] }))}
+                                    className="text-red-500 p-2 hover:bg-red-50 rounded-lg"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
+                              ))}
+                              <button
+                                type="button"
+                                onClick={addSizeField}
+                                className="text-green-600 hover:text-green-700 text-sm font-medium"
+                                style={{ fontFamily: 'Tajawal, sans-serif' }}
+                              >
+                                + إضافة مقاس
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Colors */}
+                          <div>
+                            <label className="block text-sm font-medium text-black mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                              الألوان المتاحة
+                            </label>
+                            <div className="space-y-2">
+                              {newProduct.colors.map((color, index) => (
+                                <div key={index} className="flex gap-2">
+                                  <div className="relative flex-1">
+                                    <input
+                                      type="text"
+                                      value={color}
+                                      onChange={e => updateColorField(index, e.target.value)}
+                                      placeholder="مثلاً: اسود أو اوف وايت"
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-right text-black"
+                                      style={{ fontFamily: 'Tajawal, sans-serif' }}
+                                      dir="rtl"
+                                    />
+                                    {colorMap[color] && (
+                                      <div
+                                        className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-gray-200"
+                                        style={{ backgroundColor: colorMap[color].startsWith('linear') ? 'transparent' : colorMap[color], background: colorMap[color].startsWith('linear') ? colorMap[color] : undefined }}
+                                      ></div>
+                                    )}
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => setNewProduct(prev => ({ ...prev, colors: prev.colors.filter((_, i) => i !== index) || [''] }))}
+                                    className="text-red-500 p-2 hover:bg-red-50 rounded-lg"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
+                              ))}
+
+                              {/* Predefined Color Suggestions */}
+                              <div className="flex flex-wrap gap-1 mt-2 p-2 bg-gray-50 rounded-lg border border-gray-100">
+                                {Object.keys(colorMap).slice(0, 16).map(colorName => (
+                                  <button
+                                    key={colorName}
+                                    type="button"
+                                    onClick={() => {
+                                      // If the last color field is empty, use it. Otherwise add new.
+                                      const lastIndex = newProduct.colors.length - 1;
+                                      if (!newProduct.colors[lastIndex]) {
+                                        updateColorField(lastIndex, colorName);
+                                      } else if (!newProduct.colors.includes(colorName)) {
+                                        setNewProduct(prev => ({ ...prev, colors: [...prev.colors, colorName] }));
+                                      }
+                                    }}
+                                    className="px-2 py-1 text-[10px] bg-white border border-gray-200 rounded-md hover:border-green-400 hover:text-green-600 transition-all flex items-center gap-1"
+                                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                                  >
+                                    <div
+                                      className="w-2 h-2 rounded-full border border-gray-100"
+                                      style={{ backgroundColor: colorMap[colorName].startsWith('linear') ? 'transparent' : colorMap[colorName], background: colorMap[colorName].startsWith('linear') ? colorMap[colorName] : undefined }}
+                                    ></div>
+                                    {colorName}
+                                  </button>
+                                ))}
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={addColorField}
+                                className="text-green-600 hover:text-green-700 text-sm font-medium"
+                                style={{ fontFamily: 'Tajawal, sans-serif' }}
+                              >
+                                + إضافة لون يدوي
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
                         {/* Images */}
                         <div>
                           <label className="block text-sm font-medium text-black mb-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
@@ -1473,11 +1575,23 @@ const ProductsManagement: React.FC = () => {
                                 </label>
 
                                 {image && (
-                                  <div className="flex items-center space-x-reverse space-x-2">
+                                  <div className="flex items-center space-x-reverse space-x-3">
                                     <img src={image} alt="" className="w-12 h-12 object-cover rounded" />
-                                    <span className="text-sm text-green-600" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                                      {image.startsWith('data:image') ? 'تم الرفع' : 'موجودة'}
-                                    </span>
+                                    <div className="flex flex-col">
+                                      <span className="text-xs text-green-600 font-bold" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                        {image.startsWith('data:image') ? 'تم الرفع' : 'موجودة'}
+                                      </span>
+                                      <label className="flex items-center gap-1 cursor-pointer">
+                                        <input
+                                          type="radio"
+                                          name="mainImageIndex"
+                                          checked={newProduct.mainImageIndex === index}
+                                          onChange={() => setNewProduct(prev => ({ ...prev, mainImageIndex: index }))}
+                                          className="w-3 h-3 text-green-600"
+                                        />
+                                        <span className="text-[10px] text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>الرئيسية</span>
+                                      </label>
+                                    </div>
                                   </div>
                                 )}
 

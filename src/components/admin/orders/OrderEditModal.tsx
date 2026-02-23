@@ -3,7 +3,8 @@ import { X, Save, Trash2, AlertCircle, RefreshCw, Plus, Minus } from 'lucide-rea
 
 
 interface OrderItem {
-    id: string;
+    id: string | null;
+    productId: string;
     productName: string;
     quantity: number;
     priceAtPurchase: number;
@@ -31,7 +32,16 @@ const OrderEditModal: React.FC<OrderEditModalProps> = ({ order, isOpen, onClose,
     const [address, setAddress] = useState('');
     const [governorate, setGovernorate] = useState('');
     const [items, setItems] = useState<OrderItem[]>([]);
-    // const [status, setStatus] = useState<number>(0); // Unused
+
+    // Product Search State
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+    const [newItemQty, setNewItemQty] = useState(1);
+    const [newItemSize, setNewItemSize] = useState('');
+    const [newItemColor, setNewItemColor] = useState('');
+    const [showSearch, setShowSearch] = useState(false);
 
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -64,6 +74,7 @@ const OrderEditModal: React.FC<OrderEditModalProps> = ({ order, isOpen, onClose,
             if (order.items) {
                 setItems(order.items.map((item: any) => ({
                     id: item.id,
+                    productId: item.productId,
                     productName: item.productName,
                     quantity: item.quantity,
                     priceAtPurchase: item.priceAtPurchase,
@@ -75,6 +86,55 @@ const OrderEditModal: React.FC<OrderEditModalProps> = ({ order, isOpen, onClose,
             }
         }
     }, [order]);
+
+    const handleSearch = async (val: string) => {
+        setSearchTerm(val);
+        if (val.length < 2) {
+            setSearchResults([]);
+            return;
+        }
+
+        setIsSearching(true);
+        try {
+            const response = await fetch(`${apiUrl}/api/products?pageNumber=1&pageSize=10&searchTerm=${encodeURIComponent(val)}`);
+            if (response.ok) {
+                const data = await response.json();
+                setSearchResults(data.items || []);
+            }
+        } catch (err) {
+            console.error("Search failed", err);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    const handleSelectProduct = (product: any) => {
+        setSelectedProduct(product);
+        setNewItemQty(1);
+        setNewItemSize(product.sizes?.[0] || '');
+        setNewItemColor(product.colors?.[0] || '');
+        setSearchResults([]);
+        setSearchTerm('');
+    };
+
+    const handleAddProduct = () => {
+        if (!selectedProduct) return;
+
+        const newItem: OrderItem = {
+            id: null, // Signals new item
+            productId: selectedProduct.id,
+            productName: selectedProduct.name,
+            quantity: newItemQty,
+            priceAtPurchase: selectedProduct.price,
+            size: newItemSize,
+            color: newItemColor,
+            shouldDelete: false
+        };
+
+        setItems(prev => [...prev, newItem]);
+        setSelectedProduct(null);
+        setShowSearch(false);
+    };
 
     const handleRemoveItem = (itemId: string) => {
         setItems(prev => prev.map(item =>
@@ -211,11 +271,113 @@ const OrderEditModal: React.FC<OrderEditModalProps> = ({ order, isOpen, onClose,
 
                     {/* Order Items */}
                     <div>
-                        <h3 className="text-lg font-semibold mb-4 text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>المنتجات</h3>
+                        <div className="flex items-center justify-between mb-4">
+                            <button
+                                onClick={() => setShowSearch(!showSearch)}
+                                className="text-sm bg-green-50 text-green-600 px-3 py-1.5 rounded-lg border border-green-100 hover:bg-green-100 transition-colors flex items-center"
+                                style={{ fontFamily: 'Tajawal, sans-serif' }}
+                            >
+                                <Plus size={16} className="ml-1" />
+                                إضافة منتج
+                            </button>
+                            <h3 className="text-lg font-semibold text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>المنتجات</h3>
+                        </div>
+
+                        {/* Search & Add UI */}
+                        {showSearch && (
+                            <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                {!selectedProduct ? (
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            placeholder="ابحث عن منتج بالاسم أو الكود..."
+                                            value={searchTerm}
+                                            onChange={(e) => handleSearch(e.target.value)}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 text-right"
+                                            dir="rtl"
+                                            style={{ fontFamily: 'Tajawal, sans-serif' }}
+                                        />
+                                        {isSearching && (
+                                            <div className="absolute left-3 top-2.5">
+                                                <RefreshCw className="h-5 w-5 text-gray-400 animate-spin" />
+                                            </div>
+                                        )}
+                                        {searchResults.length > 0 && (
+                                            <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                                                {searchResults.map((p) => (
+                                                    <button
+                                                        key={p.id}
+                                                        onClick={() => handleSelectProduct(p)}
+                                                        className="w-full p-3 text-right hover:bg-gray-50 border-b border-gray-50 last:border-0 flex items-center justify-between"
+                                                    >
+                                                        <span className="text-green-600 font-bold">{p.price} ج.م</span>
+                                                        <span className="text-gray-800">{p.name}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-100">
+                                            <button onClick={() => setSelectedProduct(null)} className="text-red-500 hover:text-red-600 text-xs">تغيير المنتج</button>
+                                            <span className="font-bold text-gray-800">{selectedProduct.name}</span>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                                            <div>
+                                                <label className="block text-[10px] text-gray-500 mb-1 text-right">الكمية</label>
+                                                <input
+                                                    type="number"
+                                                    value={newItemQty}
+                                                    onChange={(e) => setNewItemQty(Math.max(1, parseInt(e.target.value) || 1))}
+                                                    className="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-center"
+                                                />
+                                            </div>
+                                            {selectedProduct.sizes?.length > 0 && (
+                                                <div>
+                                                    <label className="block text-[10px] text-gray-500 mb-1 text-right">المقاس</label>
+                                                    <select
+                                                        value={newItemSize}
+                                                        onChange={(e) => setNewItemSize(e.target.value)}
+                                                        className="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-right text-sm"
+                                                        dir="rtl"
+                                                    >
+                                                        {selectedProduct.sizes.map((s: string) => <option key={s} value={s}>{s}</option>)}
+                                                    </select>
+                                                </div>
+                                            )}
+                                            {selectedProduct.colors?.length > 0 && (
+                                                <div>
+                                                    <label className="block text-[10px] text-gray-500 mb-1 text-right">اللون</label>
+                                                    <select
+                                                        value={newItemColor}
+                                                        onChange={(e) => setNewItemColor(e.target.value)}
+                                                        className="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-right text-sm"
+                                                        dir="rtl"
+                                                    >
+                                                        {selectedProduct.colors.map((c: string) => <option key={c} value={c}>{c}</option>)}
+                                                    </select>
+                                                </div>
+                                            )}
+                                            <div className="flex items-end">
+                                                <button
+                                                    onClick={handleAddProduct}
+                                                    className="w-full bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition-colors text-sm font-bold"
+                                                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                                                >
+                                                    تأكيد الإضافة
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <div className="space-y-3">
-                            {items.map((item) => (
+                            {items.map((item, index) => (
                                 <div
-                                    key={item.id}
+                                    key={item.id || `new-${index}`}
                                     className={`flex items-center justify-between p-4 rounded-xl border ${item.shouldDelete ? 'bg-red-50 border-red-200' : 'bg-white border-gray-200'
                                         }`}
                                 >
@@ -233,16 +395,17 @@ const OrderEditModal: React.FC<OrderEditModalProps> = ({ order, isOpen, onClose,
                                             {/* Quantity Controls */}
                                             <div className={`flex items-center bg-gray-50 rounded-lg border border-gray-200 ${item.shouldDelete ? 'opacity-50 pointer-events-none' : ''}`}>
                                                 <button
-                                                    onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                                                    className="p-1 hover:bg-white hover:shadow-sm rounded transition-all text-green-600"
+                                                    onClick={() => handleUpdateQuantity(item.id!, item.quantity + 1)}
+                                                    disabled={!item.id}
+                                                    className="p-1 hover:bg-white hover:shadow-sm rounded transition-all text-green-600 disabled:opacity-30"
                                                 >
                                                     <Plus className="w-4 h-4" />
                                                 </button>
                                                 <span className="w-8 text-center font-medium text-gray-700">{item.quantity}</span>
                                                 <button
-                                                    onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                                                    className="p-1 hover:bg-white hover:shadow-sm rounded transition-all text-red-600 disabled:opacity-50"
-                                                    disabled={item.quantity <= 1}
+                                                    onClick={() => handleUpdateQuantity(item.id!, item.quantity - 1)}
+                                                    disabled={!item.id || item.quantity <= 1}
+                                                    className="p-1 hover:bg-white hover:shadow-sm rounded transition-all text-red-600 disabled:opacity-30"
                                                 >
                                                     <Minus className="w-4 h-4" />
                                                 </button>
@@ -251,7 +414,14 @@ const OrderEditModal: React.FC<OrderEditModalProps> = ({ order, isOpen, onClose,
                                     </div>
 
                                     <button
-                                        onClick={() => handleRemoveItem(item.id)}
+                                        onClick={() => {
+                                            if (item.id) {
+                                                handleRemoveItem(item.id);
+                                            } else {
+                                                // If new item, just remove it from local state
+                                                setItems(prev => prev.filter((_, i) => i !== index));
+                                            }
+                                        }}
                                         className={`p-2 rounded-lg transition-colors ${item.shouldDelete
                                             ? 'text-red-600 bg-red-100 hover:bg-red-200'
                                             : 'text-gray-400 hover:text-red-500 hover:bg-gray-100'

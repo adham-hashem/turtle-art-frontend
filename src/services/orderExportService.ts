@@ -25,6 +25,7 @@ export interface OrderForExport {
     paymentMethod: string;
     items: OrderItemForExport[];
     customerNotes?: CustomerNoteForExport[];
+    balanceDue?: number;
 }
 
 // Status translations
@@ -181,6 +182,7 @@ export const generateOrdersPDF = async (orders: OrderForExport[], filterInfo?: s
 
         const summaryTable: TableCell[][] = [
             [{ text: 'Total:', bold: true }, { text: `${order.total.toFixed(2)} EGP`, bold: true, color: '#8B7355' }],
+            [{ text: 'Balance Due:', bold: true }, { text: `${(order.balanceDue || 0).toFixed(2)} EGP`, bold: true, color: (order.balanceDue || 0) > 0 ? '#cc0000' : '#0066cc' }],
             [{ text: 'Status:', bold: true }, { text: statusText }],
             [{ text: 'Payment:', bold: true }, { text: paymentText }],
             [{ text: 'Date:', bold: true }, { text: orderDate }]

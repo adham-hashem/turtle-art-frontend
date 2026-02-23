@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
+import { colorMap } from '../utils/colorUtils';
 
 interface ProductImage {
   imagePath: string;
@@ -76,7 +77,7 @@ type RestoreState = {
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 const ProductPage: React.FC = () => {
-  const { dispatch, state } = useApp();
+  const { dispatch } = useApp();
   const { userRole } = useAuth();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
@@ -139,10 +140,15 @@ const ProductPage: React.FC = () => {
 
   const safeImages = useMemo(() => {
     const imgs = Array.isArray(product?.images) ? product!.images : [];
-    // normalize any missing paths
+    // normalize any missing paths and sort so isMain is first
     return imgs
       .filter((img) => img && typeof img.imagePath === 'string' && img.imagePath.trim() !== '')
-      .map((img) => ({ ...img, imagePath: resolveUrl(img.imagePath) }));
+      .map((img) => ({ ...img, imagePath: resolveUrl(img.imagePath) }))
+      .sort((a, b) => {
+        if (a.isMain && !b.isMain) return -1;
+        if (!a.isMain && b.isMain) return 1;
+        return 0;
+      });
   }, [product]);
 
   const mainImageIndex = useMemo(() => {
@@ -349,6 +355,8 @@ const ProductPage: React.FC = () => {
       alert('عذرًا، لا يمكن للمسؤول إضافة منتجات للسلة.');
       return;
     }
+
+    if (!product) return;
 
     try {
       const token = getAuthToken();
@@ -739,28 +747,40 @@ const ProductPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Color selector */}
+              {/* Color selector - UPDATED WITH SWATCHES */}
               {hasColors && (
                 <div className="bg-gray-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-gray-200">
                   <h3 className="font-bold text-black text-base sm:text-lg mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
                     اللون
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {product.colors.map((c) => (
-                      <button
-                        key={c}
-                        type="button"
-                        onClick={() => setSelectedColor(c)}
-                        disabled={isPurchaseDisabled}
-                        className={`px-4 py-2 rounded-xl border-2 text-sm font-bold transition-all ${selectedColor === c
-                          ? 'bg-primary-green text-black border-transparent shadow-md'
-                          : 'bg-white text-black border-gray-200 hover:border-primary-green'
-                          } disabled:opacity-50 disabled:cursor-not-allowed`}
-                        style={{ fontFamily: 'Tajawal, sans-serif' }}
-                      >
-                        {c}
-                      </button>
-                    ))}
+                    {product.colors.map((c) => {
+                      const colorValue = colorMap[c.trim()];
+                      return (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => setSelectedColor(c)}
+                          disabled={isPurchaseDisabled}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 text-sm font-bold transition-all ${selectedColor === c
+                            ? 'bg-primary-green/10 text-primary-green border-primary-green shadow-sm'
+                            : 'bg-white text-black border-gray-200 hover:border-primary-green'
+                            } disabled:opacity-50 disabled:cursor-not-allowed`}
+                          style={{ fontFamily: 'Tajawal, sans-serif' }}
+                        >
+                          {colorValue && (
+                            <span
+                              className="w-4 h-4 rounded-full border border-gray-300 shadow-inner"
+                              style={{
+                                background: colorValue,
+                                display: 'inline-block'
+                              }}
+                            />
+                          )}
+                          <span>{c}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}

@@ -70,6 +70,8 @@ interface OrderResponseDto {
   subtotal?: number;
   discountAmount?: number;
   shippingFee?: number;
+  totalPaid?: number;
+  balanceDue?: number;
   items: OrderItemResponseDto[];
 }
 
@@ -503,7 +505,7 @@ const OrdersManagement: React.FC = () => {
       );
 
       // Generate CSV with Customer Notes column
-      const headers = ['Order #', 'Customer', 'Phone', 'Governorate', 'Address', 'Status', 'Total', 'Date', 'Payment', 'Items', 'Customer Notes'];
+      const headers = ['Order #', 'Customer', 'Phone', 'Governorate', 'Address', 'Status', 'Total', 'Balance Due', 'Date', 'Payment', 'Items', 'Customer Notes'];
       const csvRows = [headers.join(',')];
 
       for (const order of ordersWithNotes) {
@@ -516,6 +518,7 @@ const OrdersManagement: React.FC = () => {
           `"${order.address || ''}"`,
           order.status,
           order.total,
+          order.balanceDue || 0,
           new Date(order.date).toLocaleDateString(),
           order.paymentMethod,
           `"${itemsStr}"`,
@@ -1093,7 +1096,7 @@ const OrdersManagement: React.FC = () => {
             CSV
           </button>
 
-          {/* <button
+          <button
             onClick={handleExportPDF}
             className="px-6 py-3 rounded-xl transition-all flex items-center justify-center font-bold shadow-md bg-green-600 text-white hover:bg-green-700 hover:shadow-lg"
             style={{ fontFamily: 'Tajawal, sans-serif' }}
@@ -1102,7 +1105,7 @@ const OrdersManagement: React.FC = () => {
           >
             <Download className="h-4 w-4 ml-2" />
             PDF
-          </button> */}
+          </button>
         </div>
 
         {/* Advanced Filters Row */}
@@ -1239,6 +1242,7 @@ const OrdersManagement: React.FC = () => {
                     <th className="px-4 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>رقم الطلب</th>
                     <th className="px-4 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>العميل</th>
                     <th className="px-4 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>الإجمالي</th>
+                    <th className="px-4 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>المتبقي</th>
                     <th className="px-4 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>الحالة</th>
                     <th className="px-4 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>الدفع</th>
                     <th className="px-4 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider" style={{ fontFamily: 'Tajawal, sans-serif' }}>التاريخ</th>
@@ -1273,7 +1277,15 @@ const OrdersManagement: React.FC = () => {
                           <td className="px-4 py-4 whitespace-nowrap">
                             <div className="flex items-center gap-1">
                               <DollarSign className="h-4 w-4 text-green-600" />
-                              <span className="text-sm font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.total.toFixed(2)} جنيه</span>
+                              <span className="text-sm font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.total.toFixed(2)} ج.م</span>
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-1">
+                              <Wallet className={`h-4 w-4 ${(order.balanceDue || 0) > 0 ? 'text-red-500' : 'text-blue-500'}`} />
+                              <span className={`text-sm font-bold ${(order.balanceDue || 0) > 0 ? 'text-red-600' : 'text-blue-600'}`} style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                {(order.balanceDue || 0).toFixed(2)} ج.م
+                              </span>
                             </div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -1573,7 +1585,16 @@ const OrdersManagement: React.FC = () => {
                       <span className="text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>المبلغ:</span>
                       <div className="flex items-center gap-1">
                         <DollarSign className="h-4 w-4 text-green-600" />
-                        <span className="text-sm font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.total.toFixed(2)} جنيه</span>
+                        <span className="text-sm font-bold text-black" style={{ fontFamily: 'Tajawal, sans-serif' }}>{order.total.toFixed(2)} ج.م</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>المتبقي:</span>
+                      <div className="flex items-center gap-1">
+                        <Wallet className={`h-4 w-4 ${(order.balanceDue || 0) > 0 ? 'text-red-500' : 'text-blue-500'}`} />
+                        <span className={`text-sm font-bold ${(order.balanceDue || 0) > 0 ? 'text-red-600' : 'text-blue-600'}`} style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                          {(order.balanceDue || 0).toFixed(2)} ج.م
+                        </span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center">

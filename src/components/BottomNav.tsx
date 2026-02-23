@@ -20,7 +20,13 @@ export function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-lg pb-safe" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-[60] bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-[0_-4px_16px_rgba(0,0,0,0.05)] pb-safe transform-gpu"
+      style={{
+        paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))',
+        WebkitTransform: 'translateZ(0)' // Safari flickering fix
+      }}
+    >
       <div className="w-full">
         <div className="grid grid-cols-6 gap-0 md:flex md:justify-center md:gap-12 py-2 px-0 sm:px-4">
           {navItems.map((item) => {
