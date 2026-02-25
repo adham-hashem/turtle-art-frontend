@@ -21,10 +21,9 @@ export function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-[60] bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-[0_-4px_16px_rgba(0,0,0,0.05)] pb-safe transform-gpu"
+      className="fixed bottom-0 left-0 right-0 z-[100] bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-[0_-8px_30px_rgb(0,0,0,0.12)] pb-safe"
       style={{
-        paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))',
-        WebkitTransform: 'translateZ(0)' // Safari flickering fix
+        paddingBottom: 'env(safe-area-inset-bottom, 0.5rem)',
       }}
     >
       <div className="w-full">

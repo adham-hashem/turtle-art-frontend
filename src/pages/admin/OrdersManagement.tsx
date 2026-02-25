@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import OrderEditModal from '../../components/admin/orders/OrderEditModal';
+import OrderCreateModal from '../../components/admin/orders/OrderCreateModal';
 import PaymentTrackingPanel from '../../components/admin/orders/PaymentTrackingPanel';
 import OrderNotesPanel from '../../components/admin/orders/OrderNotesPanel';
 import OrderHistoryPanel from '../../components/admin/orders/OrderHistoryPanel';
@@ -111,6 +112,7 @@ const OrdersManagement: React.FC = () => {
 
   // Order Details Modal State
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [orderDetailsTab, setOrderDetailsTab] = useState<'details' | 'payments' | 'notes' | 'history'>('details');
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -972,7 +974,18 @@ const OrdersManagement: React.FC = () => {
             <p className="text-sm text-gray-500" style={{ fontFamily: 'Tajawal, sans-serif' }}>إجمالي الطلبات: {totalItems}</p>
           </div>
         </div>
-        <Sparkles className="h-8 w-8 text-yellow-500 animate-pulse" />
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="bg-primary-green text-white px-4 py-2.5 rounded-xl hover:bg-primary-green-dark transition-all flex items-center font-bold shadow-md"
+            style={{ fontFamily: 'Tajawal, sans-serif' }}
+          >
+            <Plus className="h-5 w-5 ml-2" />
+            إنشاء طلب
+          </button>
+          <Sparkles className="h-8 w-8 text-yellow-500 animate-pulse" />
+        </div>
       </div>
 
       {/* Error Message */}
