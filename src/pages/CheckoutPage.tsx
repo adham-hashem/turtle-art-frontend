@@ -1142,7 +1142,7 @@ const CheckoutPage: React.FC = () => {
               {/* Notes renamed to Payment Notes */}
               <div>
                 <label className="block text-right text-warm-gray-800 font-bold mb-2 text-sm sm:text-base" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                  ملاحظات حول الدفع
+                  ملاحظات الطلب
                 </label>
                 <textarea
                   value={formData.notes}
@@ -1150,7 +1150,7 @@ const CheckoutPage: React.FC = () => {
                   rows={3}
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-warm-gray-200 rounded-lg sm:rounded-xl text-right focus:border-primary-green focus:outline-none resize-none text-sm sm:text-base"
                   style={{ fontFamily: 'Tajawal, sans-serif' }}
-                  placeholder="أي ملاحظات إضافية حول عملية الدفع..."
+                  placeholder="أضف ملاحظات لطلبك..."
                   disabled={isSubmitting}
                 />
               </div>
