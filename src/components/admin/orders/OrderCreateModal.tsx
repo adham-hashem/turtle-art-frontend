@@ -26,6 +26,7 @@ const OrderCreateModal: React.FC<OrderCreateModalProps> = ({ isOpen, onClose, on
     const [address, setAddress] = useState('');
     const [governorate, setGovernorate] = useState('');
     const [paymentMethod, setPaymentMethod] = useState<number>(0); // 0: InstaPay, 1: VodafoneCash, 2: Online
+    const [initialDeposit, setInitialDeposit] = useState<number>(0);
     const [items, setItems] = useState<OrderItem[]>([]);
 
     // Product Search State
@@ -130,6 +131,7 @@ const OrderCreateModal: React.FC<OrderCreateModalProps> = ({ isOpen, onClose, on
                 address,
                 governorate,
                 paymentMethod,
+                initialDeposit,
                 items: items.map(item => ({
                     productId: item.productId,
                     quantity: item.quantity,
@@ -160,6 +162,7 @@ const OrderCreateModal: React.FC<OrderCreateModalProps> = ({ isOpen, onClose, on
             setAddress('');
             setGovernorate('');
             setItems([]);
+            setInitialDeposit(0);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -255,6 +258,17 @@ const OrderCreateModal: React.FC<OrderCreateModalProps> = ({ isOpen, onClose, on
                                 <option value={1}>Vodafone Cash</option>
                                 <option value={2}>Online Payment</option>
                             </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1 text-right" style={{ fontFamily: 'Tajawal, sans-serif' }}>الإيداع المبدئي (اختياري)</label>
+                            <input
+                                type="number"
+                                value={initialDeposit}
+                                onChange={(e) => setInitialDeposit(Number(e.target.value))}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-right font-bold text-green-600"
+                                style={{ fontFamily: 'Tajawal, sans-serif' }}
+                                placeholder="0.00"
+                            />
                         </div>
                     </div>
 

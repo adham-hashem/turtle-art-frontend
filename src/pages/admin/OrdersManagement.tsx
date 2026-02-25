@@ -2079,6 +2079,24 @@ const OrdersManagement: React.FC = () => {
                             {selectedOrder.total.toFixed(2)} جنيه
                           </span>
                         </div>
+
+                        {/* Total Paid & Balance Due */}
+                        {((selectedOrder.totalPaid || 0) > 0) && (
+                          <>
+                            <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-200 mt-2">
+                              <span className="text-blue-700 font-semibold text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>إجمالي المدفوع (شامل الوديعة)</span>
+                              <span className="font-bold text-blue-700 text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                {selectedOrder.totalPaid?.toFixed(2)} جنيه
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg border border-red-200 mt-2">
+                              <span className="text-red-700 font-bold text-sm" style={{ fontFamily: 'Tajawal, sans-serif' }}>المتبقي للدفع</span>
+                              <span className="font-bold text-red-700 text-xl" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                                {(selectedOrder.balanceDue || 0).toFixed(2)} جنيه
+                              </span>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
 
