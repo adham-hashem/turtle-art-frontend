@@ -367,12 +367,12 @@ const ProductsByTypePage: React.FC<Props> = ({ config }) => {
             </button>
           </div>
         ) : products.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="flex flex-col items-center justify-center text-center py-20">
             <div className="text-7xl mb-6">📦</div>
-            <p className="text-2xl text-black font-bold mb-3" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-2xl text-black font-bold mb-3 mx-auto" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               لا توجد منتجات للعرض حالياً
             </p>
-            <p className="text-black text-lg" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <p className="text-black text-lg mx-auto" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               نحن نعمل على إضافة منتجات جديدة قريباً!
             </p>
           </div>
