@@ -49,6 +49,9 @@ import GirlsBagsCasualPage from './pages/GirlsBagsCasualPage';
 import MomDaughterSetPage from './pages/MomDaughterSetPage';
 import RamadanSetPage from './pages/RamadanSetPage';
 import GiveawaysPage from './pages/GiveawaysPage';
+import ForHomePage from './pages/ForHomePage';
+import BagCharmPage from './pages/BagCharmPage';
+import SummerBagsPage from './pages/SummerBagsPage';
 
 // ===== Admin Pages =====
 import AdminPage from './pages/admin/AdminPage';
@@ -213,6 +216,9 @@ function AppContent() {
             <Route path="mother-daughter" element={<MomDaughterSetPage />} />
             <Route path="ramadan-collection" element={<RamadanSetPage />} />
             <Route path="giveaways" element={<GiveawaysPage />} />
+            <Route path="for-home" element={<ForHomePage />} />
+            <Route path="bag-charm" element={<BagCharmPage />} />
+            <Route path="summer-bags" element={<SummerBagsPage />} />
 
             {/* Auth */}
             <Route path="login" element={<LoginPage />} />

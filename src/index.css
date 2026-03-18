@@ -13,6 +13,8 @@
     scroll-behavior: smooth;
     font-size: 17px;
     /* Slightly larger base for better readability */
+    overscroll-behavior: none;
+    min-height: 100dvh;
   }
 
   /* Better font rendering */
@@ -26,6 +28,7 @@
     /* Warm dark text */
     line-height: 1.7;
     /* Comfortable line height */
+    overscroll-behavior: none;
   }
 
   /* Reduced motion support for accessibility */
@@ -143,6 +146,7 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-navy to-brand-green;
   }
 }
+
 * {
   font-family: 'Cairo', sans-serif !important;
 }

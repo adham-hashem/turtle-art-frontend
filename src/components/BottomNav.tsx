@@ -24,6 +24,11 @@ export function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
       className="fixed bottom-0 left-0 right-0 z-[100] bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-[0_-8px_30px_rgb(0,0,0,0.12)] pb-safe"
       style={{
         paddingBottom: 'env(safe-area-inset-bottom, 0.5rem)',
+        transform: 'translateZ(0)',
+        WebkitTransform: 'translateZ(0)',
+        willChange: 'transform',
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
       }}
     >
       <div className="w-full">

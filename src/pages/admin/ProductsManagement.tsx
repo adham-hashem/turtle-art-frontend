@@ -28,7 +28,10 @@ type CategoryType =
   | 'GirlsBags'
   | 'MomAndDaughterSet'
   | 'RamadanSet'
-  | 'Giveaways';
+  | 'Giveaways'
+  | 'ForHome'
+  | 'BagCharm'
+  | 'SummerBags';
 
 interface Product {
   id: string;
@@ -69,6 +72,9 @@ type TabKey =
   | 'motherDaughterSet'
   | 'ramadanCollection'
   | 'giveaways'
+  | 'forHome'
+  | 'bagCharm'
+  | 'summerBags'
   | 'instant'
   | 'breakfast';
 
@@ -153,7 +159,10 @@ const ProductsManagement: React.FC = () => {
     { value: 'GirlsBags', label: 'شنط الفتيات', icon: <ShoppingBag size={16} /> },
     { value: 'MomAndDaughterSet', label: 'مجموعة الأم والابنة', icon: <Users size={16} /> },
     { value: 'RamadanSet', label: 'مجموعة رمضان', icon: <Moon size={16} /> },
-    { value: 'Giveaways', label: 'التوزيعات', icon: <Gift size={16} /> }
+    { value: 'Giveaways', label: 'التوزيعات', icon: <Gift size={16} /> },
+    { value: 'ForHome', label: 'منتجات استخدام منزلي', icon: <Package size={16} /> },
+    { value: 'BagCharm', label: 'تعليقة شنطة', icon: <Star size={16} /> },
+    { value: 'SummerBags', label: 'شنط للصيف', icon: <ShoppingBag size={16} /> }
   ];
 
   const getCategoryLabel = (category?: CategoryType | null) => {
@@ -170,7 +179,10 @@ const ProductsManagement: React.FC = () => {
         'GirlsBags',
         'MomAndDaughterSet',
         'RamadanSet',
-        'Giveaways'
+        'Giveaways',
+        'ForHome',
+        'BagCharm',
+        'SummerBags'
       ];
       return byIndex[category] ?? null;
     }
@@ -195,6 +207,12 @@ const ProductsManagement: React.FC = () => {
         return 'مجموعة رمضان';
       case 'giveaways':
         return 'التوزيعات';
+      case 'forHome':
+        return 'منتجات استخدام منزلي';
+      case 'bagCharm':
+        return 'تعليقة شنطة';
+      case 'summerBags':
+        return 'شنط للصيف';
       case 'instant':
         return 'المنتجات الفورية';
       // case 'breakfast':
@@ -232,6 +250,12 @@ const ProductsManagement: React.FC = () => {
         return withPaging(`${base}/ramadan-set`);
       case 'giveaways':
         return withPaging(`${base}/giveaways`);
+      case 'forHome':
+        return withPaging(`${base}/for-home`);
+      case 'bagCharm':
+        return withPaging(`${base}/bag-charm`);
+      case 'summerBags':
+        return withPaging(`${base}/summer-bags`);
 
       // Existing ones
       case 'instant':
