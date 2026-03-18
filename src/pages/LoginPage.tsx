@@ -10,7 +10,6 @@ import {
   Lock,
   Eye,
   EyeOff,
-  User,
 } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../contexts/AuthContext';
@@ -238,8 +237,80 @@ const LoginPage: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-6">
+                {/* Credentials Form */}
+                <form onSubmit={handleCredentialsLogin} className="space-y-4">
+                  <div>
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <Mail className={`h-5 w-5 ${fieldErrors.identifier ? 'text-red-400' : 'text-gray-400 group-focus-within:text-primary-green'} transition-colors`} />
+                      </div>
+                      <input
+                        type="text"
+                        value={identifier}
+                        onChange={(e) => setIdentifier(e.target.value)}
+                        placeholder="البريد الإلكتروني أو اسم المستخدم"
+                        className={`w-full pr-10 pl-4 py-3 bg-white border-2 rounded-2xl outline-none transition-all duration-300 text-right ${fieldErrors.identifier ? 'border-red-500 focus:ring-4 focus:ring-red-100' : 'border-gray-100 focus:border-primary-green focus:ring-4 focus:ring-primary-green/10'
+                          }`}
+                        style={{ fontFamily: 'Tajawal, sans-serif' }}
+                        dir="rtl"
+                      />
+                    </div>
+                    {fieldErrors.identifier && (
+                      <p className="mt-1 text-xs text-red-500 text-right mr-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        {fieldErrors.identifier}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <Lock className={`h-5 w-5 ${fieldErrors.password ? 'text-red-400' : 'text-gray-400 group-focus-within:text-primary-green'} transition-colors`} />
+                      </div>
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="كلمة المرور"
+                        className={`w-full pr-10 pl-12 py-3 bg-white border-2 rounded-2xl outline-none transition-all duration-300 text-right ${fieldErrors.password ? 'border-red-500 focus:ring-4 focus:ring-red-100' : 'border-gray-100 focus:border-primary-green focus:ring-4 focus:ring-primary-green/10'
+                          }`}
+                        style={{ fontFamily: 'Tajawal, sans-serif' }}
+                        dir="rtl"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 hover:text-primary-green transition-colors"
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                    {fieldErrors.password && (
+                      <p className="mt-1 text-xs text-red-500 text-right mr-2" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+                        {fieldErrors.password}
+                      </p>
+                    )}
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full bg-black text-white py-3.5 rounded-2xl font-bold shadow-xl hover:bg-gray-900 transition-all duration-300 transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2 group"
+                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  >
+                    <span>دخول</span>
+                    <ArrowRight size={20} className="rotate-180 group-hover:-translate-x-1 transition-transform" />
+                  </button>
+                </form>
+
+                {/* Separator */}
+                <div className="relative flex items-center py-2">
+                  <div className="flex-grow border-t border-gray-200"></div>
+                  <span className="flex-shrink mx-4 text-gray-400 text-sm font-medium" style={{ fontFamily: 'Tajawal, sans-serif' }}>أو</span>
+                  <div className="flex-grow border-t border-gray-200"></div>
+                </div>
+
                 {/* Google Login */}
-                <div className="flex justify-center">
+                <div className="flex flex-col items-center gap-4">
                   <div className="transform hover:scale-105 transition-transform duration-200">
                     <GoogleLogin
                       onSuccess={handleGoogleSuccess}
@@ -253,6 +324,14 @@ const LoginPage: React.FC = () => {
                       useOneTap={!isSafariOrIOS()} // Disable One Tap for Safari/iOS
                     />
                   </div>
+
+                  <Link
+                    to="/register"
+                    className="text-sm text-gray-500 hover:text-black transition-colors"
+                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  >
+                    ليس لديك حساب؟ <span className="font-bold text-primary-green hober:underline">إنشاء حساب جديد</span>
+                  </Link>
                 </div>
 
                 {/* Terms */}
@@ -264,7 +343,7 @@ const LoginPage: React.FC = () => {
                   </p>
                 </div>
               </div>
-            )}
+            ) /* End of !isLoggingIn */}
           </div>
 
           {/* Bottom Banner */}
