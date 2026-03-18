@@ -418,16 +418,15 @@ const CheckoutPage: React.FC = () => {
         if (formData.paymentProofImage) {
           const imageFormData = new FormData();
           imageFormData.append('file', formData.paymentProofImage);
-          imageFormData.append('upload_preset', 'turtle_art_preset'); // Update with your Cloudinary preset
 
           try {
-            const cloudinaryResponse = await fetch('https://api.cloudinary.com/v1_1/dsmkdb8rk/image/upload', {
+            const uploadResponse = await fetch(`${apiUrl}/api/images/upload?folder=payment-proofs`, {
               method: 'POST',
               body: imageFormData,
             });
-            if (cloudinaryResponse.ok) {
-              const cloudinaryData = await cloudinaryResponse.json();
-              paymentProofImageUrl = cloudinaryData.secure_url;
+            if (uploadResponse.ok) {
+              const uploadData = await uploadResponse.json();
+              paymentProofImageUrl = uploadData.imageUrl;
             }
           } catch (error) {
             console.error('Failed to upload payment proof:', error);
